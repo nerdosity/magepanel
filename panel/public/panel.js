@@ -961,7 +961,6 @@
         langSelector.addEventListener('change', function () {
             var url = new URL(window.location.href);
             url.searchParams.set('lang', this.value);
-            url.searchParams.set('token', TOKEN);
             window.location.href = url.toString();
         });
     }
