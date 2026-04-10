@@ -936,20 +936,297 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
 ::-webkit-scrollbar-thumb { box-shadow: rgba(128,140,169,.35) 0 0 0 10px inset; }
 ::-webkit-scrollbar-thumb:hover { box-shadow: rgba(128,140,169,.65) 0 0 0 10px inset; }
 
-/* ── Responsive ──────────────────────────────────────────────── */
+/* ── Mobile bottom nav (hidden on desktop) ──────────────────── */
 
-@media (max-width: 768px) {
-    #drawer { display: none; }
-    #task-groups {
-        grid-template-columns: 1fr;
-        padding: 12px;
-    }
-    #terminal-panel { height: 220px; }
-    .workspace-title-row { padding: 12px 16px 8px; }
-    .page-title { font-size: 18px; }
+#mobile-nav {
+    display: none;
 }
+
+/* ── Responsive ──────────────────────────────────────────────── */
 
 @media (min-width: 2000px) {
     #terminal { font-size: 14px; }
     #task-groups { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+}
+
+/* ── Tablet (< 900px) ────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    /* Shrink drawer */
+    :root { --drawer-w: 64px; }
+    .DrawerNavigation .NavButton { font-size: 10px; padding: 10px 0; }
+
+    /* Compact header */
+    #workspace-header { padding: 24px 16px 0; }
+    .page-title { font-size: 22px; margin-bottom: 12px; }
+    .header-controls { gap: 6px; flex-wrap: wrap; }
+    .Button.size-small { font-size: 13px; min-height: 28px; padding: 0 10px; }
+
+    /* CLI layout: narrower sidebar */
+    #workspace.cli-layout { grid-template-columns: 260px 1fr; }
+
+    /* Task area */
+    .task-group { padding: 20px 16px; }
+    .ClusterNamespacesHeader { margin: 16px 16px; }
+    .Table tbody td { padding: 10px 16px; }
+    .Table .SortableHeaderCell { padding: 10px 16px; }
+    .ClusterSecretsTable thead th { padding: 10px 16px; }
+    .ClusterSecretsTable tbody td { padding: 12px 16px; }
+}
+
+/* ── Mobile (< 768px) ────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    /* Hide desktop drawer, show mobile bottom nav */
+    #drawer { display: none !important; }
+
+    #mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: rgb(0, 0, 0);
+        border-top: 1px solid rgba(255,255,255,.1);
+        z-index: 100;
+        padding: 0;
+    }
+
+    .mobile-nav-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: rgba(255,255,255,.5);
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.15s;
+    }
+    .mobile-nav-btn.active { color: var(--teal); }
+    .mobile-nav-btn:active { color: var(--teal-h); }
+
+    /* App shell: make room for bottom nav */
+    #app {
+        flex-direction: column;
+        padding-bottom: 56px;
+    }
+
+    /* Workspace: full width, column layout */
+    #workspace {
+        flex: 1;
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0;
+    }
+
+    /* CLI layout: single column on mobile */
+    #workspace.cli-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none;
+    }
+    #workspace.cli-layout #workspace-header { grid-column: auto; grid-row: auto; }
+    #workspace.cli-layout #task-area {
+        grid-column: auto;
+        grid-row: auto;
+        border-right: none;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+    #workspace.cli-layout #terminal-panel {
+        grid-column: auto;
+        grid-row: auto;
+        flex: 1;
+        height: auto;
+        min-height: 200px;
+    }
+
+    /* Header: stack vertically */
+    #workspace-header {
+        padding: 16px 12px 0;
+        flex-shrink: 0;
+    }
+
+    .workspace-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .page-title {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    .header-controls {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-left: 0;
+    }
+
+    .header-sep { display: none; }
+
+    .Button.size-small {
+        font-size: 13px;
+        min-height: 30px;
+        padding: 0 10px;
+    }
+
+    /* Tabs: horizontal scroll */
+    .TabsBar {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .TabsBar::-webkit-scrollbar { display: none; }
+    .Tab {
+        font-size: 14px;
+        padding: 10px 6px;
+        margin: 0 4px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Task area */
+    #task-area {
+        flex: 1;
+        min-height: 0;
+    }
+
+    .task-group {
+        padding: 12px;
+        position: relative;
+        top: auto; left: auto; right: auto; bottom: auto;
+    }
+
+    .ClusterNamespaces {
+        height: auto;
+    }
+
+    .ClusterNamespacesHeader {
+        margin: 12px 12px;
+    }
+
+    .ClusterNamespacesHeaderTitle { font-size: 16px; }
+
+    .Table tbody td { padding: 10px 12px; font-size: 13px; }
+    .Table .SortableHeaderCell { padding: 10px 12px; font-size: 13px; }
+
+    /* Static content table: stack columns vertically */
+    .ClusterSecretsTable thead { display: none; }
+    .ClusterSecretsTable tbody,
+    .ClusterSecretsTable tbody tr,
+    .ClusterSecretsTable tbody td {
+        display: block;
+        width: 100%;
+    }
+    .ClusterSecretsTable tbody td {
+        padding: 8px 12px;
+        border-bottom: none;
+    }
+    .ClusterSecretsTable tbody td:first-child {
+        padding-top: 12px;
+    }
+    .ClusterSecretsTable tbody td:last-child {
+        border-bottom: 1px solid rgb(50, 54, 68);
+        padding-bottom: 12px;
+    }
+
+    /* Task run button: smaller icon */
+    .ClusterNamespacesTableActions .ToolbarButton { font-size: 14px; margin-right: 4px; }
+    .ClusterNamespacesTableActions .ToolbarButton .Icon { width: 18px !important; height: 18px !important; }
+
+    /* Terminal panel */
+    #terminal-panel {
+        height: 200px;
+        min-height: 120px;
+    }
+
+    #terminal-header {
+        height: 32px;
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .console-dot { width: 8px; height: 8px; }
+
+    #console-title { font-size: 11px; }
+
+    #progress-text { font-size: 10px; max-width: 120px; }
+
+    .terminal-btn { font-size: 11px; min-height: 22px; padding: 0 6px; }
+
+    #terminal {
+        font-size: 13px;
+        line-height: 22px;
+        padding: 10px 0;
+    }
+
+    div.line { padding: 0 10px; font-size: 13px; }
+    code.line { padding: 0 0 0 10px; font-size: 13px; }
+
+    /* CLI mode: detail panel */
+    .ResourceDetailsLayout__Header { padding: 12px; flex-wrap: wrap; gap: 8px; }
+    .ResourceDetailsButtons { margin-left: 0; }
+    .ResourceDetailsProperties { padding: 12px; flex-direction: column; gap: 8px; }
+    .ResourceDetailsProperties>*+* { margin-left: 0; }
+    .ResourceDetailsContentBar { height: 44px; padding: 8px 12px; }
+
+    .ResourceItem__Title { font-size: 14px; }
+    .ResourceItem__Subtitle { font-size: 12px; }
+
+    /* Command list sidebar */
+    .ResourceSidebarItem { padding: 8px 12px 8px 14px; }
+    .ResourceListItemParent .ResourceSidebarItem { padding-left: 24px; }
+    .ResourceListItemChildren .ResourceSidebarItem { padding-left: 36px; }
+    .ResourceListItemChildren .ResourceItem__Subtitle { max-width: 160px; }
+
+    .LogStageSectionHeader { padding-left: 10px; padding-right: 10px; }
+    .LogStageSectionHeader .title { font-size: 13px; }
+    .LogStageSectionLines { margin-left: 10px; font-size: 13px; }
+
+    /* Terminal resize handle: easier to grab on touch */
+    #terminal-resize-handle { height: 8px; }
+
+    /* Toolbar buttons */
+    .ToolbarButton { font-size: 14px; margin-right: 16px; }
+    .ToolbarButton__icon .Icon { width: 18px !important; height: 18px !important; }
+
+    /* Modal */
+    .DialogContainer {
+        width: calc(100vw - 1.5rem);
+        max-width: 400px;
+        border-radius: 12px;
+    }
+    .ModalTitle { font-size: 20px; padding: 20px 20px 14px; }
+    .ModalContent { padding: 12px 20px 24px; }
+    .ModalContent.withTitle { padding-top: 0; }
+    .DeployButtons { flex-direction: column; gap: 8px; }
+    .DeployButtons > * { margin-left: 0; width: 100%; justify-content: center; }
+    .DeployButtons .Button { min-height: 42px; }
+
+    /* Badge */
+    .badge { font-size: 10px; padding: 2px 8px; }
+
+    /* Language selector */
+    .lang-selector { font-size: 12px; padding: 3px 6px; }
+
+    /* Scrollbar: thinner on mobile */
+    ::-webkit-scrollbar { width: 8px; }
+}
+
+/* ── Small mobile (< 400px) ──────────────────────────────────── */
+
+@media (max-width: 400px) {
+    .page-title { font-size: 18px; }
+    .Button.size-small { font-size: 12px; min-height: 28px; padding: 0 8px; }
+    .header-controls { gap: 4px; }
+    .ClusterNamespacesHeaderTitle { font-size: 14px; }
+    .Tab { font-size: 13px; padding: 8px 4px; }
 }

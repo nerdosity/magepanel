@@ -832,6 +832,11 @@
         if (navCommands) navCommands.classList.toggle('active', isCli);
         if (navComposer) navComposer.classList.toggle('active', isComposer);
 
+        // Mobile nav sync
+        document.querySelectorAll('.mobile-nav-btn').forEach(function (b) {
+            b.classList.toggle('active', b.dataset.section === section);
+        });
+
         // CLI layout: grid (sidebar commands | terminal right)
         var workspace = document.getElementById('workspace');
         if (workspace) workspace.classList.toggle('cli-layout', isCmdMode);
@@ -870,6 +875,21 @@
     if (navTasks)    navTasks.addEventListener('click',    function () { switchSection('tasks'); });
     if (navCommands) navCommands.addEventListener('click', function () { switchSection('cli'); });
     if (navComposer) navComposer.addEventListener('click', function () { switchSection('composer'); });
+
+    // Mobile bottom nav
+    document.querySelectorAll('.mobile-nav-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var section = this.dataset.section;
+            switchSection(section);
+            document.querySelectorAll('.mobile-nav-btn').forEach(function (b) {
+                b.classList.toggle('active', b.dataset.section === section);
+            });
+            // Also sync drawer nav
+            if (navTasks)    navTasks.classList.toggle('active',    section === 'tasks');
+            if (navCommands) navCommands.classList.toggle('active', section === 'cli');
+            if (navComposer) navComposer.classList.toggle('active', section === 'composer');
+        });
+    });
 
     // ================================================================
     //  Event listeners
