@@ -970,8 +970,8 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 .line-header    { color: rgb(0, 209, 202); font-weight: 700 }
 .line-separator { color: rgba(255,255,255,.4); font-size: 11px; opacity: .5 }
 
-/* Exit status line — dimmed, smaller */
-.line-exit      { color: rgba(128, 140, 169, 0.5); font-size: 11px; margin-top: 8px; letter-spacing: 0.02em }
+/* Exit status line — soft teal, slightly smaller */
+.line-exit      { color: rgba(0, 209, 202, 0.4); font-size: 13px; margin-top: 8px; letter-spacing: 0.01em }
 
 /* Tasks mode: div.line (simple block lines in bottom terminal) */
 div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: break-all; margin: 0; line-height: 1.5 }

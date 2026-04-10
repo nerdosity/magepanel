@@ -185,7 +185,25 @@
     //  Running state
     // ================================================================
 
+    var runStartTime = null;
+
+    function formatElapsed(ms) {
+        var secs = Math.round(ms / 1000);
+        if (secs < 60) return secs + 's';
+        var mins = Math.floor(secs / 60);
+        var s = secs % 60;
+        return mins + 'm ' + (s < 10 ? '0' : '') + s + 's';
+    }
+
+    function getElapsedLabel() {
+        if (!runStartTime) return '';
+        return ' (' + formatElapsed(Date.now() - runStartTime) + ')';
+    }
+
     function setRunning(isRunning) {
+        if (isRunning) {
+            runStartTime = Date.now();
+        }
         btnRun.disabled  = isRunning;
         btnStop.disabled = !isRunning;
         if (btnStatic) btnStatic.disabled = isRunning;
@@ -226,7 +244,7 @@
                 setProgress(0, __('Static content deploy...'));
 
                 openSse(BASE_URL + '?' + qs, function (ok) {
-                    setProgress(100, ok ? __('Completato') : __('Errori'));
+                    setProgress(100, (ok ? __('Completato') : __('Errori')) + getElapsedLabel());
                     setRunning(false);
                 });
             });
@@ -1117,7 +1135,7 @@
                 addSeparator(taskLabel);
                 setProgress(0, taskLabel);
                 runTask(taskId).then(function (ok) {
-                    setProgress(100, ok ? __('Completato') : __('Errore'));
+                    setProgress(100, (ok ? __('Completato') : __('Errore')) + getElapsedLabel());
                     setRunning(false);
                     loadSysInfo();
                 });
@@ -1157,7 +1175,7 @@
                         var ok = await runTask(ids[i]);
                         if (!ok) allOk = false;
                     }
-                    setProgress(100, allOk ? __('Completato') : __('Errori'));
+                    setProgress(100, (allOk ? __('Completato') : __('Errori')) + getElapsedLabel());
                     setRunning(false);
                     loadSysInfo();
                 })();
