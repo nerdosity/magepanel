@@ -988,6 +988,10 @@
         var workspace = document.getElementById('workspace');
         if (workspace) workspace.classList.toggle('cli-layout', isCmdMode);
 
+        // Reset inline height from resize handle when entering/leaving CLI mode
+        var termPanel = document.getElementById('terminal-panel');
+        if (termPanel) termPanel.style.height = '';
+
         // Containers
         var taskGroups        = document.getElementById('task-groups');
         var mageContainer     = document.getElementById('mage-commands-container');
