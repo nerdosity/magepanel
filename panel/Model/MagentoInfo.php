@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * MagentoInfo — scans the Magento filesystem for installed themes and locales.
  */

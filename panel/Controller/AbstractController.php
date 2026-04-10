@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * Base controller: authentication and response helpers.
  */
 abstract class AbstractController
 {
-    protected string $token;
-    protected bool   $authenticated;
+    protected bool $authenticated;
 
-    public function __construct(string $token)
+    public function __construct(bool $authenticated)
     {
-        $this->token         = $token;
-        $this->authenticated = $token !== '' && hash_equals(PANEL_TOKEN, $token);
+        $this->authenticated = $authenticated;
     }
 
     protected function requireAuth(): void

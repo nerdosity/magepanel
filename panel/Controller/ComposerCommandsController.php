@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * ComposerCommandsController — returns the Composer command list as JSON,
  * grouped by namespace.
@@ -30,7 +32,7 @@ class ComposerCommandsController extends AbstractController
         $data = json_decode($output, true);
 
         if (!is_array($data) || empty($data['commands'])) {
-            $this->json(['error' => 'Output non valido', 'raw' => substr($output, 0, 500)], 500);
+            $this->json(['error' => 'Output non valido'], 500);
         }
 
         // Group by namespace (first segment before ':')

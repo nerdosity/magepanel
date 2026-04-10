@@ -1,16 +1,22 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * RunComposerController — runs any Composer CLI command via SSE.
  *
  * GET params:
  *   name   — command name, e.g. "require", "update"  (validated by regex)
  *   args   — optional argument string, e.g. "vendor/package --dev"
- *   token  — auth token
  */
 class RunComposerController extends AbstractController
 {
+    /** Commands that can execute arbitrary code — blocked for safety */
+    private const BLOCKED_COMMANDS = [
+        'exec', 'run-script', 'run', 'global', 'create-project',
+    ];
+
     public function handle(): never
     {
         $this->requireAuth();
@@ -21,7 +27,14 @@ class RunComposerController extends AbstractController
         // Validate: command name must be safe CLI format
         if (!preg_match('/^[a-z][a-z0-9:_\-]*$/', $name)) {
             $this->startSse();
-            $this->send('Nome comando non valido: ' . $name, 'error');
+            $this->send('Nome comando non valido', 'error');
+            $this->sendDone(1);
+        }
+
+        // Block commands that allow arbitrary code execution
+        if (in_array($name, self::BLOCKED_COMMANDS, true)) {
+            $this->startSse();
+            $this->send('Comando bloccato per sicurezza: ' . $name, 'error');
             $this->sendDone(1);
         }
 

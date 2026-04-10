@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * CommandChecker — detects binary availability without exec/shell_exec.
  *

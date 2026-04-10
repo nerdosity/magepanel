@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * DashboardController — renders the main panel HTML.
  * If not authenticated, renders the login view instead.
@@ -10,9 +12,9 @@ class DashboardController extends AbstractController
     private TaskRegistry $registry;
     private MagentoInfo  $info;
 
-    public function __construct(string $token, TaskRegistry $registry, MagentoInfo $info)
+    public function __construct(bool $authenticated, TaskRegistry $registry, MagentoInfo $info)
     {
-        parent::__construct($token);
+        parent::__construct($authenticated);
         $this->registry = $registry;
         $this->info     = $info;
     }
@@ -25,7 +27,6 @@ class DashboardController extends AbstractController
         }
 
         $grouped = $this->registry->grouped();
-        $token   = $this->token;
         $themes  = $this->info->getFrontendThemes();
         $locales = $this->info->getAvailableLocales();
         $i18n    = I18n::get();

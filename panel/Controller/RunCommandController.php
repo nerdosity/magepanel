@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * RunCommandController — runs any Magento CLI command via SSE.
  *
  * GET params:
  *   name   — command name, e.g. "cache:clean"  (validated by regex)
  *   args   — optional argument string, e.g. "--type full_page"
- *   token  — auth token
  */
 class RunCommandController extends AbstractController
 {
@@ -21,7 +22,7 @@ class RunCommandController extends AbstractController
         // Validate: command name must be safe Magento CLI format
         if (!preg_match('/^[a-z][a-z0-9:_\-]*$/', $name)) {
             $this->startSse();
-            $this->send('Nome comando non valido: ' . $name, 'error');
+            $this->send('Nome comando non valido', 'error');
             $this->sendDone(1);
         }
 

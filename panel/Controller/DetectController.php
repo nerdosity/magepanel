@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * DetectController — returns JSON system info (PHP, Magento version, disk usage).
  */
@@ -8,9 +10,9 @@ class DetectController extends AbstractController
 {
     private MagentoInfo $info;
 
-    public function __construct(string $token, MagentoInfo $info)
+    public function __construct(bool $authenticated, MagentoInfo $info)
     {
-        parent::__construct($token);
+        parent::__construct($authenticated);
         $this->info = $info;
     }
 
@@ -50,13 +52,12 @@ class DetectController extends AbstractController
         $packageManager = CommandChecker::detectPackageManager();
 
         $this->json([
-            'php'            => $phpVersion,
+            'php'            => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION,
             'magento'        => $magentoVersion,
             'disk_free'      => $this->formatBytes((int) $diskFree),
             'disk_total'     => $this->formatBytes((int) $diskTotal),
             'disk_used_pct'  => $diskUsedPct,
             'maintenance'    => $maintenance,
-            'root'           => $root,
             'version'        => PANEL_VERSION,
             'themes'         => $this->info->getFrontendThemes(),
             'locales'        => $this->info->getAvailableLocales(),

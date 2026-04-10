@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * StaticDeployController — streams setup:static-content:deploy with
  * user-selected themes, locales and areas.
@@ -9,15 +11,14 @@ declare(strict_types=1);
  *   themes[]  — e.g. Smartwave/porto  (only themes returned by MagentoInfo)
  *   locales[] — e.g. it_IT, en_US     (validated against /^[a-z]{2}_[A-Z]{2}$/)
  *   areas[]   — frontend | adminhtml
- *   token     — auth token
  */
 class StaticDeployController extends AbstractController
 {
     private MagentoInfo $info;
 
-    public function __construct(string $token, MagentoInfo $info)
+    public function __construct(bool $authenticated, MagentoInfo $info)
     {
-        parent::__construct($token);
+        parent::__construct($authenticated);
         $this->info = $info;
     }
 
@@ -60,7 +61,6 @@ class StaticDeployController extends AbstractController
             . ' — lingue: ' . implode(', ', $locales);
 
         $this->send('▶ ' . $label, 'header');
-        $this->send($cmd, 'info');
 
         $proc = proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w']], $pipes);
 
@@ -70,10 +70,38 @@ class StaticDeployController extends AbstractController
         }
 
         fclose($pipes[0]);
+        stream_set_blocking($pipes[1], false);
 
-        while (($line = fgets($pipes[1])) !== false) {
-            $text = rtrim($line);
-            if ($text === '') continue;
+        $stopFile = MAGENTO_ROOT . '/var/.panel_stop';
+        @unlink($stopFile);
+
+        $buffer = '';
+        $timeout = time() + 1800; // 30 min max
+        while (time() < $timeout) {
+            if (file_exists($stopFile)) {
+                @unlink($stopFile);
+                proc_terminate($proc, 15);
+                usleep(200000);
+                if (is_resource($proc)) proc_terminate($proc, 9);
+                $this->send('Comando interrotto (SIGTERM)', 'warn');
+                break;
+            }
+            if (connection_aborted()) {
+                proc_terminate($proc, 15);
+                break;
+            }
+            $chunk = fread($pipes[1], 8192);
+            if ($chunk === false || ($chunk === '' && feof($pipes[1]))) break;
+            if ($chunk === '') { usleep(50000); continue; }
+            $buffer .= $chunk;
+            while (($pos = strpos($buffer, "\n")) !== false) {
+                $text = rtrim(substr($buffer, 0, $pos));
+                $buffer = substr($buffer, $pos + 1);
+                if ($text === '') continue;
+                $this->send($text, $this->classify($text));
+            }
+        }
+        if (($text = rtrim($buffer)) !== '') {
             $this->send($text, $this->classify($text));
         }
 

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined('PANEL_ROOT') || exit;
+
 /**
  * StreamController — runs a task and streams output as Server-Sent Events.
  *
@@ -12,9 +14,9 @@ class StreamController extends AbstractController
 {
     private TaskRegistry $registry;
 
-    public function __construct(string $token, TaskRegistry $registry)
+    public function __construct(bool $authenticated, TaskRegistry $registry)
     {
-        parent::__construct($token);
+        parent::__construct($authenticated);
         $this->registry = $registry;
     }
 
@@ -53,8 +55,27 @@ class StreamController extends AbstractController
         // Lettura non-bloccante: evita freeze se il processo è silenzioso
         stream_set_blocking($pipes[1], false);
 
+        $stopFile = MAGENTO_ROOT . '/var/.panel_stop';
+        @unlink($stopFile);
+
         $buf = '';
-        while (true) {
+        $timeout = time() + 900; // 15 min max
+        while (time() < $timeout) {
+            // Check stop signal
+            if (file_exists($stopFile)) {
+                @unlink($stopFile);
+                proc_terminate($proc, 15);
+                usleep(200000);
+                if (is_resource($proc)) proc_terminate($proc, 9);
+                $this->send('Comando interrotto (SIGTERM)', 'warn');
+                break;
+            }
+            // Check client disconnect
+            if (connection_aborted()) {
+                proc_terminate($proc, 15);
+                break;
+            }
+
             $status = proc_get_status($proc);
 
             // Leggi tutto ciò che è disponibile
