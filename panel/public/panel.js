@@ -58,17 +58,64 @@
 
     var activeLogLines = null; // current LogStageSectionLines container
 
+    // ANSI escape patterns (both real \x1b[ and literal bracket [ forms from 2>&1)
+    var ansiStripRe = /\x1b\[[0-9;]*[A-Za-z]|\[\d*[AHJKm]|\[\d*;\d*[Hf]/g;
+    var cursorUpCountRe = /\x1b\[(\d*)A|\[(\d*)A/g;
+
     function addLine(text, type) {
         // Skip the "▶ bin/magento ..." header line in CLI mode — already shown in stage header
         if (type === 'header' && activeLogLines) return;
 
-        var ph = term.querySelector('.term-placeholder');
-        if (ph) term.removeChild(ph);
+        // Count cursor-up sequences before stripping (progress bar updates)
+        var ups = 0;
+        var match;
+        var re = new RegExp(cursorUpCountRe.source, 'g');
+        while ((match = re.exec(text)) !== null) {
+            ups += parseInt(match[1] || match[2] || '1', 10);
+        }
 
+        // Strip all ANSI escape sequences
+        var clean = text.replace(ansiStripRe, '').trim();
+        if (clean === '') return;
+
+        // If cursor-up detected: replace last N lines (in-place progress update)
+        if (ups > 0) {
+            var container = activeLogLines || term;
+            var subLines = clean.split('\n');
+            // Remove last `ups` lines
+            var existingLines = container.querySelectorAll('.line');
+            var toRemove = Math.min(ups, existingLines.length);
+            for (var i = 0; i < toRemove; i++) {
+                var el = existingLines[existingLines.length - 1 - i];
+                if (el) el.parentNode.removeChild(el);
+            }
+            // Append replacement lines
+            for (var j = 0; j < subLines.length; j++) {
+                var sl = subLines[j].trim();
+                if (sl !== '') appendLineEl(sl, type);
+            }
+            term.scrollTop = term.scrollHeight;
+            return;
+        }
+
+        appendLineEl(clean, type);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function appendLineEl(text, type) {
+        // Dim exit status lines
+        if (/^\[OK\] .*(exit \d)/.test(text) || /^\[ERRORE\] .*(exit \d|Exit \d)/.test(text)) {
+            type = 'exit';
+        }
         var safeType = /^[a-z\-]+$/.test(type) ? type : 'output';
 
+        // Remove placeholders on first real line
+        var ph = term.querySelector('.term-placeholder');
+        if (ph) term.removeChild(ph);
+        var es = term.querySelector('.term-empty-state');
+        if (es) term.removeChild(es);
+
         if (activeLogLines) {
-            // CLI mode: LogLine structure <code class="line"><span>text</span></code>
             var code = document.createElement('code');
             code.className = 'line line-' + safeType;
             var span = document.createElement('span');
@@ -76,13 +123,11 @@
             code.appendChild(span);
             activeLogLines.appendChild(code);
         } else {
-            // Tasks mode: simple <div class="line">text</div>
             var div = document.createElement('div');
             div.className = 'line line-' + safeType;
             div.textContent = text;
             term.appendChild(div);
         }
-        term.scrollTop = term.scrollHeight;
     }
 
     function addSeparator(label) {
