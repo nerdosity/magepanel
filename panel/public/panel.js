@@ -49,10 +49,6 @@
 
     function clearOutput() {
         while (term.firstChild) term.removeChild(term.firstChild);
-        var ph = document.createElement('div');
-        ph.className = 'term-placeholder';
-        ph.textContent = __("L'output apparirà qui...");
-        term.appendChild(ph);
         setProgress(0, '');
     }
 
@@ -109,9 +105,7 @@
         }
         var safeType = /^[a-z\-]+$/.test(type) ? type : 'output';
 
-        // Remove placeholders on first real line
-        var ph = term.querySelector('.term-placeholder');
-        if (ph) term.removeChild(ph);
+        // Remove empty state on first real line
         var es = term.querySelector('.term-empty-state');
         if (es) term.removeChild(es);
 
@@ -681,8 +675,8 @@
 
     // Copiato da index4.html riga 8683-8716 (LogStageSection)
     function addLogStageHeader(name, success) {
-        var ph = term.querySelector('.term-placeholder');
-        if (ph) term.removeChild(ph);
+        var es = term.querySelector('.term-empty-state');
+        if (es) term.removeChild(es);
 
         var svgNs = 'http://www.w3.org/2000/svg';
 
