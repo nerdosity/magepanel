@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
     <title>Deploy Panel — Nerdosity</title>
     <link rel="stylesheet" href="public/panel.css">
 </head>
@@ -389,7 +390,6 @@
 </div><!-- #app -->
 
 <script>
-    var PANEL_TOKEN    = <?= json_encode($token) ?>;
     var PANEL_BASE_URL = 'index.php';
     var PANEL_PRESETS  = {
         full_deploy:   ['maintenance_enable','clean_all','module_enable','setup_upgrade','di_compile','cache_flush','maintenance_disable'],

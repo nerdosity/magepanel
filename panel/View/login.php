@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
     <title>Deploy Panel — Login</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -138,7 +137,7 @@
             <span class="login-logo-title">Deploy<em>Panel</em></span>
         </div>
         <p class="login-sub">Inserisci il token di accesso per continuare.</p>
-        <form method="get" action="">
+        <form method="post" action="">
             <label for="token">Token di accesso</label>
             <input type="password" id="token" name="token"
                    autofocus autocomplete="current-password"

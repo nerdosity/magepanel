@@ -4,7 +4,6 @@
 (function () {
     'use strict';
 
-    var TOKEN    = window.PANEL_TOKEN    || '';
     var BASE_URL = window.PANEL_BASE_URL || 'index.php';
     var PRESETS  = window.PANEL_PRESETS  || {};
     var I18N     = window.PANEL_I18N     || {};
@@ -132,7 +131,7 @@
             var url = BASE_URL
                 + '?action=stream'
                 + '&task='  + encodeURIComponent(taskId)
-                + '&token=' + encodeURIComponent(TOKEN);
+;
             openSse(url, resolve);
         });
     }
@@ -165,7 +164,7 @@
             if (!locales.length) { alert(__('Seleziona almeno una lingua')); return; }
             if (!areas.length)   { alert(__("Seleziona almeno un'area")); return; }
 
-            var qs = 'action=static&token=' + encodeURIComponent(TOKEN);
+            var qs = 'action=static';
             themes.forEach(function (t)  { qs += '&themes[]='  + encodeURIComponent(t); });
             locales.forEach(function (l) { qs += '&locales[]=' + encodeURIComponent(l); });
             areas.forEach(function (a)   { qs += '&areas[]='   + encodeURIComponent(a); });
@@ -226,7 +225,7 @@
         clearOutput();
         setRunning(true);
         openSse(
-            BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId) + '&token=' + encodeURIComponent(TOKEN),
+            BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId),
             function () { setRunning(false); loadSysInfo(); }
         );
     }
@@ -247,7 +246,7 @@
     // ================================================================
 
     function loadSysInfo() {
-        fetch(BASE_URL + '?action=detect&token=' + encodeURIComponent(TOKEN))
+        fetch(BASE_URL + '?action=detect')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (sysInfo) {
@@ -276,7 +275,7 @@
         if (commandsLoaded) return;
         commandsLoaded = true;
 
-        fetch(BASE_URL + '?action=commands&token=' + encodeURIComponent(TOKEN))
+        fetch(BASE_URL + '?action=commands')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data.error) {
@@ -624,7 +623,7 @@
         detailStop.addEventListener('click', function () {
             stopRequested = true;
             // Send SIGTERM to the running process via server
-            fetch(BASE_URL + '?action=stop_cmd&token=' + encodeURIComponent(TOKEN));
+            fetch(BASE_URL + '?action=stop_cmd');
             if (currentEs) {
                 currentEs.close(); currentEs = null;
                 addLine(__('Comando interrotto'), 'warn');
@@ -741,7 +740,7 @@
         if (composerCommandsLoaded) return;
         composerCommandsLoaded = true;
 
-        fetch(BASE_URL + '?action=composer_commands&token=' + encodeURIComponent(TOKEN))
+        fetch(BASE_URL + '?action=composer_commands')
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data.error) {
