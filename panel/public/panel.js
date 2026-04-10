@@ -271,9 +271,24 @@
     //  Magento commands (lazy load)
     // ================================================================
 
+    function showLoader(container) {
+        while (container.firstChild) container.removeChild(container.firstChild);
+        container.className = 'mage-commands-loading';
+        var wrap = document.createElement('div');
+        wrap.className = 'panel-loader';
+        var spinner = document.createElement('div');
+        spinner.className = 'panel-spinner';
+        var label = document.createElement('span');
+        label.textContent = __('Caricamento...');
+        wrap.appendChild(spinner);
+        wrap.appendChild(label);
+        container.appendChild(wrap);
+    }
+
     function loadMagentoCommands() {
         if (commandsLoaded) return;
         commandsLoaded = true;
+        showLoader(mageCommandsList);
 
         fetch(BASE_URL + '?action=commands')
             .then(function (r) { return r.json(); })
@@ -738,6 +753,7 @@
     function loadComposerCommands() {
         if (composerCommandsLoaded) return;
         composerCommandsLoaded = true;
+        showLoader(composerCommandsList);
 
         fetch(BASE_URL + '?action=composer_commands')
             .then(function (r) { return r.json(); })
