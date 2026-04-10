@@ -1,0 +1,184 @@
+<?php
+declare(strict_types=1);
+
+// ================================================================
+//  Nerdosity Deploy Panel — Configuration
+// ================================================================
+
+define('PANEL_TOKEN',    getenv('DEPLOY_PANEL_TOKEN') ?: 'change-me-to-a-secure-random-token');
+define('MAGENTO_ROOT',   dirname(__DIR__));
+define('PANEL_VERSION',  '1.0.0');
+
+// Percorso al PHP cleaner (zero dipendenze esterne per le pulizie)
+$cleaner = 'php ' . escapeshellarg(__DIR__ . '/bin/clean.php');
+
+// ----------------------------------------------------------------
+//  Task definitions
+//
+//  Chiavi:
+//    label    — etichetta UI
+//    cmd      — comando eseguito da MAGENTO_ROOT (con 2>&1 aggiunto dal StreamController)
+//    group    — gruppo UI (prefisso '_' = interno, non mostrato come checkbox)
+//    requires — array di binari esterni necessari (vuoto = solo PHP)
+// ----------------------------------------------------------------
+return [
+
+    // ── Manutenzione (azionati da pulsante header) ───────────────
+    'maintenance_enable' => [
+        'label'    => 'Attiva manutenzione',
+        'cmd'      => 'php bin/magento maintenance:enable',
+        'group'    => '_system',
+        'requires' => ['php'],
+    ],
+    'maintenance_disable' => [
+        'label'    => 'Disattiva manutenzione',
+        'cmd'      => 'php bin/magento maintenance:disable',
+        'group'    => '_system',
+        'requires' => ['php'],
+    ],
+
+    // ── Pulizia (usa PHP cleaner — nessuna dipendenza da rm) ─────
+    'clean_cache_dirs' => [
+        'label'    => 'Pulisci cache dirs (var/cache, view_preprocessed)',
+        'cmd'      => $cleaner . ' var/cache var/page_cache var/view_preprocessed',
+        'group'    => 'Pulizia',
+        'requires' => ['php'],
+    ],
+    'clean_static' => [
+        'label'    => 'Pulisci static (pub/static/frontend + adminhtml)',
+        'cmd'      => $cleaner . ' pub/static/frontend pub/static/adminhtml'
+                    . ' && rm -f pub/static/deployed_version.txt',
+        'group'    => 'Pulizia',
+        'requires' => ['php'],
+    ],
+    'clean_generated' => [
+        'label'    => 'Pulisci generated (code + metadata)',
+        'cmd'      => $cleaner . ' generated/code generated/metadata',
+        'group'    => 'Pulizia',
+        'requires' => ['php'],
+    ],
+    'clean_all' => [
+        'label'    => 'Pulisci tutto (cache + static + generated)',
+        'cmd'      => $cleaner . ' var/cache var/page_cache var/view_preprocessed'
+                    . ' pub/static/frontend pub/static/adminhtml'
+                    . ' generated/code generated/metadata'
+                    . ' && rm -f pub/static/deployed_version.txt'
+                    . ' && echo "[OK] Tutto pulito"',
+        'group'    => 'Pulizia',
+        'requires' => ['php'],
+    ],
+
+    // ── Moduli & DB ──────────────────────────────────────────────
+    'module_enable' => [
+        'label'    => 'Abilita moduli Nerdosity',
+        'cmd'      => 'php bin/magento module:enable'
+                    . ' Nerdosity_Common Nerdosity_AutoRelatedProduct'
+                    . ' Nerdosity_Spediamo Nerdosity_Smtp Nerdosity_TrackOrder'
+                    . ' Nerdosity_ChangeAttributeSet Nerdosity_AdditionalFilters'
+                    . ' Nerdosity_MassProductCategory || true',
+        'group'    => 'Moduli & DB',
+        'requires' => ['php'],
+    ],
+    'setup_upgrade' => [
+        'label'    => 'Setup upgrade (schema + dati)',
+        'cmd'      => 'php bin/magento setup:upgrade',
+        'group'    => 'Moduli & DB',
+        'requires' => ['php'],
+    ],
+
+    // ── Compilazione ─────────────────────────────────────────────
+    'di_compile' => [
+        'label'    => 'Compila DI (setup:di:compile)',
+        'cmd'      => 'php bin/magento setup:di:compile',
+        'group'    => 'Compilazione',
+        'requires' => ['php'],
+    ],
+
+    // ── Cache ────────────────────────────────────────────────────
+    'cache_flush' => [
+        'label'    => 'Cache flush',
+        'cmd'      => 'php bin/magento cache:flush',
+        'group'    => 'Cache',
+        'requires' => ['php'],
+    ],
+    'cache_clean' => [
+        'label'    => 'Cache clean',
+        'cmd'      => 'php bin/magento cache:clean',
+        'group'    => 'Cache',
+        'requires' => ['php'],
+    ],
+    'cache_enable' => [
+        'label'    => 'Abilita tutte le cache',
+        'cmd'      => 'php bin/magento cache:enable',
+        'group'    => 'Cache',
+        'requires' => ['php'],
+    ],
+    'cache_disable_dev' => [
+        'label'    => 'Disabilita block_html + full_page (dev)',
+        'cmd'      => 'php bin/magento cache:disable block_html full_page',
+        'group'    => 'Cache',
+        'requires' => ['php'],
+    ],
+
+    // ── Indici ───────────────────────────────────────────────────
+    'reindex' => [
+        'label'    => 'Reindex tutto',
+        'cmd'      => 'php bin/magento indexer:reindex',
+        'group'    => 'Indici',
+        'requires' => ['php'],
+    ],
+    'indexer_status' => [
+        'label'    => 'Stato indici',
+        'cmd'      => 'php bin/magento indexer:status',
+        'group'    => 'Indici',
+        'requires' => ['php'],
+    ],
+
+    // ── Modalità Magento ─────────────────────────────────────────
+    'mode_production' => [
+        'label'     => 'Passa a production',
+        'cmd'       => 'php bin/magento deploy:mode:set production',
+        'group'     => 'Modalità',
+        'requires'  => ['php'],
+        'exclusive' => true,
+    ],
+    'mode_developer' => [
+        'label'     => 'Passa a developer',
+        'cmd'       => 'php bin/magento deploy:mode:set developer',
+        'group'     => 'Modalità',
+        'requires'  => ['php'],
+        'exclusive' => true,
+    ],
+    'mode_show' => [
+        'label'     => 'Mostra modalità attuale',
+        'cmd'       => 'php bin/magento deploy:mode:show',
+        'group'     => 'Modalità',
+        'requires'  => ['php'],
+        'exclusive' => true,
+    ],
+
+    // ── Info & Diagnostica ───────────────────────────────────────
+    'module_status' => [
+        'label'    => 'Stato moduli Nerdosity',
+        // grep opzionale: se manca, mostra tutto (filtrato lato PHP dal classify)
+        'cmd'      => 'php bin/magento module:status --enabled'
+                    . ' | { grep -i nerdosity 2>/dev/null || cat; }',
+        'group'    => 'Info',
+        'requires' => ['php'],          // grep è opzionale (fallback: cat)
+    ],
+    'cron_run' => [
+        'label'    => 'Esegui cron',
+        'cmd'      => 'php bin/magento cron:run',
+        'group'    => 'Info',
+        'requires' => ['php'],
+    ],
+    'sys_info' => [
+        'label'    => 'Info sistema (PHP + Magento + disco)',
+        // df opzionale: se manca, le info disco arrivano dal detect endpoint
+        'cmd'      => 'php -v && echo "---" && php bin/magento --version'
+                    . ' && echo "---"'
+                    . ' && { df -h . 2>/dev/null || echo "(df non disponibile — info disco nel header)"; }',
+        'group'    => 'Info',
+        'requires' => ['php'],          // df è opzionale (fallback già nel header)
+    ],
+];

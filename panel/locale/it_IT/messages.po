@@ -1,0 +1,249 @@
+# Nerdosity Deploy Panel — Italiano (lingua predefinita)
+# Modifica i msgstr qui per cambiare i testi senza toccare il codice.
+#
+msgid ""
+msgstr ""
+"Language-Name: Italiano\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it_IT\n"
+
+# ── Header / Navigazione ────────────────────────────────────
+
+msgid "Deploy Panel"
+msgstr "Deploy Panel"
+
+msgid "Full Deploy"
+msgstr "Full Deploy"
+
+msgid "Cache"
+msgstr "Cache"
+
+msgid "Compile"
+msgstr "Compile"
+
+msgid "MANUTENZIONE"
+msgstr "MANUTENZIONE"
+
+msgid "Manutenzione"
+msgstr "Manutenzione"
+
+# ── Tab ──────────────────────────────────────────────────────
+
+msgid "Static Content"
+msgstr "Static Content"
+
+# ── Pannello Static Content Deploy ──────────────────────────
+
+msgid "Static Content Deploy"
+msgstr "Static Content Deploy"
+
+msgid "Deploy Static"
+msgstr "Deploy Static"
+
+msgid "Area"
+msgstr "Area"
+
+msgid "Temi"
+msgstr "Temi"
+
+msgid "Lingue"
+msgstr "Lingue"
+
+msgid "Nessun tema in app/design/frontend"
+msgstr "Nessun tema in app/design/frontend"
+
+# ── Gruppi task ──────────────────────────────────────────────
+
+msgid "Pulizia"
+msgstr "Pulizia"
+
+msgid "Moduli & DB"
+msgstr "Moduli & DB"
+
+msgid "Compilazione"
+msgstr "Compilazione"
+
+msgid "Indici"
+msgstr "Indici"
+
+msgid "Modalità"
+msgstr "Modalità"
+
+msgid "Info"
+msgstr "Info"
+
+# ── Tabella task ─────────────────────────────────────────────
+
+msgid "Esegui"
+msgstr "Esegui"
+
+msgid "Stop"
+msgstr "Stop"
+
+# ── Label task (config.php) ─────────────────────────────────
+
+msgid "Attiva manutenzione"
+msgstr "Attiva manutenzione"
+
+msgid "Disattiva manutenzione"
+msgstr "Disattiva manutenzione"
+
+msgid "Pulisci cache dirs (var/cache, view_preprocessed)"
+msgstr "Pulisci cache dirs (var/cache, view_preprocessed)"
+
+msgid "Pulisci static (pub/static/frontend + adminhtml)"
+msgstr "Pulisci static (pub/static/frontend + adminhtml)"
+
+msgid "Pulisci generated (code + metadata)"
+msgstr "Pulisci generated (code + metadata)"
+
+msgid "Pulisci tutto (cache + static + generated)"
+msgstr "Pulisci tutto (cache + static + generated)"
+
+msgid "Abilita moduli Nerdosity"
+msgstr "Abilita moduli Nerdosity"
+
+msgid "Setup upgrade (schema + dati)"
+msgstr "Setup upgrade (schema + dati)"
+
+msgid "Compila DI (setup:di:compile)"
+msgstr "Compila DI (setup:di:compile)"
+
+msgid "Cache flush"
+msgstr "Cache flush"
+
+msgid "Cache clean"
+msgstr "Cache clean"
+
+msgid "Abilita tutte le cache"
+msgstr "Abilita tutte le cache"
+
+msgid "Disabilita block_html + full_page (dev)"
+msgstr "Disabilita block_html + full_page (dev)"
+
+msgid "Reindex tutto"
+msgstr "Reindex tutto"
+
+msgid "Stato indici"
+msgstr "Stato indici"
+
+msgid "Passa a production"
+msgstr "Passa a production"
+
+msgid "Passa a developer"
+msgstr "Passa a developer"
+
+msgid "Mostra modalità attuale"
+msgstr "Mostra modalità attuale"
+
+msgid "Stato moduli Nerdosity"
+msgstr "Stato moduli Nerdosity"
+
+msgid "Esegui cron"
+msgstr "Esegui cron"
+
+msgid "Info sistema (PHP + Magento + disco)"
+msgstr "Info sistema (PHP + Magento + disco)"
+
+# ── Terminale / CLI ─────────────────────────────────────────
+
+msgid "Comando:"
+msgstr "Comando:"
+
+msgid "Argomenti:"
+msgstr "Argomenti:"
+
+msgid "argomenti opzionali..."
+msgstr "argomenti opzionali..."
+
+msgid "Pulisci"
+msgstr "Pulisci"
+
+# ── Modale conferma ─────────────────────────────────────────
+
+msgid "Conferma"
+msgstr "Conferma"
+
+msgid "Annulla"
+msgstr "Annulla"
+
+# ── Stringhe JS ─────────────────────────────────────────────
+
+msgid "L'output apparirà qui..."
+msgstr "L'output apparirà qui..."
+
+msgid "Errore di connessione SSE"
+msgstr "Errore di connessione SSE"
+
+msgid "Seleziona almeno una lingua"
+msgstr "Seleziona almeno una lingua"
+
+msgid "Seleziona almeno un'area"
+msgstr "Seleziona almeno un'area"
+
+msgid "Static content deploy..."
+msgstr "Static content deploy..."
+
+msgid "Completato"
+msgstr "Completato"
+
+msgid "Errore"
+msgstr "Errore"
+
+msgid "Errori"
+msgstr "Errori"
+
+msgid "Disattivare la modalità manutenzione? Il sito tornerà online."
+msgstr "Disattivare la modalità manutenzione? Il sito tornerà online."
+
+msgid "Attivare la modalità manutenzione? Il sito sarà irraggiungibile."
+msgstr "Attivare la modalità manutenzione? Il sito sarà irraggiungibile."
+
+msgid "Info non disponibili"
+msgstr "Info non disponibili"
+
+msgid "Caricamento..."
+msgstr "Caricamento..."
+
+msgid "Impossibile caricare i comandi"
+msgstr "Impossibile caricare i comandi"
+
+msgid "Impossibile caricare i comandi composer"
+msgstr "Impossibile caricare i comandi composer"
+
+msgid "comandi"
+msgstr "comandi"
+
+msgid "comando"
+msgstr "comando"
+
+msgid "Comando interrotto"
+msgstr "Comando interrotto"
+
+msgid "Esegui Task"
+msgstr "Esegui Task"
+
+msgid "Operazione interrotta"
+msgstr "Operazione interrotta"
+
+msgid "Interrotto"
+msgstr "Interrotto"
+
+msgid "Esegui Preset"
+msgstr "Esegui Preset"
+
+msgid "Full Deploy (manutenzione + pulizia + compile + cache)"
+msgstr "Full Deploy (manutenzione + pulizia + compile + cache)"
+
+msgid "Cache (pulizia cache + flush)"
+msgstr "Cache (pulizia cache + flush)"
+
+msgid "Compile (pulizia generated + DI compile + cache flush)"
+msgstr "Compile (pulizia generated + DI compile + cache flush)"
+
+msgid "Eseguire"
+msgstr "Eseguire"
+
+msgid "operazioni"
+msgstr "operazioni"

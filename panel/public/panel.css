@@ -1,0 +1,955 @@
+/* ================================================================
+   Nerdosity Deploy Panel — CSS
+   Layout: drawer | workspace(header + task-area + terminal-bottom)
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:        rgb(35, 41, 53);
+    --surface:   rgb(30, 34, 43);
+    --deep:      rgb(17, 19, 24);
+    --hover:     rgb(43, 51, 67);
+    --drawer-bg: rgb(0, 0, 0);
+
+    --text:      rgb(236, 237, 239);
+    --text-70:   rgba(255,255,255,.7);
+    --text-40:   rgba(255,255,255,.4);
+    --meta:      rgb(128, 140, 169);
+    --border:    rgb(76, 84, 99);
+    --sep:       rgba(255,255,255,.08);
+
+    --teal:      rgb(0, 209, 202);
+    --teal-h:    rgb(28, 168, 184);
+    --teal-a:    rgb(48, 140, 171);
+    --teal-link: rgb(0, 178, 172);
+
+    --err:       rgb(255, 77, 97);
+    --err-bg:    rgb(191, 64, 79);
+    --ok:        rgb(0, 209, 202);
+    --warn:      rgb(252, 163, 38);
+    --info:      rgb(74, 144, 226);
+
+    --drawer-w:  88px;
+    --radius:    3px;     /* MagePanel Button border-radius */
+    --radius-lg: 8px;
+
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'Inconsolata', 'Fira Mono', 'Consolas', monospace;
+    --ls:   -0.3px;
+}
+
+/* ── Base ─────────────────────────────────────────────────────── */
+
+/* Copiato da index4.html riga 437-445 */
+html, body {
+    height: 100%;
+    background-color: rgb(35, 41, 53);
+    color: rgb(236, 237, 239);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+}
+
+/* ── App shell ────────────────────────────────────────────────── */
+
+#app {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+/* ══ Left drawer — copiato da index3.html righe 2919-2980 ══ */
+
+/* .Drawer (index3.html riga 2919) */
+#drawer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: var(--drawer-w);
+    min-width: var(--drawer-w);
+    flex-shrink: 0;
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 6px 0px;
+    z-index: 12;
+}
+
+/* .Drawer .ItemLogo (MagePanel3.html righe 2929+2933) */
+#drawer .ItemLogo { margin: 24px 0 32px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center }
+.ItemLogo__version { font-size: 10px; color: rgb(128, 140, 169); margin-top: 6px }
+
+/* .DrawerNavigation (index3.html riga 2945) */
+.DrawerNavigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* .DrawerNavigation .NavButton (index3.html riga 2952) */
+.DrawerNavigation .NavButton {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    color: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: -0.3px;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 14px 0;
+}
+
+/* .DrawerNavigation .NavButtonIcon (index3.html riga 2967) */
+.NavButtonIcon {
+    margin-bottom: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.NavButtonIcon svg { display: block }
+
+/* .DrawerNavigation .NavButton.selected / :hover (index3.html riga 2972) */
+.DrawerNavigation .NavButton.active,
+.DrawerNavigation .NavButton:hover {
+    color: rgb(0, 209, 202);
+}
+
+.DrawerNavigation .NavButton.active .NavButtonIcon .colorable,
+.DrawerNavigation .NavButton:hover .NavButtonIcon .colorable {
+    fill: #00d1ca;
+}
+
+/* Sys-info in drawer bottom */
+.drawer-sysinfo {
+    font-size: 10px;
+    color: rgb(128, 140, 169);
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 8px;
+    margin-bottom: 20px;
+}
+
+/* ── Workspace ────────────────────────────────────────────────── */
+
+#workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* CLI/Composer mode — MagePanel SpaceOverviewContent grid layout:
+   Left sidebar (400px) = command list, Right = terminal/logs */
+#workspace.cli-layout {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 400px 1fr;
+}
+
+#workspace.cli-layout #workspace-header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+
+#workspace.cli-layout #workspace-header {
+    box-shadow: none;
+    border-bottom: 1px solid rgb(24, 27, 34);
+}
+
+#workspace.cli-layout #task-area {
+    grid-column: 1;
+    grid-row: 2;
+    overflow-y: auto;
+    border-right: 1px solid rgb(24, 27, 34); /* MagePanel SpaceSidebar */
+    padding: 0;
+}
+
+#workspace.cli-layout #terminal-resize-handle {
+    display: none;
+}
+
+#workspace.cli-layout #terminal-panel {
+    grid-column: 2;
+    grid-row: 2;
+    height: auto;
+    min-height: 0;
+    /* ResourceDetailsLayout (index4.html riga 3082) */
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(35, 41, 53);
+}
+
+/* In CLI mode, terminal = ResourceDetailsLayout__Content */
+#workspace.cli-layout #terminal {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+@media screen and (max-width: 996px) {
+    #workspace.cli-layout {
+        grid-template-columns: 100px 1fr; /* MagePanel responsive */
+    }
+}
+
+/* ── Workspace header — ClusterViewHeader (index3.html riga 8321) ── */
+
+#workspace-header {
+    flex-shrink: 0;
+    align-items: flex-start;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 0px 0px;
+    display: flex;
+    flex-direction: column;
+    z-index: 11;
+    background: rgb(30, 34, 43);
+    padding: 46px 36px 0;
+}
+
+/* ClusterViewHeaderTitle (index3.html riga 8331) */
+.page-title {
+    font-size: 30px;
+    font-weight: 300;
+    margin-bottom: 18px;
+    color: rgb(236, 237, 239);
+}
+
+.workspace-title-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Tabs (index3.html riga 7326) */
+.Tabs { display: flex; flex-direction: column }
+.Tabs { background: rgb(30, 34, 43) } /* ClusterViewHeader .Tabs */
+.TabsBar { display: flex; flex-direction: row; font-weight: normal }
+
+/* Tab (index3.html riga 7337) */
+.Tab {
+    border-bottom: 2px solid rgba(0, 0, 0, 0);
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    font-weight: normal;
+    padding: 14px 8px;
+    margin: 0 8px;
+}
+
+.Tab:first-child { margin-left: 0 }
+.Tab.selected { color: rgb(0, 209, 202); border-color: rgb(0, 209, 202) }
+.Tab:not(.selected):hover { color: rgb(0, 209, 202) }
+.Tab.disabled { pointer-events: none; opacity: 0.3; cursor: default }
+
+.tabs-spacer { flex: 1; }
+
+/* Sys info pill in tabs bar */
+.sys-info-pill {
+    display: inline-flex;
+    align-items: center;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--meta);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 340px;
+    font-family: var(--mono);
+}
+
+/* ── Task area ────────────────────────────────────────────────── */
+
+#task-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--bg);
+}
+
+/* Header separator (between presets and maintenance) */
+.header-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--sep);
+    flex-shrink: 0;
+}
+
+/* Preset buttons now use .Button.size-small from the MagePanel Button CSS below */
+
+/* ================================================================
+   TASK AREA — Copiato da index3.html (ClusterView + Table)
+   ================================================================ */
+
+/* ClusterViewContent (index3.html riga 8340) */
+#task-area {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex: 1 1 0%;
+    overflow: hidden auto;
+}
+
+/* TabContent container (index3.html riga 8348) */
+#task-groups {
+    position: relative;
+    flex: 1;
+}
+
+/* ClusterViewContent .TabContent (index3.html riga 8348) */
+.task-group {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgb(35, 41, 53);
+    padding: 36px;
+    overflow: auto;
+}
+
+.task-group.active-group { display: block }
+
+/* ClusterViewContent .TabContent a (index3.html riga 8363) */
+.task-group a { color: rgb(0, 209, 202) }
+
+/* ClusterNamespaces card (index3.html riga 7701) */
+.ClusterNamespaces {
+    background-color: rgb(30, 34, 43);
+    box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 0px 0px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+/* ClusterNamespacesHeader (index3.html riga 7711) */
+.ClusterNamespacesHeader {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    min-height: 30px;
+    margin: 24px 28px;
+}
+
+.ClusterNamespacesHeaderTitle { font-size: 20px; font-weight: normal }
+.ClusterNamespacesHeaderTotal { font-size: 16px; margin-left: 24px }
+.ClusterNamespacesHeaderTotal label { color: rgb(128, 140, 169); font-weight: normal; margin-right: 4px }
+
+/* Table (index3.html riga 7585) */
+.Table table { width: 100% }
+.Table thead { border-bottom: 1px solid rgb(50, 54, 68) }
+.Table thead th { vertical-align: bottom; overflow: hidden }
+.Table tbody tr { border-bottom: 1px solid rgb(50, 54, 68) }
+.Table tbody tr:last-child { border: 0 }
+.Table tbody tr.rc-table-measure-row { border: 0 }
+.Table tbody td { font-size: 14px; vertical-align: middle; padding: 12px 28px }
+
+/* rc-table wrapper (index3.html riga 7620) */
+.Table.rc-table { position: relative }
+.Table.rc-table .rc-table-container { height: 100%; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0 }
+.Table.rc-table .rc-table-header { overflow: visible !important }
+.Table.rc-table .rc-table-body { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden !important }
+.Table.rc-table .rc-table-placeholder td { text-align: center; padding: 32px }
+.Table--no-scrollbars.rc-table .rc-table-container { position: relative }
+.Table--no-scrollbars.rc-table .rc-table-body { overflow: visible !important }
+
+/* SortableHeaderCell (index3.html riga 7651) */
+.Table .SortableHeaderCell {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 300;
+    color: rgb(128, 140, 169);
+    font-size: 14px;
+    user-select: none;
+    padding: 12px 28px;
+}
+.Table .SortableHeaderCell:not(.sortable) { cursor: default; pointer-events: none }
+.Table .SortableHeaderCell.left { justify-content: flex-start }
+.Table .SortableHeaderCell.right { justify-content: flex-end }
+.Table .SortableHeaderCell.center { justify-content: center }
+.Table .SortableHeaderCell:hover { color: rgb(154, 169, 205) }
+
+/* ClusterNamespacesTable (index3.html riga 7740) */
+.ClusterNamespacesTable { flex-grow: 1 }
+.ClusterNamespacesTableActions { align-items: center; display: flex; flex-direction: row; justify-content: flex-end; margin-left: 4px }
+.ClusterNamespacesTableActions .ToolbarButton:last-child { margin-right: 4px }
+
+/* ClusterSecretsTable — kept for Static Content panel (index3.html riga 7960) */
+.ClusterSecretsTable { border-collapse: separate; width: 100% }
+.ClusterSecretsTable thead th { border-bottom: 1px solid rgb(50, 54, 68); color: rgb(128, 140, 169); font-size: 14px; font-weight: 300; text-align: left; vertical-align: bottom; padding: 12px 28px }
+.ClusterSecretsTable tbody { width: 100%; overflow: visible }
+.ClusterSecretsTable tbody td { border-bottom: 1px solid rgb(50, 54, 68); color: rgb(255, 255, 255); font-size: 16px; vertical-align: middle; padding: 16px 28px }
+
+/* Task name as teal link (like MagePanel namespace names — index3.html riga 8617) */
+.task-link { color: rgb(0, 209, 202); cursor: pointer }
+.task-link:hover { text-decoration: underline }
+
+/* Task run button in table */
+.task-run-btn { justify-content: flex-end }
+
+/* Button.green.solid (index2.html riga 913) */
+.Button { align-items: center; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; flex-direction: row; font-family: var(--font); font-size: 16px; font-weight: bold; letter-spacing: -0.3px; line-height: 16px; min-height: 46px; position: relative; background: transparent; border: 2px solid rgba(255,255,255,0.9); border-radius: 3px; padding: 0 18px }
+.Button:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.8) }
+.Button:active { background-color: rgba(255,255,255,0.5) }
+.Button[disabled] { opacity: 0.3; pointer-events: none }
+.Button.size-small { font-size: 15px; min-height: 32px; padding: 0 14px }
+.Button.green.solid { background-color: rgb(0, 178, 172); color: rgb(255, 255, 255); border-color: transparent }
+.Button.green.solid:hover { background-color: rgb(28, 168, 184) }
+.Button.green.solid:active { background-color: rgb(48, 140, 171) }
+.Button.light { color: rgba(0,0,0,0.9); border-color: rgba(0,0,0,0.9) }
+.Button.light:hover { background-color: rgba(30,34,43,0.06) }
+
+/* Checkbox styling in tables */
+.ClusterSecretsTable input[type="checkbox"] { accent-color: rgb(0, 209, 202); cursor: pointer; width: 15px; height: 15px }
+
+/* ================================================================
+   COPIATO DA index4.html — CSS MagePanel originale
+   Usato per la sezione comandi Magento e Composer
+   ================================================================ */
+
+#mage-commands-container,
+#composer-commands-container {
+    padding: 0;
+}
+
+.mage-commands-loading {
+    padding: 24px 22px;
+    color: rgb(128, 140, 169);
+    font-size: 13px;
+}
+
+/* --- layout helpers (da index4.html riga 91-131) --- */
+.layout.vertical { display: flex; flex-direction: column }
+.layout.center-center { align-items: center; justify-content: center }
+.flex-auto { flex: 1 1 auto }
+
+/* --- ResourceIcon (index4.html riga 4004) --- */
+.ResourceIcon { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; position: relative }
+.ResourceIcon svg { display: block; width: 28px; height: 28px }
+
+/* --- ResourceItem (index4.html riga 3164) --- */
+.ResourceItem { display: flex; align-items: flex-start; row-gap: 8px; column-gap: 8px }
+.ResourceItem__Icon { margin-top: 3px }
+.ResourceItem__Desc { display: flex; flex-direction: column; align-items: flex-start; min-width: 94px }
+.ResourceItem__Title { font-size: 16px; font-weight: 500; letter-spacing: -0.4px; margin-bottom: 4px; word-break: break-word }
+.ResourceItem__Subtitle { color: rgb(128, 140, 169); font-size: 13px; letter-spacing: -0.2px; white-space: nowrap }
+
+/* Troncamento solo nella sidebar sinistra (400px) — il pannello destro mostra tutto */
+.ResourceListItemChildren .ResourceItem__Subtitle { overflow: hidden; text-overflow: ellipsis; max-width: 220px }
+.ResourceDetailsLayout__Header .ResourceItem__Subtitle { white-space: normal; overflow: visible }
+
+/* --- ResourceList (index4.html riga 3237) --- */
+.ResourceList { display: flex; flex-direction: column }
+.ResourceListItem { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(24, 27, 34) }
+.ResourceListItemParent { position: relative }
+.ResourceListItemParent:hover { background-color: rgba(30, 34, 43, 0.5) }
+
+/* --- ResourceListItemParentArrow (index4.html riga 3256) --- */
+.ResourceListItemParentArrow { align-items: center; cursor: pointer; display: flex; flex-direction: row; left: 0px; padding-left: 7px; position: absolute; top: 0; bottom: 0 }
+.ResourceListItemParentArrow .Icon { transition: transform 0.1s ease-in-out 0s }
+.ResourceListItemParentArrow-Open .Icon { transform: rotateZ(90deg) }
+.ResourceListItemParentArrow:hover .Icon { background-color: rgba(128, 140, 169, 0.3); border-radius: 32px }
+
+/* --- ResourceListItemParent/Children padding (index4.html riga 3286-3304) --- */
+.ResourceListItemParent .ResourceSidebarItem { padding-left: 32px }
+.ResourceListItemChildren { padding-bottom: 0 }
+.ResourceListItemChildren .ResourceSidebarItem { padding-left: 46px }
+
+/* --- ReactCollapse (index4.html riga 3306) --- */
+.ReactCollapse--collapse { overflow: hidden; transition: height 200ms ease 0s }
+.ReactCollapse--content {}
+
+/* --- ResourceSidebarItem (index4.html riga 3310) --- */
+.ResourceSidebarItem { align-items: center; background-color: rgba(0, 0, 0, 0); cursor: pointer; display: flex; flex-direction: row; position: relative; user-select: none; padding: 10px 22px 10px 19px }
+.ResourceSidebarItem:hover { background-color: rgba(30, 34, 43, 0.5) }
+.ResourceSidebarItem.selected { background-color: rgb(24, 27, 34) }
+
+/* --- ResourceSidebarItemButtons (index4.html riga 3341) --- */
+.ResourceSidebarItemButtons { align-items: center; display: flex; flex-direction: row; min-width: 22px; user-select: none }
+
+/* --- ResourceSidebarItemInfo (index4.html riga 3372) --- */
+.ResourceSidebarItemInfo { align-items: center; display: flex; flex-direction: row-reverse; user-select: none; margin-left: 12px }
+
+/* --- ResourceSidebarItem .Status overrides (index4.html riga 3386) --- */
+.ResourceSidebarItem .Status { justify-content: flex-end; margin-right: 20px; min-width: 80px; position: relative }
+
+/* --- Status (index4.html riga 6069) --- */
+.Status { align-items: center; display: flex; flex-direction: row; font-size: 12px; white-space: nowrap }
+.StatusCircle { background-color: rgb(255, 255, 255); flex-shrink: 0; height: 8px; margin-left: 6px; opacity: 0.9; width: 8px; border-radius: 8px }
+.Status--good .StatusCircle { background-color: rgb(0, 209, 202) }
+.Status--progress .StatusCircle { animation: StatusProgressAnimation 0.8s cubic-bezier(0.5, 0, 1, 1) 0s infinite alternate; background-color: rgb(74, 144, 226) }
+.Status--bad .StatusCircle { background-color: rgb(255, 77, 97) }
+@keyframes StatusProgressAnimation { 0% { opacity: 1 } 100% { opacity: 0 } }
+
+/* --- ResourceChildrenInfo (index4.html riga 7138) --- */
+.ResourceChildrenInfo { align-items: center; display: flex; flex-direction: row }
+.ResourceChildrenInfoItem { align-items: center; display: flex; flex-direction: row; margin-right: 6px }
+.ResourceChildrenInfoItem .Icon { margin-right: 2px; opacity: 0.9 }
+.ResourceChildrenInfoItemValue { font-size: 12px }
+
+/* --- SpaceSidebar (index4.html riga 3691) --- */
+.SpaceSidebarContainer { padding: 12px 0 }
+
+/* --- custom: ns-group expand (JS toggling) --- */
+.ns-group .ReactCollapse--collapse { height: 0 }
+.ns-group.expanded .ReactCollapse--collapse { height: auto; overflow: initial }
+
+/* --- custom: ns-icon (nostro, per il terminale prompt >) --- */
+.ns-icon { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; width: 28px; height: 28px; border-radius: 50%; background: rgb(43, 51, 67); color: rgba(255,255,255,.6); font-family: var(--mono); font-size: 13px; font-weight: 700 }
+
+/* --- custom: run button (inside ResourceSidebarItemButtons) --- */
+.cmd-run-btn { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; position: relative; user-select: none; white-space: nowrap; color: rgba(255,255,255,0.9); background: transparent; border: 0; padding: 0; margin-right: 0 }
+.cmd-run-btn:hover { color: rgb(0, 209, 202) }
+.cmd-run-btn:disabled { opacity: 0.2; pointer-events: none }
+
+/* --- custom: args input (in detail panel) --- */
+.mage-cmd-args-input { padding: 8px 14px; background: rgb(17, 19, 24); border: 1px solid rgb(76, 84, 99); border-radius: 3px; color: rgb(236, 237, 239); font-family: var(--mono); font-size: 13px; outline: none; transition: box-shadow 0.15s; width: 100% }
+.mage-cmd-args-input:focus { box-shadow: rgb(28, 168, 184) 0 0 0 2px }
+.mage-cmd-args-input::placeholder { color: rgba(255,255,255,.4) }
+
+/* ================================================================
+   PANNELLO DESTRO — copiato da index4.html (ResourceDetailsLayout)
+   ================================================================ */
+
+/* --- ResourceDetailsLayout (index4.html riga 3082) --- */
+.ResourceDetailsLayout { display: flex; flex-direction: column; height: 100% }
+.ResourceDetailsLayout__Header { align-items: center; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(24, 27, 34); display: flex; flex-direction: row; padding: 18px 20px }
+
+/* --- ResourceDetailsButtons (index4.html riga 6511) --- */
+.ResourceDetailsButtons { display: flex; align-items: center; margin-left: 42px }
+
+/* --- ResourceDetailsProperties (index4.html riga 6752) --- */
+.ResourceDetailsProperties { display: flex; align-items: flex-start; font-size: 14px; padding: 18px 20px }
+.ResourceDetailsProperties>*+* { margin-left: 18px }
+
+/* --- ResourceProperty (index4.html riga 6660) --- */
+.ResourceProperty { font-size: 14px; min-height: 18px }
+.ResourceProperty__Label { color: rgb(128, 140, 169); font-weight: normal; white-space: nowrap; margin: 0 0 4px; padding: 0 }
+.ResourceProperty__Value { color: rgb(255, 255, 255); margin: 0; padding: 0 }
+#detail-cmd-full { padding: 8px 0; line-height: 26px; font-family: Inconsolata, sans-serif }
+
+/* --- ResourceDetailsLayout__Content (index4.html riga 3134) --- */
+.ResourceDetailsLayout__Content { background-color: rgb(17, 19, 24); display: flex; flex-direction: column; position: relative; flex: 1 1 auto; margin: 0; overflow: hidden; padding: 0 }
+
+/* --- ResourceDetailsContentBar / Switch (index4.html riga 6522) --- */
+.ResourceDetailsContentBar { display: flex; align-items: center; height: 64px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgba(154, 169, 205, 0.2); padding: 14px 18px }
+.ResourceDetailsContentBar>*+* { margin-left: 18px }
+.ResourceDetailsContentBar__Switch { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 12px; font-weight: bold; letter-spacing: -0.3px; user-select: none; background: rgba(30, 34, 43, 0.9); border: 1px solid rgb(255, 255, 255); border-radius: 3px }
+.ResourceDetailsContentBar__SwitchOption { border-right: 1px solid rgb(255, 255, 255); padding: 6px 10px }
+.ResourceDetailsContentBar__SwitchOption.selected, .ResourceDetailsContentBar__SwitchOption.selected:hover { color: rgb(35, 41, 53); background: rgb(255, 255, 255) }
+.ResourceDetailsContentBar__SwitchOption:last-child { border: 0 }
+.ResourceDetailsContentBar__SwitchOption:hover { background: rgba(35, 41, 53, 0.8) }
+
+/* --- ToolbarButton (index4.html riga 4317) --- */
+.ToolbarButton { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; margin-right: 24px; position: relative; user-select: none; white-space: nowrap }
+.ToolbarButton:hover:not(.disabled) { color: rgb(0, 209, 202) }
+.ToolbarButton:hover:not(.disabled) .colorable { fill: #00d1ca }
+.ToolbarButton.disabled { opacity: 0.2; pointer-events: none }
+.ToolbarButton__icon { position: relative; margin-right: 8px }
+
+/* --- Logs area: #terminal already styled above --- */
+
+/* --- detail panel placeholder --- */
+.detail-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: rgb(128, 140, 169); font-size: 14px }
+
+/* ── Maintenance badge + button ───────────────────────────────── */
+
+.badge {
+    padding: 2px 10px;
+    border-radius: 24px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.badge-maintenance {
+    background: rgba(255,77,97,.15);
+    color: var(--err);
+    border: 1px solid rgba(255,77,97,.4);
+    animation: pulse-danger 2s infinite;
+}
+
+@keyframes pulse-danger { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+.badge-hidden { display: none; }
+
+/* Maintenance — MagePanel Button.size-small with teal border */
+.btn-maintenance {
+    align-items: center;
+    background: rgba(0, 0, 0, 0);
+    border: 2px solid var(--teal);
+    border-radius: 3px;
+    color: var(--teal);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: bold;
+    gap: .3em;
+    letter-spacing: -0.3px;
+    line-height: 16px;
+    min-height: 32px;
+    padding: 0 14px;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.btn-maintenance:hover { background: rgba(0,209,202,.1); }
+.btn-maintenance-on { background: rgba(255,77,97,.1); border-color: var(--err); color: var(--err); }
+.btn-maintenance-on:hover { background: rgba(255,77,97,.2); }
+
+/* Language selector */
+.lang-selector {
+    font-size: 13px;
+    font-family: var(--font);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+}
+.lang-selector:hover { border-color: rgba(255,255,255,0.3) }
+.lang-selector:focus { border-color: var(--teal) }
+.lang-selector option { background: var(--deep); color: #fff }
+
+/* ── Terminal resize handle ───────────────────────────────────── */
+
+#terminal-resize-handle {
+    height: 4px;
+    flex-shrink: 0;
+    background: var(--sep);
+    cursor: ns-resize;
+    transition: background 0.15s;
+    position: relative;
+    z-index: 5;
+}
+
+#terminal-resize-handle:hover,
+#terminal-resize-handle.dragging {
+    background: var(--teal);
+}
+
+/* ── Terminal panel (bottom) ─────────────────────────────────── */
+
+#terminal-panel {
+    flex-shrink: 0;
+    height: 260px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    background: var(--deep);
+}
+
+/* Terminal header bar */
+#terminal-header {
+    height: 36px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--sep);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 10px;
+}
+
+.console-dots {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.console-dot { width: 10px; height: 10px; border-radius: 50%; }
+.console-dot-red    { background: #ff5f57; }
+.console-dot-yellow { background: #febc2e; }
+.console-dot-green  { background: #28c840; }
+
+#console-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--meta);
+    flex-shrink: 0;
+    font-family: var(--mono);
+}
+
+#progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+#progress-text {
+    font-size: 11px;
+    color: var(--text-70);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+    font-family: var(--mono);
+}
+
+#progress-bar-track {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--teal);
+    border-radius: 2px;
+    transition: width 0.35s;
+}
+
+.terminal-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Terminal buttons — MagePanel Button.size-xsmall */
+.terminal-btn {
+    align-items: center;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: -0.3px;
+    min-height: 26px;
+    padding: 0 8px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+/* Run: teal solid */
+#btn-run {
+    background: var(--teal);
+    border: 1px solid transparent;
+    color: var(--deep);
+}
+#btn-run:hover:not(:disabled) { background: var(--teal-h); }
+
+/* Stop: danger outline */
+#btn-stop {
+    background: transparent;
+    border: 1px solid var(--err);
+    color: var(--err);
+}
+#btn-stop:hover:not(:disabled) { background: rgba(255,77,97,.15); }
+
+/* Clear: ghost */
+#btn-clear {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.18);
+    color: var(--text-70);
+}
+#btn-clear:hover:not(:disabled) { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.35); }
+
+#btn-run:disabled, #btn-stop:disabled, #btn-clear:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* ── Terminal output area ─────────────────────────────────────── */
+
+/* Copiato da index4.html: code (riga 537), LogLine (riga 6134), LogsOutput (riga 3154) */
+#terminal {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 0;
+    font-family: Inconsolata, sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 26px;
+    background-color: rgb(17, 19, 24);
+    color: rgb(255, 255, 255);
+}
+
+.term-placeholder {
+    color: rgb(128, 140, 169);
+    padding: 0 20px;
+}
+
+/* code (index4.html — base style for code blocks) */
+code {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    cursor: text;
+    display: block;
+    font-family: Inconsolata, sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 26px;
+    white-space: nowrap;
+    width: 100%;
+    border-radius: 3px;
+    overflow: auto hidden;
+    padding: 8px 14px;
+}
+
+/* LogLine (index4.html riga 6134) */
+code.line {
+    display: block;
+    font-size: inherit;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 0 0 0 20px;
+    border: 0;
+}
+
+code.line span { white-space: pre-wrap; word-break: break-all }
+
+/* LogStageSection (index4.html riga 6166) */
+.LogStageSection { margin-bottom: 12px; cursor: pointer }
+.LogStageSection--opened { margin-bottom: 24px }
+.LogStageSection .chevronDown svg { transition: transform 0.1s }
+.LogStageSection:not(.LogStageSection--opened) .chevronDown svg { transform: rotate(-90deg) }
+
+/* LogStageSectionHeader (index4.html riga 6175) */
+.LogStageSectionHeader { align-items: center; display: flex; padding-left: 20px; padding-right: 20px }
+.LogStageSectionHeader .status { margin-left: 8px }
+.LogStageSectionHeader .title { font-size: 15px; margin-left: 8px }
+.LogStageSectionHeader .command { color: rgb(233, 233, 234); font-family: Inconsolata, sans-serif; margin-left: 8px }
+.LogStageSectionHeader .elapsed { color: rgb(128, 140, 169); font-size: 13px; margin-left: 8px }
+.LogStageSectionHeader .elapsed::before { content: "\2022"; margin-right: 8px }
+
+/* LogStageSectionLines (index4.html riga 6206) */
+.LogStageSectionLines { cursor: default; font-family: Inconsolata, sans-serif; font-size: 15px; margin-top: 10px; margin-left: 24px }
+
+/* Progress pulse for running state */
+.progress-pulse svg { animation: StatusProgressAnimation 0.8s cubic-bezier(0.5, 0, 1, 1) 0s infinite alternate }
+@keyframes StatusProgressAnimation { 0% { opacity: 1 } 100% { opacity: 0.3 } }
+
+/* Line type colors */
+.line-output    { color: rgba(255,255,255,.6) }
+.line-ok        { color: rgb(0, 209, 202) }
+.line-error     { color: rgb(255, 77, 97) }
+.line-warn      { color: rgb(252, 163, 38) }
+.line-info      { color: rgb(74, 144, 226) }
+.line-header    { color: rgb(0, 209, 202); font-weight: 700 }
+.line-separator { color: rgba(255,255,255,.4); font-size: 11px; opacity: .5 }
+
+/* Tasks mode: div.line (simple block lines in bottom terminal) */
+div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: break-all; margin: 0; line-height: 1.5 }
+
+/* ── Modal — index tooltip style ──────────────────────────── */
+
+/* ================================================================
+   MODAL — Copiato da index3.html (DialogOverlay + DialogContainer)
+   ================================================================ */
+
+/* DialogOverlay (index3.html) */
+.DialogOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* DialogContainer (index3.html) */
+.DialogContainer {
+    background-color: white;
+    z-index: 5001;
+    box-shadow: rgba(0,0,0,0.14) 0px 0px 4px, rgba(0,0,0,0.28) 0px 4px 8px;
+    color: rgb(23, 27, 34);
+    font-size: 18px;
+    line-height: normal;
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    padding: 0;
+    overflow: visible;
+    width: 450px;
+    max-width: calc(100vw - 2rem);
+}
+
+/* ModalSizer (index3.html) */
+.ModalSizer { display: flex; flex-direction: column; height: 100%; max-height: 100vh; flex: 1 1 0% }
+
+/* ModalTitle (index3.html) */
+.ModalTitle { color: rgb(30, 34, 43); font-size: 24px; font-weight: bold; letter-spacing: -0.04rem; margin: 0; padding: 24px 32px 18px }
+
+/* ModalContainer (index3.html) */
+.ModalContainer { display: flex; position: relative; max-height: 100%; min-height: 0; flex: 1 1 0% }
+
+/* ModalContent (index3.html) */
+.ModalContent { position: relative; z-index: 500; flex: 1 1 0%; overflow: hidden; padding: 18px 32px 32px }
+.ModalContent.withTitle { padding-top: 0 }
+
+/* DeployButtons (index3.html) */
+.DeployButtons { display: flex; margin-top: 24px; flex-flow: row-reverse wrap-reverse }
+.DeployButtons > * { margin-left: 8px }
+.DeployButtons > :last-child { margin-left: 0 }
+
+/* ── Scrollbars ──────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 16px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border: 5px solid transparent;
+    border-radius: 16px;
+}
+::-webkit-scrollbar-thumb { box-shadow: rgba(128,140,169,.35) 0 0 0 10px inset; }
+::-webkit-scrollbar-thumb:hover { box-shadow: rgba(128,140,169,.65) 0 0 0 10px inset; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    #drawer { display: none; }
+    #task-groups {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+    #terminal-panel { height: 220px; }
+    .workspace-title-row { padding: 12px 16px 8px; }
+    .page-title { font-size: 18px; }
+}
+
+@media (min-width: 2000px) {
+    #terminal { font-size: 14px; }
+    #task-groups { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+}
