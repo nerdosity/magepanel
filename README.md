@@ -68,7 +68,7 @@ Nella sidebar: versione PHP, versione Magento, spazio disco disponibile. Aggiorn
 
 - **Zero dipendenze esterne**: PHP puro, niente framework, niente npm, niente build. Vanilla JS + CSS per il frontend.
 - **Output in tempo reale**: i comandi vengono eseguiti con `proc_open()` e lo stdout viene streammato al browser via Server-Sent Events (SSE).
-- **Autenticazione a token**: un singolo token protegge l'accesso. Senza token, vedi solo la pagina di login.
+- **Autenticazione a sessione**: login con token via POST, poi sessione PHP con cookie sicuro (HttpOnly, SameSite=Strict). Il token non appare mai nell'URL.
 - **Pulizia senza `rm`**: il cleaner (`panel/bin/clean.php`) usa PHP puro per svuotare le directory, funziona anche su hosting dove `rm` non e disponibile.
 - **Stop dei comandi**: puoi interrompere un comando in esecuzione. Il pannello invia SIGTERM al processo.
 - **i18n**: interfaccia in italiano di default, traduzione in inglese inclusa. Aggiungere una lingua = creare un file `.po`.
@@ -87,15 +87,17 @@ Nella sidebar: versione PHP, versione Magento, spazio disco disponibile. Aggiorn
        ...
    ```
 
-2. Copia `panel/config.php.sample` in `panel/config.php` (oppure crea il file) e imposta il token:
+2. Copia `panel/config.php.sample` in `panel/config.php` e imposta il token:
    ```php
    define('PANEL_TOKEN', getenv('DEPLOY_PANEL_TOKEN') ?: 'IL_TUO_TOKEN_SEGRETO');
    ```
    Oppure imposta la variabile d'ambiente `DEPLOY_PANEL_TOKEN`.
 
-3. Apri `https://tuosito.com/panel/index.php` nel browser.
+3. Configura il web server (vedi sotto).
 
-4. Inserisci il token e sei dentro.
+4. Apri `https://tuosito.com/panel/index.php` nel browser.
+
+5. Inserisci il token e sei dentro.
 
 ### Requisiti
 
@@ -103,13 +105,101 @@ Nella sidebar: versione PHP, versione Magento, spazio disco disponibile. Aggiorn
 - Un'installazione Magento 2 funzionante
 - Il web server deve poter eseguire `panel/index.php`
 
-### Sicurezza
+## Configurazione Web Server
+
+### Apache
+
+Il pannello include gia un `.htaccess` che protegge i file sorgente. Se usi Apache con `AllowOverride All` (configurazione standard di Magento), funziona out-of-the-box.
+
+Per limitare l'accesso a IP specifici, aggiungi nel tuo vhost o nel `.htaccess` del pannello:
+
+```apache
+<Directory "/var/www/magento/panel">
+    # Solo IP autorizzati
+    <IfModule mod_authz_core.c>
+        Require ip 203.0.113.0/24
+        Require ip 198.51.100.42
+    </IfModule>
+</Directory>
+```
+
+Dopo le modifiche:
+```bash
+sudo apachectl configtest && sudo systemctl reload apache2
+```
+
+### Nginx
+
+Nginx non supporta `.htaccess`. Aggiungi questo blocco nel tuo vhost (dentro il blocco `server`):
+
+```nginx
+# ── MagePanel ────────────────────────────────────────────
+location /panel/ {
+    # Opzionale: limita a IP specifici
+    # allow 203.0.113.0/24;
+    # allow 198.51.100.42;
+    # deny all;
+
+    # Solo index.php e assets pubblici
+    location = /panel/index.php {
+        fastcgi_pass unix:/run/php/php-fpm.sock;  # adatta al tuo socket
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location /panel/public/ {
+        # Serve CSS/JS statici
+        try_files $uri =404;
+
+        # Blocca PHP in public/
+        location ~ \.php$ { deny all; }
+    }
+
+    # Blocca tutto il resto (config, controller, model, view, bin, locale)
+    location ~ ^/panel/ {
+        deny all;
+    }
+}
+```
+
+Dopo le modifiche:
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### Alternativa: installazione in `pub/panel/`
+
+Se preferisci mettere il pannello dentro la document root pubblica di Magento (`pub/`), il pannello funziona ugualmente. Serve solo aggiornare `MAGENTO_ROOT` in `config.php`:
+
+```php
+// Se il pannello e in pub/panel/ invece che panel/
+define('MAGENTO_ROOT', dirname(__DIR__, 2));  // risale due livelli invece di uno
+```
+
+Struttura risultante:
+```
+magento-root/
+  pub/
+    panel/          <-- il pannello
+      index.php
+      config.php
+      ...
+```
+
+Questa opzione puo essere piu semplice su hosting dove la document root e `pub/` e non si puo servire contenuto dalla root di Magento.
+
+## Sicurezza
 
 - **Non esporre il pannello in produzione senza protezione**. Idealmente:
-  - Limita l'accesso via `.htaccess` / nginx a IP specifici
-  - Usa un token lungo e casuale
+  - Limita l'accesso via IP (vedi configurazioni sopra)
+  - Usa un token lungo e casuale (minimo 32 caratteri)
   - Metti `panel/` dietro autenticazione HTTP aggiuntiva se necessario
 - Il file `config.php` e nel `.gitignore` per evitare di committare il token
+- L'autenticazione usa sessioni PHP — il token non transita mai nell'URL
+- Security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) inclusi in ogni risposta
+- I comandi Composer pericolosi (`exec`, `run-script`, `global`) sono bloccati
+- Il cleaner PHP valida i percorsi per prevenire path traversal
+- Tutti i file PHP (tranne `index.php`) rifiutano l'accesso diretto
 
 ## Struttura
 
@@ -117,6 +207,7 @@ Nella sidebar: versione PHP, versione Magento, spazio disco disponibile. Aggiorn
 panel/
   index.php                  # Front controller + router
   config.php                 # Token, task definitions (gitignored)
+  .htaccess                  # Protezione accesso Apache
   bin/clean.php              # Cleaner PHP-native
   Controller/
     AbstractController.php   # Auth + response helpers
@@ -139,6 +230,7 @@ panel/
   public/
     panel.js                 # Frontend JS (vanilla)
     panel.css                # Stili (dark theme stile DevOps)
+    .htaccess                # Permette servire CSS/JS, blocca PHP
   locale/
     it_IT/messages.po        # Italiano (lingua sorgente)
     en_US/messages.po        # Inglese
@@ -168,4 +260,4 @@ Poi aggiungi la traduzione del label in ogni file `.po` sotto `locale/`.
 
 ---
 
-Made with a mass of caffeine by **Nerdosity**.
+Made with mass amounts of caffeine by **Nerdosity**.

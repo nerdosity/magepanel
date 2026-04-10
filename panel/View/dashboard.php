@@ -14,11 +14,19 @@
     <!-- ── Left drawer — Drawer (MagePanel3.html riga 2919) ───── -->
     <div id="drawer">
 
-        <!-- ItemLogo (MagePanel3.html riga 2933) -->
+        <!-- ItemLogo -->
         <div class="Item ItemLogo" title="Deploy Panel">
             <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="4" fill="#00d1ca"/>
-                <path d="M7 7h3v11l6-8 6 8V7h3v18h-3l-6-8-6 8H7V7z" fill="#111318"/>
+                <rect width="32" height="32" rx="6" fill="#111318"/>
+                <rect x="1" y="1" width="30" height="30" rx="5" fill="none" stroke="#00d1ca" stroke-width="2"/>
+                <!-- Terminal window dots -->
+                <circle cx="7" cy="7" r="1.5" fill="#ff4d61"/>
+                <circle cx="12" cy="7" r="1.5" fill="#f5a623"/>
+                <circle cx="17" cy="7" r="1.5" fill="#00d1ca"/>
+                <!-- Terminal prompt: > -->
+                <path d="M8 15l4 3.5-4 3.5" stroke="#00d1ca" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <!-- Deploy arrow (upload) -->
+                <path d="M20 22v-8m-3 3l3-3 3 3" stroke="#00d1ca" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
             <span class="ItemLogo__version">v<?= htmlspecialchars(PANEL_VERSION) ?></span>
         </div>

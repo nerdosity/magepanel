@@ -40,21 +40,6 @@
             margin-bottom: 28px;
         }
 
-        /* MagePanel circular logo mark */
-        .login-logo-mark {
-            width: 36px;
-            height: 36px;
-            background: rgb(0, 209, 202);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: rgb(24, 27, 34);
-            flex-shrink: 0;
-        }
-
         .login-logo-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -133,8 +118,16 @@
 <body>
     <div class="login-box">
         <div class="login-logo">
-            <div class="login-logo-mark">N</div>
-            <span class="login-logo-title">Deploy<em>Panel</em></span>
+            <svg viewBox="0 0 32 32" width="36" height="36" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+                <rect width="32" height="32" rx="6" fill="#111318"/>
+                <rect x="1" y="1" width="30" height="30" rx="5" fill="none" stroke="#00d1ca" stroke-width="2"/>
+                <circle cx="7" cy="7" r="1.5" fill="#ff4d61"/>
+                <circle cx="12" cy="7" r="1.5" fill="#f5a623"/>
+                <circle cx="17" cy="7" r="1.5" fill="#00d1ca"/>
+                <path d="M8 15l4 3.5-4 3.5" stroke="#00d1ca" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <path d="M20 22v-8m-3 3l3-3 3 3" stroke="#00d1ca" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <span class="login-logo-title">Mage<em>Panel</em></span>
         </div>
         <p class="login-sub">Inserisci il token di accesso per continuare.</p>
         <form method="post" action="">

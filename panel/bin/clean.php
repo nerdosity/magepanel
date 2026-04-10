@@ -17,7 +17,12 @@ declare(strict_types=1);
  * Exit code: 0 on full success, 1 if any error occurred.
  */
 
-$root = getcwd(); // StreamController runs "cd MAGENTO_ROOT && php panel/bin/clean.php ..."
+$root = realpath(getcwd());
+if ($root === false) {
+    fwrite(STDERR, "Impossibile determinare la directory corrente\n");
+    exit(1);
+}
+
 $args = array_slice($argv, 1);
 
 if (empty($args)) {
@@ -28,11 +33,27 @@ if (empty($args)) {
 $errors = 0;
 
 foreach ($args as $rel) {
+    // Reject paths with traversal sequences
+    if (preg_match('/\.\.[\/\\\\]|[\/\\\\]\.\.|^\.\.$/', $rel)) {
+        echo "[ERRORE] Percorso non valido (traversal): $rel\n";
+        $errors++;
+        continue;
+    }
+
     $abs = $root . DIRECTORY_SEPARATOR . ltrim($rel, '/\\');
+
+    // Validate the resolved path stays within root
+    $resolved = realpath($abs);
+    if ($resolved !== false && !str_starts_with($resolved, $root . DIRECTORY_SEPARATOR)) {
+        echo "[ERRORE] Percorso fuori dalla root: $rel\n";
+        $errors++;
+        continue;
+    }
+
     echo "  Pulizia: $rel\n";
 
     if (is_dir($abs)) {
-        $errors += deleteContents($abs) ? 0 : 1;
+        $errors += deleteContents($abs, $root) ? 0 : 1;
     }
 
     // (Re)create the directory
@@ -54,8 +75,9 @@ exit($errors > 0 ? 1 : 0);
 /**
  * Delete all contents of a directory without removing the directory itself.
  * Uses RecursiveDirectoryIterator — no shell commands required.
+ * Symlinks are removed directly without following them.
  */
-function deleteContents(string $dir): bool
+function deleteContents(string $dir, string $root): bool
 {
     try {
         $it = new RecursiveIteratorIterator(
@@ -66,8 +88,24 @@ function deleteContents(string $dir): bool
         $ok = true;
         foreach ($it as $entry) {
             /** @var SplFileInfo $entry */
-            $path = $entry->getRealPath();
-            if (!$path) continue;
+            $path = $entry->getPathname();
+
+            // Handle symlinks: remove the link itself, do not follow
+            if (is_link($path)) {
+                if (!unlink($path)) {
+                    fwrite(STDERR, "  Impossibile rimuovere symlink: $path\n");
+                    $ok = false;
+                }
+                continue;
+            }
+
+            // Verify the resolved path is still within root
+            $real = realpath($path);
+            if ($real !== false && !str_starts_with($real, $root . DIRECTORY_SEPARATOR)) {
+                fwrite(STDERR, "  Percorso fuori dalla root, ignorato: $path\n");
+                $ok = false;
+                continue;
+            }
 
             if ($entry->isDir()) {
                 if (!rmdir($path)) {

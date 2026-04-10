@@ -1,0 +1,30 @@
+# Nerdosity Deploy Panel — Apache access control
+# Only index.php and public/ assets are accessible via HTTP.
+# All other PHP files, config, models, controllers, views, locale, bin are blocked.
+
+# Deny everything by default
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
+
+# Allow index.php (the only entry point)
+<Files "index.php">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</Files>
+
+# Allow public assets (JS, CSS)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} ^.*/public/panel\.(js|css)$
+    RewriteRule .* - [L]
+</IfModule>

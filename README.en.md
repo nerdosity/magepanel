@@ -68,7 +68,7 @@ In the sidebar: PHP version, Magento version, available disk space. Auto-refresh
 
 - **Zero external dependencies**: pure PHP, no framework, no npm, no build step. Vanilla JS + CSS on the frontend.
 - **Real-time output**: commands run via `proc_open()` and stdout is streamed to the browser using Server-Sent Events (SSE).
-- **Token authentication**: a single token protects access. Without it, you only see the login page.
+- **Session-based authentication**: login with token via POST, then PHP session with secure cookie (HttpOnly, SameSite=Strict). The token never appears in URLs.
 - **Cleanup without `rm`**: the cleaner (`panel/bin/clean.php`) uses pure PHP to empty directories — works even on hosting where shell `rm` isn't available.
 - **Command interruption**: you can stop a running command. The panel sends SIGTERM to the process.
 - **i18n**: Italian UI by default, English translation included. Adding a language = creating a `.po` file.
@@ -87,15 +87,17 @@ In the sidebar: PHP version, Magento version, available disk space. Auto-refresh
        ...
    ```
 
-2. Copy `panel/config.php.sample` to `panel/config.php` (or create the file) and set your token:
+2. Copy `panel/config.php.sample` to `panel/config.php` and set your token:
    ```php
    define('PANEL_TOKEN', getenv('DEPLOY_PANEL_TOKEN') ?: 'YOUR_SECRET_TOKEN');
    ```
    Or set the `DEPLOY_PANEL_TOKEN` environment variable.
 
-3. Open `https://yoursite.com/panel/index.php` in the browser.
+3. Configure your web server (see below).
 
-4. Enter the token and you're in.
+4. Open `https://yoursite.com/panel/index.php` in the browser.
+
+5. Enter the token and you're in.
 
 ### Requirements
 
@@ -103,13 +105,101 @@ In the sidebar: PHP version, Magento version, available disk space. Auto-refresh
 - A working Magento 2 installation
 - The web server must be able to execute `panel/index.php`
 
-### Security
+## Web Server Configuration
+
+### Apache
+
+The panel ships with an `.htaccess` file that protects source files. If you're using Apache with `AllowOverride All` (standard Magento configuration), it works out of the box.
+
+To restrict access to specific IPs, add to your vhost or the panel's `.htaccess`:
+
+```apache
+<Directory "/var/www/magento/panel">
+    # Authorized IPs only
+    <IfModule mod_authz_core.c>
+        Require ip 203.0.113.0/24
+        Require ip 198.51.100.42
+    </IfModule>
+</Directory>
+```
+
+After changes:
+```bash
+sudo apachectl configtest && sudo systemctl reload apache2
+```
+
+### Nginx
+
+Nginx does not support `.htaccess`. Add this block to your vhost (inside the `server` block):
+
+```nginx
+# ── MagePanel ────────────────────────────────────────────
+location /panel/ {
+    # Optional: restrict to specific IPs
+    # allow 203.0.113.0/24;
+    # allow 198.51.100.42;
+    # deny all;
+
+    # Only index.php and public assets
+    location = /panel/index.php {
+        fastcgi_pass unix:/run/php/php-fpm.sock;  # adjust to your socket
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location /panel/public/ {
+        # Serve static CSS/JS
+        try_files $uri =404;
+
+        # Block PHP execution in public/
+        location ~ \.php$ { deny all; }
+    }
+
+    # Block everything else (config, controller, model, view, bin, locale)
+    location ~ ^/panel/ {
+        deny all;
+    }
+}
+```
+
+After changes:
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### Alternative: install in `pub/panel/`
+
+If you prefer to place the panel inside Magento's public document root (`pub/`), the panel works just the same. You only need to update `MAGENTO_ROOT` in `config.php`:
+
+```php
+// If the panel is in pub/panel/ instead of panel/
+define('MAGENTO_ROOT', dirname(__DIR__, 2));  // go up two levels instead of one
+```
+
+Resulting structure:
+```
+magento-root/
+  pub/
+    panel/          <-- the panel
+      index.php
+      config.php
+      ...
+```
+
+This option can be simpler on hosting where the document root is `pub/` and you can't serve content from the Magento root.
+
+## Security
 
 - **Do not expose the panel in production without protection**. Ideally:
-  - Restrict access via `.htaccess` / nginx to specific IPs
-  - Use a long, random token
+  - Restrict access by IP (see configurations above)
+  - Use a long, random token (minimum 32 characters)
   - Put `panel/` behind additional HTTP authentication if needed
 - `config.php` is in `.gitignore` to avoid committing the token
+- Authentication uses PHP sessions — the token never travels in URLs
+- Security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) are included in every response
+- Dangerous Composer commands (`exec`, `run-script`, `global`) are blocked
+- The PHP cleaner validates paths to prevent path traversal
+- All PHP files (except `index.php`) reject direct access
 
 ## Structure
 
@@ -117,6 +207,7 @@ In the sidebar: PHP version, Magento version, available disk space. Auto-refresh
 panel/
   index.php                  # Front controller + router
   config.php                 # Token, task definitions (gitignored)
+  .htaccess                  # Apache access protection
   bin/clean.php              # PHP-native cleaner
   Controller/
     AbstractController.php   # Auth + response helpers
@@ -139,6 +230,7 @@ panel/
   public/
     panel.js                 # Frontend JS (vanilla)
     panel.css                # Styles (dark DevOps-style theme)
+    .htaccess                # Allows serving CSS/JS, blocks PHP
   locale/
     it_IT/messages.po        # Italian (source language)
     en_US/messages.po        # English
