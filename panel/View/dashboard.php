@@ -116,6 +116,7 @@
                     <div class="Tab group-tab" data-group="<?= htmlspecialchars($groupName) ?>"><?= htmlspecialchars(__($groupName)) ?></div>
                     <?php endforeach; ?>
                     <div class="flex-auto"></div>
+                    <div id="tab-indicator" class="tab-indicator"></div>
                 </div>
             </div>
 

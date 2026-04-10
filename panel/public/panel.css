@@ -244,23 +244,35 @@ html, body {
 /* Tabs (index3.html riga 7326) */
 .Tabs { display: flex; flex-direction: column }
 .Tabs { background: rgb(30, 34, 43) } /* ClusterViewHeader .Tabs */
-.TabsBar { display: flex; flex-direction: row; font-weight: normal }
+.TabsBar { display: flex; flex-direction: row; font-weight: normal; position: relative }
 
 /* Tab (index3.html riga 7337) */
 .Tab {
-    border-bottom: 2px solid rgba(0, 0, 0, 0);
+    border-bottom: 2px solid transparent;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.7);
     font-size: 16px;
     font-weight: normal;
     padding: 14px 8px;
     margin: 0 8px;
+    transition: color 0.2s;
 }
 
 .Tab:first-child { margin-left: 0 }
-.Tab.selected { color: rgb(0, 209, 202); border-color: rgb(0, 209, 202) }
+.Tab.selected { color: rgb(0, 209, 202); border-color: transparent }
 .Tab:not(.selected):hover { color: rgb(0, 209, 202) }
 .Tab.disabled { pointer-events: none; opacity: 0.3; cursor: default }
+
+/* Sliding tab indicator */
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: rgb(0, 209, 202);
+    border-radius: 1px;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
 
 .tabs-spacer { flex: 1; }
 

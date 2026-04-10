@@ -900,18 +900,39 @@
     //  Group tab activation
     // ================================================================
 
+    var tabIndicator = document.getElementById('tab-indicator');
+
+    function moveTabIndicator(tab) {
+        if (!tabIndicator || !tab) return;
+        var bar = tab.parentNode;
+        var barRect = bar.getBoundingClientRect();
+        var tabRect = tab.getBoundingClientRect();
+        tabIndicator.style.left = (tabRect.left - barRect.left) + 'px';
+        tabIndicator.style.width = tabRect.width + 'px';
+    }
+
     function activateGroupTab(groupId) {
+        var activeTab = null;
         document.querySelectorAll('.group-tab').forEach(function (t) {
-            t.classList.toggle('selected', t.dataset.group === groupId);
+            var isActive = t.dataset.group === groupId;
+            t.classList.toggle('selected', isActive);
+            if (isActive) activeTab = t;
         });
         document.querySelectorAll('.task-group').forEach(function (g) {
             g.classList.toggle('active-group', g.dataset.id === groupId);
         });
+        moveTabIndicator(activeTab);
         try { localStorage.setItem('panel_active_group', groupId); } catch (e) {}
     }
 
     document.querySelectorAll('.group-tab').forEach(function (tab) {
         tab.addEventListener('click', function () { activateGroupTab(this.dataset.group); });
+    });
+
+    // Reposition indicator on resize
+    window.addEventListener('resize', function () {
+        var active = document.querySelector('.group-tab.selected');
+        if (active) moveTabIndicator(active);
     });
 
     // ================================================================
@@ -1094,12 +1115,20 @@
 
     // Activate group tab (restore last or fall back to first)
     (function () {
+        // No transition on first paint
+        if (tabIndicator) tabIndicator.style.transition = 'none';
         var saved = null;
         try { saved = localStorage.getItem('panel_active_group'); } catch (e) {}
         var target = saved && document.querySelector('.group-tab[data-group="' + CSS.escape(saved) + '"]')
             ? saved
             : (document.querySelector('.group-tab') || {}).dataset.group || '__static';
         activateGroupTab(target);
+        // Re-enable transition after first paint
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                if (tabIndicator) tabIndicator.style.transition = '';
+            });
+        });
     })();
 
     clearOutput();
