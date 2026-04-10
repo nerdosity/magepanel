@@ -590,8 +590,7 @@
         var url = BASE_URL
             + '?action=' + encodeURIComponent(selectedCmd.action)
             + '&name='  + encodeURIComponent(selectedCmd.name)
-            + '&args='  + encodeURIComponent(args)
-            + '&token=' + encodeURIComponent(TOKEN);
+            + '&args='  + encodeURIComponent(args);
         openSse(url, function (ok) {
             setRunning(false);
             if (detailRun)  detailRun.classList.remove('disabled');
@@ -899,7 +898,7 @@
     // Terminal buttons
     btnStop.addEventListener('click', function () {
         stopRequested = true;
-        fetch(BASE_URL + '?action=stop_cmd&token=' + encodeURIComponent(TOKEN));
+        fetch(BASE_URL + '?action=stop_cmd');
         if (currentEs) {
             currentEs.close(); currentEs = null;
             addLine(__("Operazione interrotta"), 'warn');
