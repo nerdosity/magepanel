@@ -435,6 +435,7 @@ html, body {
 #mage-commands-container,
 #composer-commands-container {
     padding: 0;
+    animation: fadeSlideIn 0.2s ease-out;
 }
 
 .mage-commands-loading {
@@ -1024,6 +1025,113 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
 }
 ::-webkit-scrollbar-thumb { box-shadow: rgba(128,140,169,.35) 0 0 0 10px inset; }
 ::-webkit-scrollbar-thumb:hover { box-shadow: rgba(128,140,169,.65) 0 0 0 10px inset; }
+
+/* ── Transitions & Animations ────────────────────────────────── */
+
+/* Tab underline slide */
+.Tab {
+    transition: color 0.2s, border-color 0.25s ease;
+}
+
+/* Nav buttons */
+.DrawerNavigation .NavButton {
+    transition: color 0.2s;
+}
+
+/* Task group fade in */
+.task-group.active-group {
+    animation: fadeSlideIn 0.2s ease-out;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal overlay + container */
+.DialogOverlay {
+    animation: overlayFadeIn 0.2s ease-out;
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.DialogContainer {
+    animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: scale(0.92) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Buttons — hover/active */
+.Button {
+    transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.ToolbarButton {
+    transition: color 0.15s;
+}
+
+/* CLI sidebar item selection */
+.ResourceSidebarItem {
+    transition: background-color 0.15s;
+}
+
+/* Detail panels — slide in when shown */
+.ResourceDetailsLayout__Header,
+.ResourceDetailsProperties,
+.ResourceDetailsContentBar {
+    animation: detailFadeIn 0.2s ease-out;
+}
+
+@keyframes detailFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Terminal lines appear */
+div.line, code.line {
+    animation: lineFadeIn 0.12s ease-out;
+}
+
+@keyframes lineFadeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Badge pulse (already exists, keeping) */
+
+/* Namespace group expand/collapse */
+.ReactCollapse--collapse {
+    transition: height 0.2s ease;
+}
+
+/* ns-group arrow rotation */
+.ns-group .ResourceListItemParentArrow .Icon {
+    transition: transform 0.2s ease;
+}
+.ns-group.expanded .ResourceListItemParentArrow .Icon {
+    transform: rotate(90deg);
+}
+
+/* Empty state in terminal */
+.term-empty-state {
+    animation: fadeSlideIn 0.3s ease-out;
+}
+
+/* Progress bar smooth */
+#progress-bar {
+    transition: width 0.35s ease;
+}
+
+/* Maintenance button state change */
+#btn-maintenance {
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
 
 /* ── Mobile bottom nav (hidden on desktop) ──────────────────── */
 
