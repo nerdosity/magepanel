@@ -10,11 +10,11 @@ msgstr ""
 
 # ── Header / Navigation ──────────────────────────────────────
 
-msgid "Deploy Panel"
-msgstr "Deploy Panel"
+msgid "Deploy panel"
+msgstr "Deploy panel"
 
-msgid "Full Deploy"
-msgstr "Full Deploy"
+msgid "Full deploy"
+msgstr "Full deploy"
 
 msgid "Cache"
 msgstr "Cache"
@@ -30,16 +30,16 @@ msgstr "Maintenance"
 
 # ── Tabs ─────────────────────────────────────────────────────
 
-msgid "Static Content"
-msgstr "Static Content"
+msgid "Static content"
+msgstr "Static content"
 
 # ── Static Content Deploy panel ──────────────────────────────
 
-msgid "Static Content Deploy"
-msgstr "Static Content Deploy"
+msgid "Static content deploy"
+msgstr "Static content deploy"
 
-msgid "Deploy Static"
-msgstr "Deploy Static"
+msgid "Deploy static"
+msgstr "Deploy static"
 
 msgid "Area"
 msgstr "Area"
@@ -221,8 +221,8 @@ msgstr "command"
 msgid "Comando interrotto"
 msgstr "Command interrupted"
 
-msgid "Esegui Task"
-msgstr "Run Task"
+msgid "Esegui task"
+msgstr "Run task"
 
 msgid "Operazione interrotta"
 msgstr "Operation interrupted"
@@ -230,11 +230,11 @@ msgstr "Operation interrupted"
 msgid "Interrotto"
 msgstr "Interrupted"
 
-msgid "Esegui Preset"
-msgstr "Run Preset"
+msgid "Esegui preset"
+msgstr "Run preset"
 
-msgid "Full Deploy (manutenzione + pulizia + compile + cache)"
-msgstr "Full Deploy (maintenance + cleanup + compile + cache)"
+msgid "Full deploy (manutenzione + pulizia + compile + cache)"
+msgstr "Full deploy (maintenance + cleanup + compile + cache)"
 
 msgid "Cache (pulizia cache + flush)"
 msgstr "Cache (cache cleanup + flush)"
@@ -255,6 +255,12 @@ msgstr "Select a command from the list"
 
 msgid "Premi Esegui per avviare il comando"
 msgstr "Press Run to execute the command"
+
+msgid "selezionato"
+msgstr "selected"
+
+msgid "selezionati"
+msgstr "selected"
 
 msgid "Seleziona un task e premi Esegui"
 msgstr "Select a task and press Run"

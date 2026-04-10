@@ -89,9 +89,9 @@
 
             <!-- ClusterViewHeaderTitle + controls -->
             <div class="workspace-title-row">
-                <div class="page-title"><?= __('Deploy Panel') ?></div>
+                <div class="page-title"><?= __('Deploy panel') ?></div>
                 <div class="header-controls">
-                    <div class="Button size-small preset-confirm" data-preset="full_deploy" data-label="<?= htmlspecialchars(__('Full Deploy (manutenzione + pulizia + compile + cache)')) ?>" role="button"><?= __('Full Deploy') ?></div>
+                    <div class="Button size-small preset-confirm" data-preset="full_deploy" data-label="<?= htmlspecialchars(__('Full deploy (manutenzione + pulizia + compile + cache)')) ?>" role="button"><?= __('Full deploy') ?></div>
                     <div class="Button size-small preset-confirm" data-preset="cache_only" data-label="<?= htmlspecialchars(__('Cache (pulizia cache + flush)')) ?>" role="button"><?= __('Cache') ?></div>
                     <div class="Button size-small preset-confirm" data-preset="compile_cache" data-label="<?= htmlspecialchars(__('Compile (pulizia generated + DI compile + cache flush)')) ?>" role="button"><?= __('Compile') ?></div>
                     <div class="header-sep"></div>
@@ -111,7 +111,7 @@
             <!-- Tabs — .Tabs .TabsBar (MagePanel3.html riga 7326) -->
             <div class="Tabs" id="group-tabs">
                 <div class="TabsBar">
-                    <div class="Tab group-tab selected" data-group="__static"><?= __('Static Content') ?></div>
+                    <div class="Tab group-tab selected" data-group="__static"><?= __('Static content') ?></div>
                     <?php foreach ($grouped as $groupName => $tasks): ?>
                     <div class="Tab group-tab" data-group="<?= htmlspecialchars($groupName) ?>"><?= htmlspecialchars(__($groupName)) ?></div>
                     <?php endforeach; ?>
@@ -128,13 +128,14 @@
             <!-- Task group panels (one visible at a time, selected by tab) -->
             <div id="task-groups">
 
-                <!-- ═══ Static Content panel ═══ -->
+                <!-- ═══ Static content panel ═══ -->
                 <div class="task-group TabContent" data-id="__static">
                     <div class="ClusterNamespaces">
                         <div class="ClusterNamespacesHeader">
-                            <div class="ClusterNamespacesHeaderTitle"><?= __('Static Content Deploy') ?></div>
+                            <div class="ClusterNamespacesHeaderTitle"><?= __('Static content deploy') ?></div>
                             <div class="flex-auto"></div>
-                            <button id="btn-static" class="Button green solid size-small"><?= __('Deploy Static') ?></button>
+                            <span id="static-count" class="static-count"></span>
+                            <button id="btn-static" class="Button green solid size-small" disabled><?= __('Deploy static') ?></button>
                         </div>
 
                         <table class="Table ClusterSecretsTable">
@@ -149,16 +150,16 @@
                                 <tr>
                                     <td style="vertical-align:top">
                                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
-                                            <input type="checkbox" class="static-area" value="frontend" checked> Frontend
+                                            <input type="checkbox" class="static-opt static-area" value="frontend"> Frontend
                                         </label>
                                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-                                            <input type="checkbox" class="static-area" value="adminhtml"> Adminhtml
+                                            <input type="checkbox" class="static-opt static-area" value="adminhtml"> Adminhtml
                                         </label>
                                     </td>
                                     <td style="vertical-align:top">
                                         <?php foreach ($themes as $theme): ?>
                                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
-                                            <input type="checkbox" class="static-theme" value="<?= htmlspecialchars($theme) ?>" checked>
+                                            <input type="checkbox" class="static-opt static-theme" value="<?= htmlspecialchars($theme) ?>">
                                             <?= htmlspecialchars($theme) ?>
                                         </label>
                                         <?php endforeach; ?>
@@ -167,12 +168,9 @@
                                         <?php endif; ?>
                                     </td>
                                     <td style="vertical-align:top">
-                                        <?php
-                                        $defaultLocales = ['it_IT', 'en_US', 'en_GB'];
-                                        foreach ($locales as $locale): ?>
+                                        <?php foreach ($locales as $locale): ?>
                                         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
-                                            <input type="checkbox" class="static-locale" value="<?= htmlspecialchars($locale) ?>"
-                                                <?= in_array($locale, $defaultLocales) ? 'checked' : '' ?>>
+                                            <input type="checkbox" class="static-opt static-locale" value="<?= htmlspecialchars($locale) ?>">
                                             <?= htmlspecialchars($locale) ?>
                                         </label>
                                         <?php endforeach; ?>

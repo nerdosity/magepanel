@@ -436,6 +436,14 @@ html, body {
 .Button.light { color: rgba(0,0,0,0.9); border-color: rgba(0,0,0,0.9) }
 .Button.light:hover { background-color: rgba(30,34,43,0.06) }
 
+/* Static content count badge */
+.static-count {
+    font-size: 12px;
+    color: var(--teal);
+    margin-right: 12px;
+    white-space: nowrap;
+}
+
 /* Checkbox styling in tables */
 .ClusterSecretsTable input[type="checkbox"] { accent-color: rgb(0, 209, 202); cursor: pointer; width: 15px; height: 15px }
 

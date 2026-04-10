@@ -273,21 +273,35 @@
     //  Static content deploy
     // ================================================================
 
+    var staticCount = document.getElementById('static-count');
+
+    function updateStaticCount() {
+        var total = document.querySelectorAll('.static-opt:checked').length;
+        if (staticCount) {
+            staticCount.textContent = total > 0 ? (total + ' ' + (total === 1 ? __('selezionato') : __('selezionati'))) : '';
+        }
+        if (btnStatic) btnStatic.disabled = total === 0;
+    }
+
+    // Listen to all static checkboxes
+    document.querySelectorAll('.static-opt').forEach(function (cb) {
+        cb.addEventListener('change', updateStaticCount);
+    });
+    updateStaticCount(); // init
+
     if (btnStatic) {
         btnStatic.addEventListener('click', function () {
             var themes  = Array.from(document.querySelectorAll('.static-theme:checked')).map(function (c) { return c.value; });
             var locales = Array.from(document.querySelectorAll('.static-locale:checked')).map(function (c) { return c.value; });
             var areas   = Array.from(document.querySelectorAll('.static-area:checked')).map(function (c) { return c.value; });
 
-            if (!locales.length) { alert(__('Seleziona almeno una lingua')); return; }
             if (!areas.length)   { alert(__("Seleziona almeno un'area")); return; }
 
-            var summary = __('Static content deploy...') + '\n\n'
-                + __('Area') + ': ' + areas.join(', ') + '\n'
-                + __('Temi') + ': ' + (themes.length ? themes.join(', ') : '(admin)') + '\n'
-                + __('Lingue') + ': ' + locales.join(', ');
+            var summary = __('Area') + ': ' + (areas.length ? areas.join(', ') : '\u2014') + '\n'
+                + __('Temi') + ': ' + (themes.length ? themes.join(', ') : '\u2014') + '\n'
+                + __('Lingue') + ': ' + (locales.length ? locales.join(', ') : '\u2014');
 
-            showConfirm(__('Deploy Static'), summary, function () {
+            showConfirm(__('Deploy static'), summary, function () {
                 var qs = 'action=static';
                 themes.forEach(function (t)  { qs += '&themes[]='  + encodeURIComponent(t); });
                 locales.forEach(function (l) { qs += '&locales[]=' + encodeURIComponent(l); });
@@ -765,24 +779,6 @@
         });
 
         clearOutput();
-
-        // Show "press Run" placeholder in the terminal
-        var hint = document.createElement('div');
-        hint.className = 'term-empty-state';
-        var hintIcon = document.createElement('div');
-        hintIcon.className = 'detail-empty-icon';
-        hintIcon.textContent = '\u25B6';
-        hintIcon.style.fontSize = '32px';
-        hint.appendChild(hintIcon);
-        var hintTitle = document.createElement('div');
-        hintTitle.className = 'detail-empty-title';
-        hintTitle.textContent = prefix + name;
-        hint.appendChild(hintTitle);
-        var hintSub = document.createElement('div');
-        hintSub.className = 'detail-empty-sub';
-        hintSub.textContent = __('Premi Esegui per avviare il comando');
-        hint.appendChild(hintSub);
-        term.appendChild(hint);
     }
 
     // Copiato da index4.html riga 8683-8716 (LogStageSection)
@@ -1267,7 +1263,7 @@
         btn.addEventListener('click', function () {
             var taskId = this.dataset.task;
             var taskLabel = this.dataset.label;
-            showConfirm(__('Esegui Task'), __('Eseguire') + ' "' + taskLabel + '"?', function () {
+            showConfirm(__('Esegui task'), __('Eseguire') + ' "' + taskLabel + '"?', function () {
                 clearOutput();
                 setRunning(true);
                 stopRequested = false;
@@ -1302,7 +1298,7 @@
             var presetLabel = this.dataset.label || presetKey;
             var ids = PRESETS[presetKey] || [];
             if (!ids.length) return;
-            showConfirm(__('Esegui Preset'), presetLabel + '\n\n' + __('Eseguire') + ' ' + ids.length + ' ' + __('operazioni') + '?', function () {
+            showConfirm(__('Esegui preset'), presetLabel + '\n\n' + __('Eseguire') + ' ' + ids.length + ' ' + __('operazioni') + '?', function () {
                 clearOutput();
                 setRunning(true);
                 stopRequested = false;
