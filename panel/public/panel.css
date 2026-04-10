@@ -424,7 +424,46 @@ html, body {
 /* Task run button in table */
 .task-run-btn { justify-content: flex-end }
 
-/* Button.green.solid (index2.html riga 913) */
+/* IconBtn — Komodor style: white circle icon + label */
+.IconBtn {
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: row;
+    gap: 7px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    line-height: 1;
+    white-space: nowrap;
+    color: rgba(255,255,255,0.85);
+    background: none;
+    border: none;
+    padding: 4px 0;
+    transition: color 0.15s;
+    user-select: none;
+}
+.IconBtn:hover:not([disabled]) { color: var(--teal); }
+.IconBtn[disabled] { opacity: 0.25; pointer-events: none; }
+
+.IconBtn__circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.IconBtn__circle svg { width: 12px; height: 12px; display: block; }
+.IconBtn:hover:not([disabled]) .IconBtn__circle { background: var(--teal); }
+.IconBtn:hover:not([disabled]) .IconBtn__circle svg { fill: #fff; stroke: #fff; }
+.IconBtn__circle svg { fill: rgb(17, 19, 24); stroke: rgb(17, 19, 24); }
+
+/* Legacy Button (kept for modal buttons) */
 .Button { align-items: center; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; flex-direction: row; font-family: var(--font); font-size: 16px; font-weight: bold; letter-spacing: -0.3px; line-height: 16px; min-height: 46px; position: relative; background: transparent; border: 2px solid rgba(255,255,255,0.9); border-radius: 3px; padding: 0 18px }
 .Button:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.8) }
 .Button:active { background-color: rgba(255,255,255,0.5) }
@@ -675,12 +714,42 @@ html, body {
 .ResourceDetailsContentBar__SwitchOption:last-child { border: 0 }
 .ResourceDetailsContentBar__SwitchOption:hover { background: rgba(35, 41, 53, 0.8) }
 
-/* --- ToolbarButton (index4.html riga 4317) --- */
-.ToolbarButton { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; margin-right: 24px; position: relative; user-select: none; white-space: nowrap }
-.ToolbarButton:hover:not(.disabled) { color: rgb(0, 209, 202) }
-.ToolbarButton:hover:not(.disabled) .colorable { fill: #00d1ca }
-.ToolbarButton.disabled { opacity: 0.2; pointer-events: none }
-.ToolbarButton__icon { position: relative; margin-right: 8px }
+/* --- ToolbarButton — Komodor style: white circle + dark icon + label --- */
+.ToolbarButton {
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: row;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    line-height: 1;
+    margin-right: 20px;
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+    gap: 7px;
+    color: rgba(255,255,255,0.85);
+    transition: color 0.15s;
+}
+.ToolbarButton:hover:not(.disabled) { color: var(--teal); }
+.ToolbarButton.disabled { opacity: 0.25; pointer-events: none; }
+
+.ToolbarButton__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.ToolbarButton__icon svg { width: 12px; height: 12px; display: block; }
+.ToolbarButton__icon .colorable { fill: rgb(17, 19, 24); }
+.ToolbarButton:hover:not(.disabled) .ToolbarButton__icon { background: var(--teal); }
+.ToolbarButton:hover:not(.disabled) .ToolbarButton__icon .colorable { fill: #fff; }
 
 /* --- Logs area: #terminal already styled above --- */
 
@@ -1238,6 +1307,9 @@ input[type="checkbox"] {
 /* ── Mobile (< 768px) ────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+    /* IconBtn: icon only on mobile */
+    .IconBtn__label { display: none; }
+
     /* Hide desktop drawer, show mobile bottom nav */
     #drawer { display: none !important; }
 

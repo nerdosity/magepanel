@@ -85,8 +85,8 @@
         btnClear.disabled = !hasOutput;
         // Also update the detail-clear button in CLI mode
         if (detailClear) {
-            if (hasOutput) detailClear.classList.remove('disabled');
-            else detailClear.classList.add('disabled');
+            if (hasOutput) detailClear.removeAttribute('disabled');
+            else detailClear.setAttribute('disabled', '');
         }
     }
 
@@ -692,8 +692,8 @@
         if (detailSubtitle) detailSubtitle.textContent = __('Seleziona un comando dalla lista');
         if (detailCmdFull)  detailCmdFull.textContent = '\u2014';
         if (detailArgs)     { detailArgs.value = ''; detailArgs.disabled = true; }
-        if (detailRun)  detailRun.classList.add('disabled');
-        if (detailStop) detailStop.classList.add('disabled');
+        if (detailRun)  detailRun.setAttribute('disabled', '');
+        if (detailStop) detailStop.setAttribute('disabled', '');
 
         // Mark as empty state
         if (detailHeader) detailHeader.dataset.emptyState = '1';
@@ -748,7 +748,7 @@
             delete detailHeader.dataset.emptyState;
         }
         if (detailArgs) detailArgs.disabled = false;
-        if (detailRun)  detailRun.classList.remove('disabled');
+        if (detailRun)  detailRun.removeAttribute('disabled');
     }
 
     function selectCommand(action, name, desc) {
@@ -908,8 +908,8 @@
         var args = detailArgs ? detailArgs.value.trim() : '';
         clearOutput();
         setRunning(true);
-        if (detailRun)  detailRun.classList.add('disabled');
-        if (detailStop) detailStop.classList.remove('disabled');
+        if (detailRun)  detailRun.setAttribute('disabled', '');
+        if (detailStop) detailStop.removeAttribute('disabled');
 
         // Add MagePanel-style stage header (blue = running)
         var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'bin/magento ';
@@ -922,8 +922,8 @@
             + '&args='  + encodeURIComponent(args);
         openSse(url, function (ok) {
             setRunning(false);
-            if (detailRun)  detailRun.classList.remove('disabled');
-            if (detailStop) detailStop.classList.add('disabled');
+            if (detailRun)  detailRun.removeAttribute('disabled');
+            if (detailStop) detailStop.setAttribute('disabled', '');
 
             // Update stage header: stop pulsing, set check (teal) or X (red)
             var pulser = stage.section.querySelector('.progress-pulse');
@@ -943,7 +943,7 @@
 
     if (detailRun) {
         detailRun.addEventListener('click', function () {
-            if (!detailRun.classList.contains('disabled')) runSelectedCommand();
+            if (!detailRun.hasAttribute('disabled')) runSelectedCommand();
         });
     }
 
@@ -956,8 +956,8 @@
                 currentEs.close(); currentEs = null;
                 addLine(__('Comando interrotto'), 'warn');
                 setRunning(false);
-                if (detailRun)  detailRun.classList.remove('disabled');
-                if (detailStop) detailStop.classList.add('disabled');
+                if (detailRun)  detailRun.removeAttribute('disabled');
+                if (detailStop) detailStop.setAttribute('disabled', '');
             }
         });
     }

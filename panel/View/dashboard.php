@@ -91,13 +91,23 @@
             <div class="workspace-title-row">
                 <div class="page-title"><?= __('Deploy panel') ?></div>
                 <div class="header-controls">
-                    <div class="Button size-small preset-confirm" data-preset="full_deploy" data-label="<?= htmlspecialchars(__('Full deploy (manutenzione + pulizia + compile + cache)')) ?>" role="button"><?= __('Full deploy') ?></div>
-                    <div class="Button size-small preset-confirm" data-preset="cache_only" data-label="<?= htmlspecialchars(__('Cache (pulizia cache + flush)')) ?>" role="button"><?= __('Cache') ?></div>
-                    <div class="Button size-small preset-confirm" data-preset="compile_cache" data-label="<?= htmlspecialchars(__('Compile (pulizia generated + DI compile + cache flush)')) ?>" role="button"><?= __('Compile') ?></div>
+                    <div class="IconBtn preset-confirm" data-preset="full_deploy" data-label="<?= htmlspecialchars(__('Full deploy (manutenzione + pulizia + compile + cache)')) ?>" role="button">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Full deploy') ?></span>
+                    </div>
+                    <div class="IconBtn preset-confirm" data-preset="cache_only" data-label="<?= htmlspecialchars(__('Cache (pulizia cache + flush)')) ?>" role="button">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Cache') ?></span>
+                    </div>
+                    <div class="IconBtn preset-confirm" data-preset="compile_cache" data-label="<?= htmlspecialchars(__('Compile (pulizia generated + DI compile + cache flush)')) ?>" role="button">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.611 3.611 0 0112 15.6z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Compile') ?></span>
+                    </div>
                     <div class="header-sep"></div>
                     <span id="maintenance-badge" class="badge badge-hidden"><?= __('MANUTENZIONE') ?></span>
-                    <div id="btn-maintenance" class="Button size-small" data-state="off" role="button">
-                        <?= __('Manutenzione') ?>: <strong id="maint-state-label">OFF</strong>
+                    <div id="btn-maintenance" class="IconBtn" data-state="off" role="button">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Manutenzione') ?>: <strong id="maint-state-label">OFF</strong></span>
                     </div>
                     <div class="header-sep"></div>
                     <select id="lang-selector" class="lang-selector">
@@ -135,7 +145,10 @@
                             <div class="ClusterNamespacesHeaderTitle"><?= __('Static content deploy') ?></div>
                             <div class="flex-auto"></div>
                             <span id="static-count" class="static-count"></span>
-                            <button id="btn-static" class="Button green solid size-small" disabled><?= __('Deploy static') ?></button>
+                            <button id="btn-static" class="IconBtn" disabled>
+                                <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg></span>
+                                <span class="IconBtn__label"><?= __('Deploy static') ?></span>
+                            </button>
                         </div>
 
                         <table class="Table ClusterSecretsTable">
@@ -228,16 +241,11 @@
                                                 </td>
                                                 <td class="rc-table-cell" style="text-align:right">
                                                     <div class="ClusterNamespacesTableActions">
-                                                        <div class="ToolbarButton normal task-run-btn" role="button" tabindex="0"
+                                                        <div class="IconBtn task-run-btn" role="button" tabindex="0"
                                                              data-task="<?= htmlspecialchars($id) ?>"
                                                              data-label="<?= htmlspecialchars(__($task['label'])) ?>">
-                                                            <div class="ToolbarButton__icon">
-                                                                <div class="Icon layout vertical center-center" style="width:22px;height:22px">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                                                        <path class="colorable" fill="white" d="M8 5v14l11-7z"/>
-                                                                    </svg>
-                                                                </div>
-                                                            </div><?= __('Esegui') ?>
+                                                            <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                                                            <span class="IconBtn__label"><?= __('Esegui') ?></span>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -295,23 +303,13 @@
                 </div>
                 <!-- ResourceDetailsButtons (MagePanel4.html riga 8567) -->
                 <div id="detail-buttons" class="ResourceDetailsButtons">
-                    <div id="detail-run" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon">
-                            <div class="Icon layout vertical center-center" style="width:22px;height:22px">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                    <path class="colorable" fill="white" d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div><?= __('Esegui') ?>
+                    <div id="detail-run" class="IconBtn" role="button" tabindex="0">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Esegui') ?></span>
                     </div>
-                    <div id="detail-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon">
-                            <div class="Icon layout vertical center-center" style="width:22px;height:22px">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                    <path class="colorable" fill="white" d="M6 6h12v12H6z"/>
-                                </svg>
-                            </div>
-                        </div><?= __('Stop') ?>
+                    <div id="detail-stop" class="IconBtn" role="button" tabindex="0" disabled>
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Stop') ?></span>
                     </div>
                 </div>
                 <div class="flex-auto"></div>
@@ -337,14 +335,9 @@
                     <div class="ResourceDetailsContentBar__SwitchOption selected">Logs</div>
                 </div>
                 <div class="flex-auto"></div>
-                <div id="detail-clear" class="ToolbarButton normal" role="button" tabindex="0">
-                    <div class="ToolbarButton__icon">
-                        <div class="Icon layout vertical center-center" style="width:22px;height:22px">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                <path class="colorable" fill="white" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                            </svg>
-                        </div>
-                    </div><?= __('Pulisci') ?>
+                <div id="detail-clear" class="IconBtn" role="button" tabindex="0">
+                    <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span>
+                    <span class="IconBtn__label"><?= __('Pulisci') ?></span>
                 </div>
             </div>
 
@@ -363,9 +356,18 @@
                     </div>
                 </div>
                 <div class="terminal-actions">
-                    <button id="btn-run"   class="terminal-btn">&#9654; <?= __('Esegui') ?></button>
-                    <button id="btn-stop"  class="terminal-btn" disabled>&#9632; <?= __('Stop') ?></button>
-                    <button id="btn-clear" class="terminal-btn">&#10005; <?= __('Pulisci') ?></button>
+                    <button id="btn-run" class="IconBtn">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Esegui') ?></span>
+                    </button>
+                    <button id="btn-stop" class="IconBtn" disabled>
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Stop') ?></span>
+                    </button>
+                    <button id="btn-clear" class="IconBtn">
+                        <span class="IconBtn__circle"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span>
+                        <span class="IconBtn__label"><?= __('Pulisci') ?></span>
+                    </button>
                 </div>
             </div>
 
