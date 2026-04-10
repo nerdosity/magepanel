@@ -81,22 +81,6 @@
 
     </div>
 
-    <!-- ── Mobile bottom nav (visible < 768px) ─────────────── -->
-    <nav id="mobile-nav">
-        <div class="mobile-nav-btn active" data-section="tasks">
-            <svg viewBox="0 0 22 22" width="20" height="20" fill="currentColor"><rect x="1" y="3" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="4.5" width="13" height="1.8" rx="0.9"/><rect x="1" y="9.5" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="11" width="13" height="1.8" rx="0.9"/><rect x="1" y="16" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="17.5" width="10" height="1.8" rx="0.9"/></svg>
-            <span>Tasks</span>
-        </div>
-        <div class="mobile-nav-btn" data-section="cli">
-            <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2" width="19" height="17" rx="2.5"/><path d="M5.5 8.5l4 3.5-4 3.5"/><path d="M13 15.5h3.5"/></svg>
-            <span>Mage</span>
-        </div>
-        <div class="mobile-nav-btn" data-section="composer">
-            <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l8.5-4.5 8.5 4.5-8.5 4.5-8.5-4.5z"/><path d="M2.5 6.5v9l8.5 4.5V11"/><path d="M19.5 6.5v9l-8.5 4.5V11"/></svg>
-            <span>Composer</span>
-        </div>
-    </nav>
-
     <!-- ── Workspace ──────────────────────────────────────────── -->
     <div id="workspace">
 
@@ -413,6 +397,22 @@
     </div>
 
 </div><!-- #app -->
+
+<!-- ── Mobile bottom nav (visible only < 768px, position:fixed) ── -->
+<nav id="mobile-nav">
+    <div class="mobile-nav-btn active" data-section="tasks">
+        <svg viewBox="0 0 22 22" width="20" height="20" fill="currentColor"><rect x="1" y="3" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="4.5" width="13" height="1.8" rx="0.9"/><rect x="1" y="9.5" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="11" width="13" height="1.8" rx="0.9"/><rect x="1" y="16" width="4.5" height="4.5" rx="0.5"/><rect x="8" y="17.5" width="10" height="1.8" rx="0.9"/></svg>
+        <span>Tasks</span>
+    </div>
+    <div class="mobile-nav-btn" data-section="cli">
+        <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2" width="19" height="17" rx="2.5"/><path d="M5.5 8.5l4 3.5-4 3.5"/><path d="M13 15.5h3.5"/></svg>
+        <span>Mage</span>
+    </div>
+    <div class="mobile-nav-btn" data-section="composer">
+        <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l8.5-4.5 8.5 4.5-8.5 4.5-8.5-4.5z"/><path d="M2.5 6.5v9l8.5 4.5V11"/><path d="M19.5 6.5v9l-8.5 4.5V11"/></svg>
+        <span>Composer</span>
+    </div>
+</nav>
 
 <script>
     var PANEL_BASE_URL = 'index.php';
