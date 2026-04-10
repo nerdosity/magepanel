@@ -256,6 +256,12 @@ msgstr "Seleziona un comando dalla lista"
 msgid "Premi Esegui per avviare il comando"
 msgstr "Premi Esegui per avviare il comando"
 
+msgid "Seleziona un task e premi Esegui"
+msgstr "Seleziona un task e premi Esegui"
+
+msgid "Oppure usa i preset in alto per operazioni rapide."
+msgstr "Oppure usa i preset in alto per operazioni rapide."
+
 msgid "Seleziona un comando"
 msgstr "Seleziona un comando"
 

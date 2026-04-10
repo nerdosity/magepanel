@@ -50,6 +50,66 @@
     function clearOutput() {
         while (term.firstChild) term.removeChild(term.firstChild);
         setProgress(0, '');
+        // Restore appropriate placeholder
+        var workspace = document.getElementById('workspace');
+        if (workspace && workspace.classList.contains('cli-layout')) {
+            if (selectedCmd) {
+                // Command selected but not run yet — show "press Run" hint
+                var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'php bin/magento ';
+                var hint = document.createElement('div');
+                hint.className = 'term-empty-state';
+                var hIcon = document.createElement('div');
+                hIcon.className = 'detail-empty-icon';
+                hIcon.textContent = '\u25B6';
+                hIcon.style.fontSize = '32px';
+                hint.appendChild(hIcon);
+                var hTitle = document.createElement('div');
+                hTitle.className = 'detail-empty-title';
+                hTitle.textContent = prefix + selectedCmd.name;
+                hint.appendChild(hTitle);
+                var hSub = document.createElement('div');
+                hSub.className = 'detail-empty-sub';
+                hSub.textContent = __('Premi Esegui per avviare il comando');
+                hint.appendChild(hSub);
+                term.appendChild(hint);
+            }
+            // If no command selected, showDetailEmptyState handles it
+        } else {
+            showTasksPlaceholder();
+        }
+        updateClearBtn();
+    }
+
+    function updateClearBtn() {
+        var hasOutput = term.querySelector('.line') || term.querySelector('.LogStageSection');
+        btnClear.disabled = !hasOutput;
+        // Also update the detail-clear button in CLI mode
+        if (detailClear) {
+            if (hasOutput) detailClear.classList.remove('disabled');
+            else detailClear.classList.add('disabled');
+        }
+    }
+
+    function showTasksPlaceholder() {
+        // Only if terminal is empty (no output from a previous run)
+        if (term.querySelector('.line') || term.querySelector('.LogStageSection')) return;
+        while (term.firstChild) term.removeChild(term.firstChild);
+        var el = document.createElement('div');
+        el.className = 'term-empty-state';
+        var icon = document.createElement('div');
+        icon.className = 'detail-empty-icon';
+        icon.textContent = '\u25B8';
+        icon.style.fontSize = '28px';
+        el.appendChild(icon);
+        var t = document.createElement('div');
+        t.className = 'detail-empty-title';
+        t.textContent = __('Seleziona un task e premi Esegui');
+        el.appendChild(t);
+        var s = document.createElement('div');
+        s.className = 'detail-empty-sub';
+        s.textContent = __('Oppure usa i preset in alto per operazioni rapide.');
+        el.appendChild(s);
+        term.appendChild(el);
     }
 
     var activeLogLines = null; // current LogStageSectionLines container
@@ -122,6 +182,7 @@
             div.textContent = text;
             term.appendChild(div);
         }
+        updateClearBtn();
     }
 
     function addSeparator(label) {
@@ -1163,11 +1224,12 @@
         if (detailContentBar) detailContentBar.style.display = 'none';
         if (termHeader)       termHeader.style.display       = isTasks ? '' : 'none';
 
-        // Show empty state in detail area when entering CLI mode
+        // Show appropriate empty state
         if (isCmdMode) {
             showDetailEmptyState();
         } else {
             removeDetailEmptyState();
+            showTasksPlaceholder();
         }
 
         // Reset selection when switching sections
