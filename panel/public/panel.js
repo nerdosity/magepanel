@@ -209,19 +209,26 @@
             if (!locales.length) { alert(__('Seleziona almeno una lingua')); return; }
             if (!areas.length)   { alert(__("Seleziona almeno un'area")); return; }
 
-            var qs = 'action=static';
-            themes.forEach(function (t)  { qs += '&themes[]='  + encodeURIComponent(t); });
-            locales.forEach(function (l) { qs += '&locales[]=' + encodeURIComponent(l); });
-            areas.forEach(function (a)   { qs += '&areas[]='   + encodeURIComponent(a); });
+            var summary = __('Static content deploy...') + '\n\n'
+                + __('Area') + ': ' + areas.join(', ') + '\n'
+                + __('Temi') + ': ' + (themes.length ? themes.join(', ') : '(admin)') + '\n'
+                + __('Lingue') + ': ' + locales.join(', ');
 
-            clearOutput();
-            setRunning(true);
-            stopRequested = false;
-            setProgress(0, __('Static content deploy...'));
+            showConfirm(__('Deploy Static'), summary, function () {
+                var qs = 'action=static';
+                themes.forEach(function (t)  { qs += '&themes[]='  + encodeURIComponent(t); });
+                locales.forEach(function (l) { qs += '&locales[]=' + encodeURIComponent(l); });
+                areas.forEach(function (a)   { qs += '&areas[]='   + encodeURIComponent(a); });
 
-            openSse(BASE_URL + '?' + qs, function (ok) {
-                setProgress(100, ok ? __('Completato') : __('Errori'));
-                setRunning(false);
+                clearOutput();
+                setRunning(true);
+                stopRequested = false;
+                setProgress(0, __('Static content deploy...'));
+
+                openSse(BASE_URL + '?' + qs, function (ok) {
+                    setProgress(100, ok ? __('Completato') : __('Errori'));
+                    setRunning(false);
+                });
             });
         });
     }
