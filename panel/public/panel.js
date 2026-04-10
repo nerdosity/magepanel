@@ -273,16 +273,52 @@
 
     function showLoader(container) {
         while (container.firstChild) container.removeChild(container.firstChild);
-        container.className = 'mage-commands-loading';
-        var wrap = document.createElement('div');
-        wrap.className = 'panel-loader';
-        var spinner = document.createElement('div');
-        spinner.className = 'panel-spinner';
-        var label = document.createElement('span');
-        label.textContent = __('Caricamento...');
-        wrap.appendChild(spinner);
-        wrap.appendChild(label);
-        container.appendChild(wrap);
+        container.className = 'SpaceSidebarContainer';
+        // Build 4 skeleton groups, each with 3-5 child rows
+        var counts = [4, 3, 5, 3];
+        for (var g = 0; g < counts.length; g++) {
+            var group = document.createElement('div');
+            group.className = 'skel-group';
+            // Group header: icon + two text bars
+            var header = document.createElement('div');
+            header.className = 'skel-row skel-header';
+            var circle = document.createElement('div');
+            circle.className = 'skel-bone skel-circle';
+            var col = document.createElement('div');
+            col.className = 'skel-col';
+            var bar1 = document.createElement('div');
+            bar1.className = 'skel-bone skel-bar';
+            bar1.style.width = (60 + Math.round(Math.random() * 60)) + 'px';
+            var bar2 = document.createElement('div');
+            bar2.className = 'skel-bone skel-bar skel-bar-sm';
+            bar2.style.width = '48px';
+            col.appendChild(bar1);
+            col.appendChild(bar2);
+            header.appendChild(circle);
+            header.appendChild(col);
+            group.appendChild(header);
+            // Child rows
+            for (var c = 0; c < counts[g]; c++) {
+                var row = document.createElement('div');
+                row.className = 'skel-row skel-child';
+                var hex = document.createElement('div');
+                hex.className = 'skel-bone skel-hex';
+                var col2 = document.createElement('div');
+                col2.className = 'skel-col';
+                var b1 = document.createElement('div');
+                b1.className = 'skel-bone skel-bar';
+                b1.style.width = (80 + Math.round(Math.random() * 100)) + 'px';
+                var b2 = document.createElement('div');
+                b2.className = 'skel-bone skel-bar skel-bar-sm';
+                b2.style.width = (100 + Math.round(Math.random() * 80)) + 'px';
+                col2.appendChild(b1);
+                col2.appendChild(b2);
+                row.appendChild(hex);
+                row.appendChild(col2);
+                group.appendChild(row);
+            }
+            container.appendChild(group);
+        }
     }
 
     function loadMagentoCommands() {

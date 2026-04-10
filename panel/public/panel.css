@@ -443,29 +443,61 @@ html, body {
     font-size: 13px;
 }
 
-/* Loading spinner */
-.panel-loader {
+/* Skeleton loader */
+.skel-group {
+    border-bottom: 1px solid rgb(24, 27, 34);
+    padding: 6px 0;
+}
+
+.skel-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+}
+
+.skel-header { padding-left: 32px; }
+.skel-child  { padding-left: 46px; }
+
+.skel-col {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 48px 20px;
-    color: rgb(128, 140, 169);
-    font-size: 14px;
+    gap: 6px;
 }
 
-.panel-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(128, 140, 169, 0.2);
-    border-top-color: var(--teal);
+.skel-bone {
+    background: rgba(128, 140, 169, 0.1);
+    border-radius: 4px;
+    animation: skel-pulse 1.4s ease-in-out infinite;
+}
+
+.skel-circle {
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    animation: panel-spin 0.7s linear infinite;
+    flex-shrink: 0;
 }
 
-@keyframes panel-spin {
-    to { transform: rotate(360deg); }
+.skel-hex {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.skel-bar {
+    height: 12px;
+    border-radius: 3px;
+}
+
+.skel-bar-sm {
+    height: 9px;
+    opacity: 0.6;
+}
+
+@keyframes skel-pulse {
+    0%, 100% { opacity: 0.4; }
+    50%      { opacity: 1; }
 }
 
 /* --- layout helpers (da index4.html riga 91-131) --- */
