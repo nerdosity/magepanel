@@ -506,7 +506,70 @@
 
     var detailCmdFull = document.getElementById('detail-cmd-full');
 
+    function showDetailEmptyState() {
+        removeDetailEmptyState();
+        // Show a centered empty state in the terminal-panel area
+        var panel = document.getElementById('terminal-panel');
+        if (!panel) return;
+        var empty = document.createElement('div');
+        empty.id = 'detail-empty-state';
+        empty.className = 'detail-empty-state';
+
+        // Terminal icon
+        var svgNs = 'http://www.w3.org/2000/svg';
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'detail-empty-icon';
+        var svg = document.createElementNS(svgNs, 'svg');
+        svg.setAttribute('width', '48');
+        svg.setAttribute('height', '48');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        var rect = document.createElementNS(svgNs, 'rect');
+        rect.setAttribute('x', '2');
+        rect.setAttribute('y', '3');
+        rect.setAttribute('width', '20');
+        rect.setAttribute('height', '18');
+        rect.setAttribute('rx', '3');
+        svg.appendChild(rect);
+        var p1 = document.createElementNS(svgNs, 'path');
+        p1.setAttribute('d', 'M7 10l3 3-3 3');
+        svg.appendChild(p1);
+        var p2 = document.createElementNS(svgNs, 'line');
+        p2.setAttribute('x1', '14');
+        p2.setAttribute('y1', '16');
+        p2.setAttribute('x2', '17');
+        p2.setAttribute('y2', '16');
+        svg.appendChild(p2);
+        iconWrap.appendChild(svg);
+        empty.appendChild(iconWrap);
+
+        var title = document.createElement('div');
+        title.className = 'detail-empty-title';
+        title.textContent = __('Seleziona un comando');
+        empty.appendChild(title);
+
+        var sub = document.createElement('div');
+        sub.className = 'detail-empty-sub';
+        sub.textContent = __('Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo.');
+        empty.appendChild(sub);
+
+        // Hide terminal, insert empty state
+        if (term) term.style.display = 'none';
+        panel.appendChild(empty);
+    }
+
+    function removeDetailEmptyState() {
+        var existing = document.getElementById('detail-empty-state');
+        if (existing) existing.parentNode.removeChild(existing);
+        if (term) term.style.display = '';
+    }
+
     function selectCommand(action, name, desc) {
+        removeDetailEmptyState();
         selectedCmd = { action: action, name: name };
         var prefix = action === 'run_composer' ? 'composer ' : 'php bin/magento ';
 
@@ -916,6 +979,13 @@
         if (detailProps)      detailProps.style.display       = 'none';
         if (detailContentBar) detailContentBar.style.display = 'none';
         if (termHeader)       termHeader.style.display       = isTasks ? '' : 'none';
+
+        // Show empty state in detail area when entering CLI mode
+        if (isCmdMode) {
+            showDetailEmptyState();
+        } else {
+            removeDetailEmptyState();
+        }
 
         // Reset selection when switching sections
         selectedCmd = null;

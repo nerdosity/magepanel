@@ -247,3 +247,11 @@ msgstr "Eseguire"
 
 msgid "operazioni"
 msgstr "operazioni"
+
+# ── Empty state CLI ────────────────────────────────────
+
+msgid "Seleziona un comando"
+msgstr "Seleziona un comando"
+
+msgid "Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo."
+msgstr "Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo."

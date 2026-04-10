@@ -500,6 +500,39 @@ html, body {
     50%      { opacity: 1; }
 }
 
+/* Empty state (CLI mode, no command selected) */
+.detail-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 48px 24px;
+    background: var(--deep);
+    color: var(--meta);
+    text-align: center;
+}
+
+.detail-empty-icon {
+    color: rgba(128, 140, 169, 0.3);
+    margin-bottom: 4px;
+}
+
+.detail-empty-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-70);
+    letter-spacing: -0.3px;
+}
+
+.detail-empty-sub {
+    font-size: 13px;
+    color: var(--meta);
+    max-width: 280px;
+    line-height: 1.5;
+}
+
 /* --- layout helpers (da index4.html riga 91-131) --- */
 .layout.vertical { display: flex; flex-direction: column }
 .layout.center-center { align-items: center; justify-content: center }
