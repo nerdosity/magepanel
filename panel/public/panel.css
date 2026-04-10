@@ -617,9 +617,9 @@ html, body {
 /* --- SpaceSidebar (index4.html riga 3691) --- */
 .SpaceSidebarContainer { padding: 12px 0 }
 
-/* --- custom: ns-group expand (JS toggling) --- */
-.ns-group .ReactCollapse--collapse { height: 0 }
-.ns-group.expanded .ReactCollapse--collapse { height: auto; overflow: initial }
+/* --- custom: ns-group expand (JS toggling with animated height) --- */
+.ns-group .ReactCollapse--collapse { height: 0; overflow: hidden }
+.ns-group.expanded .ReactCollapse--collapse { height: auto; overflow: visible }
 
 /* --- custom: ns-icon (nostro, per il terminale prompt >) --- */
 .ns-icon { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; width: 28px; height: 28px; border-radius: 50%; background: rgb(43, 51, 67); color: rgba(255,255,255,.6); font-family: var(--mono); font-size: 13px; font-weight: 700 }
@@ -1116,17 +1116,62 @@ div.line, code.line {
 
 /* Badge pulse (already exists, keeping) */
 
-/* Namespace group expand/collapse */
-.ReactCollapse--collapse {
-    transition: height 0.2s ease;
-}
-
-/* ns-group arrow rotation */
+/* ns-group chevron rotation */
 .ns-group .ResourceListItemParentArrow .Icon {
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ns-group.expanded .ResourceListItemParentArrow .Icon {
     transform: rotate(90deg);
+}
+
+/* ns-group parent row highlight on expand */
+.ns-group .ResourceListItemParent {
+    transition: background-color 0.15s;
+}
+
+/* ns-group children items stagger fade in */
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem {
+    animation: itemSlideIn 0.2s ease-out both;
+}
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(1) { animation-delay: 0s }
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(2) { animation-delay: 0.03s }
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(3) { animation-delay: 0.06s }
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(4) { animation-delay: 0.09s }
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(5) { animation-delay: 0.12s }
+.ns-group.expanded .ResourceListItemChildren .ResourceSidebarItem:nth-child(n+6) { animation-delay: 0.15s }
+
+@keyframes itemSlideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* LogStageSection chevron */
+.LogStageSection .chevronDown svg {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Language selector dropdown */
+.lang-selector {
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* Checkbox tick */
+input[type="checkbox"] {
+    transition: box-shadow 0.15s;
+}
+
+/* Badge appear */
+.badge-maintenance {
+    animation: badgeAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes badgeAppear {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    transition: box-shadow 0.15s;
 }
 
 /* Empty state in terminal */

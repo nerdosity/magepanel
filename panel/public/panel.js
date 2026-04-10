@@ -547,7 +547,40 @@
         collapse.appendChild(content);
 
         parent.addEventListener('click', function () {
-            group.classList.toggle('expanded');
+            var isExpanding = !group.classList.contains('expanded');
+            if (isExpanding) {
+                group.classList.add('expanded');
+                // Animate open: set height explicitly then transition to scrollHeight
+                collapse.style.height = '0px';
+                collapse.style.overflow = 'hidden';
+                collapse.style.transition = 'height 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+                requestAnimationFrame(function () {
+                    collapse.style.height = collapse.scrollHeight + 'px';
+                });
+                var onEnd = function () {
+                    collapse.style.height = '';
+                    collapse.style.overflow = '';
+                    collapse.style.transition = '';
+                    collapse.removeEventListener('transitionend', onEnd);
+                };
+                collapse.addEventListener('transitionend', onEnd);
+            } else {
+                // Animate close: set current height, then transition to 0
+                collapse.style.height = collapse.scrollHeight + 'px';
+                collapse.style.overflow = 'hidden';
+                collapse.style.transition = 'height 0.2s ease-out';
+                requestAnimationFrame(function () {
+                    collapse.style.height = '0px';
+                });
+                var onEnd2 = function () {
+                    group.classList.remove('expanded');
+                    collapse.style.height = '';
+                    collapse.style.overflow = '';
+                    collapse.style.transition = '';
+                    collapse.removeEventListener('transitionend', onEnd2);
+                };
+                collapse.addEventListener('transitionend', onEnd2);
+            }
         });
 
         group.appendChild(parent);
@@ -671,6 +704,24 @@
         });
 
         clearOutput();
+
+        // Show "press Run" placeholder in the terminal
+        var hint = document.createElement('div');
+        hint.className = 'term-empty-state';
+        var hintIcon = document.createElement('div');
+        hintIcon.className = 'detail-empty-icon';
+        hintIcon.textContent = '\u25B6';
+        hintIcon.style.fontSize = '32px';
+        hint.appendChild(hintIcon);
+        var hintTitle = document.createElement('div');
+        hintTitle.className = 'detail-empty-title';
+        hintTitle.textContent = prefix + name;
+        hint.appendChild(hintTitle);
+        var hintSub = document.createElement('div');
+        hintSub.className = 'detail-empty-sub';
+        hintSub.textContent = __('Premi Esegui per avviare il comando');
+        hint.appendChild(hintSub);
+        term.appendChild(hint);
     }
 
     // Copiato da index4.html riga 8683-8716 (LogStageSection)
@@ -749,11 +800,43 @@
         var lines = document.createElement('div');
         lines.className = 'LogStageSectionLines';
 
-        // Chevron click toggles LogStageSectionLines visibility
+        // Chevron click toggles LogStageSectionLines visibility with animation
         chevron.addEventListener('click', function (e) {
             e.stopPropagation();
-            section.classList.toggle('LogStageSection--opened');
-            lines.style.display = section.classList.contains('LogStageSection--opened') ? '' : 'none';
+            var isOpening = !section.classList.contains('LogStageSection--opened');
+            if (isOpening) {
+                section.classList.add('LogStageSection--opened');
+                lines.style.display = '';
+                lines.style.height = '0px';
+                lines.style.overflow = 'hidden';
+                lines.style.transition = 'height 0.2s ease-out';
+                requestAnimationFrame(function () {
+                    lines.style.height = lines.scrollHeight + 'px';
+                });
+                var done = function () {
+                    lines.style.height = '';
+                    lines.style.overflow = '';
+                    lines.style.transition = '';
+                    lines.removeEventListener('transitionend', done);
+                };
+                lines.addEventListener('transitionend', done);
+            } else {
+                lines.style.height = lines.scrollHeight + 'px';
+                lines.style.overflow = 'hidden';
+                lines.style.transition = 'height 0.2s ease-out';
+                requestAnimationFrame(function () {
+                    lines.style.height = '0px';
+                });
+                var done2 = function () {
+                    section.classList.remove('LogStageSection--opened');
+                    lines.style.display = 'none';
+                    lines.style.height = '';
+                    lines.style.overflow = '';
+                    lines.style.transition = '';
+                    lines.removeEventListener('transitionend', done2);
+                };
+                lines.addEventListener('transitionend', done2);
+            }
         });
 
         section.appendChild(header);

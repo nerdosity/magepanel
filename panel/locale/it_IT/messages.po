@@ -253,6 +253,9 @@ msgstr "operazioni"
 msgid "Seleziona un comando dalla lista"
 msgstr "Seleziona un comando dalla lista"
 
+msgid "Premi Esegui per avviare il comando"
+msgstr "Premi Esegui per avviare il comando"
+
 msgid "Seleziona un comando"
 msgstr "Seleziona un comando"
 
