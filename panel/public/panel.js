@@ -508,14 +508,29 @@
 
     function showDetailEmptyState() {
         removeDetailEmptyState();
-        // Show a centered empty state in the terminal-panel area
-        var panel = document.getElementById('terminal-panel');
-        if (!panel) return;
-        var empty = document.createElement('div');
-        empty.id = 'detail-empty-state';
-        empty.className = 'detail-empty-state';
 
-        // Terminal icon
+        // Show the detail panels with placeholder content
+        if (detailHeader)     detailHeader.style.display = '';
+        if (detailProps)      detailProps.style.display = '';
+        if (detailContentBar) detailContentBar.style.display = '';
+        if (termHeader)       termHeader.style.display = 'none';
+
+        // Fill header with placeholder
+        if (detailTitle)    detailTitle.textContent = '\u2014';
+        if (detailSubtitle) detailSubtitle.textContent = __('Seleziona un comando dalla lista');
+        if (detailCmdFull)  detailCmdFull.textContent = '\u2014';
+        if (detailArgs)     { detailArgs.value = ''; detailArgs.disabled = true; }
+        if (detailRun)  detailRun.classList.add('disabled');
+        if (detailStop) detailStop.classList.add('disabled');
+
+        // Mark as empty state
+        if (detailHeader) detailHeader.dataset.emptyState = '1';
+
+        // Replace terminal with centered empty state
+        while (term.firstChild) term.removeChild(term.firstChild);
+        var empty = document.createElement('div');
+        empty.className = 'term-empty-state';
+
         var svgNs = 'http://www.w3.org/2000/svg';
         var iconWrap = document.createElement('div');
         iconWrap.className = 'detail-empty-icon';
@@ -528,44 +543,40 @@
         svg.setAttribute('stroke-width', '1.2');
         svg.setAttribute('stroke-linecap', 'round');
         svg.setAttribute('stroke-linejoin', 'round');
-        var rect = document.createElementNS(svgNs, 'rect');
-        rect.setAttribute('x', '2');
-        rect.setAttribute('y', '3');
-        rect.setAttribute('width', '20');
-        rect.setAttribute('height', '18');
-        rect.setAttribute('rx', '3');
-        svg.appendChild(rect);
-        var p1 = document.createElementNS(svgNs, 'path');
-        p1.setAttribute('d', 'M7 10l3 3-3 3');
-        svg.appendChild(p1);
-        var p2 = document.createElementNS(svgNs, 'line');
-        p2.setAttribute('x1', '14');
-        p2.setAttribute('y1', '16');
-        p2.setAttribute('x2', '17');
-        p2.setAttribute('y2', '16');
-        svg.appendChild(p2);
+        var r = document.createElementNS(svgNs, 'rect');
+        r.setAttribute('x', '2'); r.setAttribute('y', '3');
+        r.setAttribute('width', '20'); r.setAttribute('height', '18');
+        r.setAttribute('rx', '3');
+        svg.appendChild(r);
+        var pa = document.createElementNS(svgNs, 'path');
+        pa.setAttribute('d', 'M7 10l3 3-3 3');
+        svg.appendChild(pa);
+        var ln = document.createElementNS(svgNs, 'line');
+        ln.setAttribute('x1', '14'); ln.setAttribute('y1', '16');
+        ln.setAttribute('x2', '17'); ln.setAttribute('y2', '16');
+        svg.appendChild(ln);
         iconWrap.appendChild(svg);
         empty.appendChild(iconWrap);
 
-        var title = document.createElement('div');
-        title.className = 'detail-empty-title';
-        title.textContent = __('Seleziona un comando');
-        empty.appendChild(title);
+        var t = document.createElement('div');
+        t.className = 'detail-empty-title';
+        t.textContent = __('Seleziona un comando');
+        empty.appendChild(t);
 
-        var sub = document.createElement('div');
-        sub.className = 'detail-empty-sub';
-        sub.textContent = __('Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo.');
-        empty.appendChild(sub);
+        var s = document.createElement('div');
+        s.className = 'detail-empty-sub';
+        s.textContent = __('Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo.');
+        empty.appendChild(s);
 
-        // Hide terminal, insert empty state
-        if (term) term.style.display = 'none';
-        panel.appendChild(empty);
+        term.appendChild(empty);
     }
 
     function removeDetailEmptyState() {
-        var existing = document.getElementById('detail-empty-state');
-        if (existing) existing.parentNode.removeChild(existing);
-        if (term) term.style.display = '';
+        if (detailHeader && detailHeader.dataset.emptyState) {
+            delete detailHeader.dataset.emptyState;
+        }
+        if (detailArgs) detailArgs.disabled = false;
+        if (detailRun)  detailRun.classList.remove('disabled');
     }
 
     function selectCommand(action, name, desc) {

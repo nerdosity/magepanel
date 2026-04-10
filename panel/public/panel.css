@@ -500,16 +500,15 @@ html, body {
     50%      { opacity: 1; }
 }
 
-/* Empty state (CLI mode, no command selected) */
-.detail-empty-state {
-    flex: 1;
+/* Empty state inside terminal (CLI mode, no command selected) */
+.term-empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
     padding: 48px 24px;
-    background: var(--deep);
+    height: 100%;
     color: var(--meta);
     text-align: center;
 }

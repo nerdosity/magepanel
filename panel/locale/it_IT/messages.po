@@ -250,6 +250,9 @@ msgstr "operazioni"
 
 # ── Empty state CLI ────────────────────────────────────
 
+msgid "Seleziona un comando dalla lista"
+msgstr "Seleziona un comando dalla lista"
+
 msgid "Seleziona un comando"
 msgstr "Seleziona un comando"
 
