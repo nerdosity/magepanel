@@ -76,7 +76,7 @@
                 <!-- SpaceHeaderToolBar: maintenance + dots menu -->
                 <div class="header-toolbar">
                     <div id="btn-maintenance" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zm0 3.6C7.362 3.6 3.6 7.362 3.6 12S7.362 20.4 12 20.4 20.4 16.638 20.4 12 16.638 3.6 12 3.6zm3.6 4.8v7.2H8.4V8.4h7.2z"/></svg></div></div><span id="maint-state-label"><?= __('Manutenzione') ?></span>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="#00d1ca"/><path fill="#181b22" d="M4.5 19h15L12 5 4.5 19zm8.2-2.5h-1.4v-1.4h1.4v1.4zm0-2.8h-1.4V11h1.4v2.7z"/></svg></div></div><span id="maint-state-label"><?= __('Manutenzione') ?></span>
                     </div>
                     <div class="preset-dropdown" id="preset-dropdown">
                         <div role="button" tabindex="0" title="<?= htmlspecialchars(__('Preset')) ?>" class="DropdownMenu__Trigger" id="preset-trigger">
@@ -143,7 +143,7 @@
                             <div class="flex-auto"></div>
                             <span id="static-count" class="static-count"></span>
                             <div id="btn-static" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                                <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm1.8 9h-3.6v7.2H9v3.6h7.2V27h3.6v-7.2H27v-3.6h-7.2V9z"/></svg></div></div><?= __('Deploy static') ?>
+                                <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Deploy static') ?>
                             </div>
                         </div>
 
@@ -304,7 +304,7 @@
                 </div>
                 <!-- ResourceDetailsButtons (MagePanel4.html riga 8567) -->
                 <div id="detail-buttons" class="ResourceDetailsButtons">
-                    <div id="detail-run" class="ToolbarButton normal" role="button" tabindex="0">
+                    <div id="detail-run" class="ToolbarButton normal disabled" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center plusCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
                     </div>
                     <div id="detail-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
@@ -333,10 +333,10 @@
 
             <!-- ═══ Tasks mode: console header ═══ -->
             <div id="terminal-header">
-                <div class="console-dots">
-                    <span class="console-dot console-dot-red" id="console-minimize" title="<?= htmlspecialchars(__('Minimizza')) ?>"></span>
-                    <span class="console-dot console-dot-yellow" id="console-default" title="<?= htmlspecialchars(__('Dimensione standard')) ?>"></span>
-                    <span class="console-dot console-dot-green" id="console-maximize" title="<?= htmlspecialchars(__('Massimizza')) ?>"></span>
+                <div class="console-controls">
+                    <button type="button" class="console-ctrl console-ctrl-red" id="console-minimize" title="<?= htmlspecialchars(__('Minimizza')) ?>"><svg width="12" height="12" viewBox="0 0 24 24"><path fill="white" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg></button>
+                    <button type="button" class="console-ctrl console-ctrl-yellow" id="console-default" title="<?= htmlspecialchars(__('Dimensione standard')) ?>"><svg width="12" height="12" viewBox="0 0 24 24"><path fill="white" d="M4 18h6v2H2v-8h2v6zm14-12h-6V4h8v8h-2V6z"/></svg></button>
+                    <button type="button" class="console-ctrl console-ctrl-green" id="console-maximize" title="<?= htmlspecialchars(__('Massimizza')) ?>"><svg width="12" height="12" viewBox="0 0 24 24"><path fill="white" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button>
                 </div>
                 <span id="console-title">console</span>
                 <div id="progress-wrap">
@@ -346,9 +346,6 @@
                     </div>
                 </div>
                 <div class="terminal-actions">
-                    <div id="btn-run" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="evenodd" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
-                    </div>
                     <div id="btn-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>

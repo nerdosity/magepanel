@@ -7,6 +7,7 @@
     var BASE_URL = window.PANEL_BASE_URL || 'index.php';
     var PRESETS  = window.PANEL_PRESETS  || {};
     var I18N     = window.PANEL_I18N     || {};
+    var TASK_LABELS = {};
 
     // ── Helpers ──────────────────────────────────────────────
 
@@ -98,7 +99,6 @@
     // ── DOM refs ─────────────────────────────────────────────
 
     var term              = document.getElementById('terminal');
-    var btnRun            = document.getElementById('btn-run');
     var btnStop           = document.getElementById('btn-stop');
     var btnClear          = document.getElementById('btn-clear');
     var btnStatic         = document.getElementById('btn-static');
@@ -158,12 +158,13 @@
     }
 
     function setDetailButtons(running) {
-        if (detailRun)  { if (running) detailRun.classList.add('disabled'); else detailRun.classList.remove('disabled'); }
+        if (detailRun)  { if (running || !selectedCmd) detailRun.classList.add('disabled'); else detailRun.classList.remove('disabled'); }
         if (detailStop) { if (!running) detailStop.classList.add('disabled'); else detailStop.classList.remove('disabled'); }
     }
 
     function beginOperation() {
-        clearOutput();
+        var es = term.querySelector('.term-empty-state');
+        if (es) term.removeChild(es);
         setRunning(true);
         stopRequested = false;
     }
@@ -186,7 +187,6 @@
 
     function setRunning(isRunning) {
         if (isRunning) runStartTime = Date.now();
-        if (isRunning) btnRun.classList.add('disabled'); else btnRun.classList.remove('disabled');
         if (!isRunning) btnStop.classList.add('disabled'); else btnStop.classList.remove('disabled');
         if (btnStatic) { if (isRunning) btnStatic.classList.add('disabled'); else btnStatic.classList.remove('disabled'); }
         document.querySelectorAll('.preset-dropdown-item, .task-run-btn').forEach(function (el) {
@@ -297,14 +297,6 @@
         updateClearBtn();
     }
 
-    function addSeparator(label) {
-        var div = document.createElement('div');
-        div.className = 'line line-separator';
-        div.textContent = '\u2500\u2500\u2500 ' + label + ' ' + '\u2500'.repeat(Math.max(0, 50 - label.length));
-        term.appendChild(div);
-        term.scrollTop = term.scrollHeight;
-    }
-
     // ── SSE ──────────────────────────────────────────────────
 
     function openSse(url, onDone) {
@@ -326,9 +318,14 @@
         return es;
     }
 
-    function runTask(taskId) {
+    function runTask(taskId, label) {
+        var stage = addLogStageHeader(label || taskId, null);
+        activeLogLines = stage.lines;
         return new Promise(function (resolve) {
-            openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId), resolve);
+            openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId), function (ok) {
+                finishStage(stage, ok);
+                resolve(ok);
+            });
         });
     }
 
@@ -364,7 +361,12 @@
                 areas.forEach(function (a) { qs += '&areas[]=' + encodeURIComponent(a); });
                 beginOperation();
                 setProgress(0, __('Static content deploy...'));
-                openSse(BASE_URL + '?' + qs, function (ok) { finishOperation(ok); });
+                var stage = addLogStageHeader(__('Static content deploy'), null);
+                activeLogLines = stage.lines;
+                openSse(BASE_URL + '?' + qs, function (ok) {
+                    finishStage(stage, ok);
+                    finishOperation(ok);
+                });
             });
         });
     }
@@ -397,7 +399,7 @@
     function updateMaintenanceUI() {
         if (btnMaintenance) {
             var icon = btnMaintenance.querySelector('.colorable');
-            if (icon) icon.setAttribute('fill', maintenanceOn ? '#ff4d61' : 'white');
+            if (icon) icon.setAttribute('fill', maintenanceOn ? '#ff4d61' : '#00d1ca');
         }
     }
 
@@ -407,9 +409,16 @@
                 ? __('Disattivare la modalità manutenzione? Il sito tornerà online.')
                 : __('Attivare la modalità manutenzione? Il sito sarà irraggiungibile.');
             showConfirm(__('Manutenzione'), msg, function () {
+                var taskId = maintenanceOn ? 'maintenance_disable' : 'maintenance_enable';
+                var taskLabel = TASK_LABELS[taskId] || __('Manutenzione');
                 beginOperation();
-                openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(maintenanceOn ? 'maintenance_disable' : 'maintenance_enable'),
-                    function () { setRunning(false); loadSysInfo(); });
+                var stage = addLogStageHeader(taskLabel, null);
+                activeLogLines = stage.lines;
+                openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId), function (ok) {
+                    finishStage(stage, ok);
+                    setRunning(false);
+                    loadSysInfo();
+                });
             });
         });
     }
@@ -707,9 +716,10 @@
             showCliPlaceholder();
         }
         updateClearBtn();
+        if (detailRun) detailRun.classList.remove('disabled');
     }
 
-    // ── Log stage header (CLI mode) ──────────────────────────
+    // ── Log stage header ────────────────────────────────────
 
     function addLogStageHeader(name, success) {
         var es = term.querySelector('.term-empty-state');
@@ -770,6 +780,16 @@
         term.appendChild(section);
         term.scrollTop = term.scrollHeight;
         return { section: section, iconPath: iconPath, lines: lines };
+    }
+
+    function finishStage(stage, ok) {
+        var pulser = stage.section.querySelector('.progress-pulse');
+        if (pulser) pulser.classList.remove('progress-pulse');
+        if (stage.iconPath) {
+            stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
+            stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
+        }
+        activeLogLines = null;
     }
 
     // ── Run selected command (CLI mode) ──────────────────────
@@ -853,12 +873,7 @@
         openSse(url, function (ok) {
             setRunning(false);
             setDetailButtons(false);
-            var pulser = stage.section.querySelector('.progress-pulse');
-            if (pulser) pulser.classList.remove('progress-pulse');
-            if (stage.iconPath) {
-                stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
-                stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
-            }
+            finishStage(stage, ok);
             // Update sidebar command status: progress → good/bad
             var cmdSt = sidebarItem ? sidebarItem.querySelector('.sidebar-cmd-status') : null;
             if (cmdSt) {
@@ -972,12 +987,22 @@
         handle.addEventListener('mousedown', function (e) {
             startY = e.clientY; startH = panel.offsetHeight;
             handle.classList.add('dragging');
+            panel.style.transition = 'none';
             document.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onUp);
             e.preventDefault();
         });
         function onMove(e) { panel.style.height = Math.max(80, Math.min(window.innerHeight * 0.8, startH + (startY - e.clientY))) + 'px'; }
-        function onUp() { handle.classList.remove('dragging'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+        function onUp() {
+            handle.classList.remove('dragging');
+            panel.style.transition = '';
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            // Reset all console buttons to enabled after manual drag
+            var btns = document.querySelectorAll('.console-ctrl');
+            btns.forEach(function (b) { b.classList.remove('disabled'); });
+            consoleState = 'custom';
+        }
     })();
 
     // ── Section switching ────────────────────────────────────
@@ -1032,14 +1057,14 @@
     // ── Event listeners ──────────────────────────────────────
 
     document.querySelectorAll('.task-run-btn').forEach(function (btn) {
+        TASK_LABELS[btn.dataset.task] = btn.dataset.label;
         btn.addEventListener('click', function () {
             var taskId = this.dataset.task;
             var taskLabel = this.dataset.label;
             showConfirm(__('Esegui task'), __('Eseguire') + ' "' + taskLabel + '"?', function () {
                 beginOperation();
-                addSeparator(taskLabel);
                 setProgress(0, taskLabel);
-                runTask(taskId).then(function (ok) { finishOperation(ok); });
+                runTask(taskId, taskLabel).then(function (ok) { finishOperation(ok); });
             });
         });
     });
@@ -1066,22 +1091,30 @@
     var consoleDef = document.getElementById('console-default');
     var consoleMax = document.getElementById('console-maximize');
 
+    var consoleState = 'default';
+
     function setConsoleState(state) {
         if (!termPanelEl) return;
-        termPanelEl.classList.remove('console-collapsed', 'console-maximized');
-        termPanelEl.style.height = '';
+        consoleState = state;
+        var headerH = document.getElementById('terminal-header');
+        headerH = headerH ? headerH.offsetHeight : 36;
         if (state === 'min') {
-            termPanelEl.classList.add('console-collapsed');
+            termPanelEl.style.height = headerH + 'px';
         } else if (state === 'max') {
-            termPanelEl.classList.add('console-maximized');
+            var available = termPanelEl.parentNode ? termPanelEl.parentNode.offsetHeight : window.innerHeight;
+            termPanelEl.style.height = available + 'px';
         } else {
             termPanelEl.style.height = '260px';
         }
+        if (consoleMin) consoleMin.classList.toggle('disabled', state === 'min');
+        if (consoleDef) consoleDef.classList.toggle('disabled', state === 'default');
+        if (consoleMax) consoleMax.classList.toggle('disabled', state === 'max');
     }
 
     if (consoleMin) consoleMin.addEventListener('click', function () { setConsoleState('min'); });
     if (consoleDef) consoleDef.addEventListener('click', function () { setConsoleState('default'); });
     if (consoleMax) consoleMax.addEventListener('click', function () { setConsoleState('max'); });
+    setConsoleState('default');
 
     document.querySelectorAll('.preset-confirm').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
@@ -1097,8 +1130,9 @@
                     var allOk = true;
                     for (var i = 0; i < ids.length; i++) {
                         if (stopRequested) { addLine(__('Interrotto'), 'warn'); break; }
-                        setProgress(Math.round((i / ids.length) * 100), '[' + (i + 1) + '/' + ids.length + ']');
-                        var ok = await runTask(ids[i]);
+                        var stepLabel = TASK_LABELS[ids[i]] || ids[i];
+                        setProgress(Math.round((i / ids.length) * 100), '[' + (i + 1) + '/' + ids.length + '] ' + stepLabel);
+                        var ok = await runTask(ids[i], stepLabel);
                         if (!ok) allOk = false;
                     }
                     finishOperation(allOk);

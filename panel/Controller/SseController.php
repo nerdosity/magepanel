@@ -14,10 +14,13 @@ abstract class SseController extends AbstractController
     protected const STOP_FILE = '/var/.panel_stop';
     protected const CMD_NAME_REGEX = '/^[a-z][a-z0-9:_\-]*$/';
 
+    private float $startTime = 0;
+
     // ── SSE protocol ─────────────────────────────────────────
 
     protected function startSse(): void
     {
+        $this->startTime = microtime(true);
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
@@ -163,13 +166,26 @@ abstract class SseController extends AbstractController
      */
     protected function finishStream(int $exitCode): never
     {
+        $elapsed = $this->startTime > 0 ? microtime(true) - $this->startTime : 0;
         $this->send(
-            $exitCode === 0
-                ? '✓ completed (exit 0)'
-                : '✗ failed (exit ' . $exitCode . ')',
+            ($exitCode === 0 ? '✓ completed' : '✗ failed (exit ' . $exitCode . ')')
+            . ' — ' . $this->formatDuration($elapsed),
             $exitCode === 0 ? 'ok' : 'error'
         );
         $this->sendDone($exitCode);
+    }
+
+    private function formatDuration(float $seconds): string
+    {
+        if ($seconds < 1) {
+            return round($seconds * 1000) . 'ms';
+        }
+        if ($seconds < 60) {
+            return number_format($seconds, 1) . 's';
+        }
+        $m = (int) floor($seconds / 60);
+        $s = $seconds - $m * 60;
+        return $m . 'm ' . number_format($s, 1) . 's';
     }
 
     // ── Input validation helpers ─────────────────────────────
