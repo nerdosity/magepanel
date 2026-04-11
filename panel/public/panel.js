@@ -829,6 +829,7 @@
             // Update group status
             var gs = parentGroup.querySelector('.group-status');
             if (gs) {
+                gs.style.display = '';
                 gs.className = 'Status Status--progress group-status';
                 if (!gs.querySelector('.StatusLabel')) {
                     var gl = document.createElement('div');
