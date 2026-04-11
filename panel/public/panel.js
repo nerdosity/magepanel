@@ -1048,7 +1048,6 @@
         if (pd) pd.style.display = isTasks ? '' : 'none';
         if (btnMaintenance) btnMaintenance.style.display = isTasks ? '' : 'none';
         var sysinfo = document.getElementById('header-sysinfo');
-        if (sysinfo) sysinfo.style.display = isTasks ? '' : 'none';
 
         if (detailHeader)     detailHeader.style.display     = 'none';
         if (detailProps)      detailProps.style.display       = 'none';

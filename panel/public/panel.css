@@ -156,7 +156,6 @@ html, body {
 #workspace.cli-layout #workspace-header {
     grid-column: 1 / -1;
     grid-row: 1;
-    border-bottom: 1px solid var(--border-dark);
 }
 
 #workspace.cli-layout #task-area {
@@ -210,6 +209,7 @@ html, body {
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 18px;
+    margin-right: 24px;
     letter-spacing: -0.8px;
     white-space: nowrap;
     color: var(--text);
@@ -231,6 +231,7 @@ html, body {
     flex-direction: row;
     font-size: 18px;
     gap: 16px;
+    margin-bottom: 18px;
 }
 .header-toolbar .ToolbarButton { margin-right: 0 }
 
@@ -240,7 +241,7 @@ html, body {
 
 /* SpaceQuotas — Komodor */
 .SpaceQuotas{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;position:relative;cursor:pointer;user-select:none}
-#workspace-header .SpaceQuotas{margin:12px 0 12px 12px}
+#workspace-header .SpaceQuotas{margin:0 0 18px 12px}
 .Quota{display:flex;flex-direction:column;align-items:flex-start;font-size:13px;white-space:nowrap}
 .SpaceQuotas .Quota{margin-left:18px}
 .SpaceQuotas .Quota:first-child{margin-left:0}
@@ -261,13 +262,9 @@ html, body {
     fill: #00d1ca;
 }
 
-/* Preset dropdown (three dots menu) */
+/* Dropdown menu — Komodor Menu */
 .preset-dropdown {
     position: relative;
-}
-
-.preset-dropdown-trigger {
-    margin-right: 0 !important;
 }
 
 .preset-dropdown-menu {
@@ -275,14 +272,12 @@ html, body {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    min-width: 220px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    box-shadow: rgba(0,0,0,0.3) 0px 4px 16px, rgba(0,0,0,0.15) 0px 1px 4px;
-    z-index: 50;
-    padding: 4px 0;
-    animation: fadeSlideIn 0.15s ease-out;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.41) 0px 0px 4px 2px;
+    font-size: 16px;
+    z-index: 20;
+    border-radius: 2px;
+    padding: 12px 0;
 }
 
 .preset-dropdown.open .preset-dropdown-menu {
@@ -290,25 +285,28 @@ html, body {
 }
 
 .preset-dropdown-item {
+    color: rgb(30, 34, 43);
+    cursor: pointer;
+    font-size: 16px;
+    letter-spacing: -0.3px;
+    min-width: 110px;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: var(--text);
-    cursor: pointer;
-    transition: background 0.1s;
-    white-space: nowrap;
+    margin: 0;
+    padding: 12px 18px;
 }
 .preset-dropdown-item:hover {
-    background: var(--hover);
+    background-color: rgb(233, 233, 234);
 }
 .preset-dropdown-item svg {
     flex-shrink: 0;
-    opacity: 0.7;
+    width: 20px;
+    height: 20px;
 }
 .preset-dropdown-item[disabled] {
-    opacity: 0.3;
+    opacity: 0.2;
     pointer-events: none;
 }
 
@@ -1408,13 +1406,13 @@ input[type="checkbox"] {
     }
 
     /* Tabs: horizontal scroll */
-    .TabsBar {
+    .Tabs .TabsBar {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
     }
-    .TabsBar::-webkit-scrollbar { display: none; }
-    .Tab {
+    .Tabs .TabsBar::-webkit-scrollbar { display: none; }
+    .Tabs .TabsBar .Tab {
         font-size: 14px;
         padding: 10px 6px;
         margin: 0 4px;
@@ -1582,5 +1580,5 @@ input[type="checkbox"] {
     .Button.size-small { font-size: 12px; min-height: 28px; padding: 0 8px; }
     .header-controls { gap: 4px; }
     .ClusterNamespacesHeaderTitle { font-size: 14px; }
-    .Tab { font-size: 13px; padding: 8px 4px; }
+    .Tabs .TabsBar .Tab { font-size: 13px; padding: 8px 4px; }
 }
