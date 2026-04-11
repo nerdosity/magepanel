@@ -726,10 +726,11 @@ html, body {
 .ResourceItem__Icon { margin-top: 3px }
 .ResourceItem__Desc { display: flex; flex-direction: column; align-items: flex-start; min-width: 94px }
 .ResourceItem__Title { font-size: 16px; font-weight: 500; letter-spacing: -0.4px; margin-bottom: 4px; word-break: break-word }
-.ResourceItem__Subtitle { color: var(--meta); font-size: 13px; letter-spacing: -0.2px; white-space: nowrap }
+.ResourceItem__Subtitle { color: var(--meta); font-size: 12.5px; letter-spacing: -0.5px; white-space: nowrap; font-weight: 100 }
 
 /* Troncamento solo nella sidebar sinistra (400px) — il pannello destro mostra tutto */
-.ResourceListItemChildren .ResourceItem__Subtitle { overflow: hidden; text-overflow: ellipsis; max-width: 220px }
+.ResourceListItemChildren .ResourceItem__Subtitle { overflow: hidden; text-overflow: ellipsis; width: 275px }
+.ResourceSidebarItem.has-status .ResourceItem__Subtitle { max-width: 205px; width: auto; }
 .ResourceDetailsLayout__Header .ResourceItem__Subtitle { white-space: normal; overflow: visible }
 
 /* --- ResourceList (index4.html riga 3237) --- */
@@ -754,7 +755,7 @@ html, body {
 .ReactCollapse--content {}
 
 /* --- ResourceSidebarItem (index4.html riga 3310) --- */
-.ResourceSidebarItem { align-items: center; background-color: rgba(0, 0, 0, 0); cursor: pointer; display: flex; flex-direction: row; position: relative; user-select: none; padding: 10px 22px 10px 19px; transition: background-color 0.15s; }
+.ResourceSidebarItem { align-items: center; background-color: rgba(0, 0, 0, 0); cursor: pointer; display: flex; flex-direction: row; position: relative; user-select: none; padding: 10px 0px 10px 19px; transition: background-color 0.15s; }
 .ResourceSidebarItem:hover { background-color: rgba(30, 34, 43, 0.5) }
 .ResourceSidebarItem.selected { background-color: var(--border-dark) }
 
@@ -765,7 +766,7 @@ html, body {
 .ResourceSidebarItemInfo { align-items: center; display: flex; flex-direction: row-reverse; user-select: none; margin-left: 12px }
 
 /* --- ResourceSidebarItem .Status overrides (index4.html riga 3386) --- */
-.ResourceSidebarItem .Status { justify-content: flex-end; margin-right: 20px; min-width: 80px; position: relative }
+.ResourceSidebarItem .Status { justify-content: flex-end; margin-right: 0; min-width: 80px; position: relative }
 
 /* --- Status (index4.html riga 6069) --- */
 .Status { align-items: center; display: flex; flex-direction: row; font-size: 12px; white-space: nowrap }

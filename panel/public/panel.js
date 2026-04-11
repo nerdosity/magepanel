@@ -396,13 +396,8 @@
 
     function updateMaintenanceUI() {
         if (btnMaintenance) {
-            btnMaintenance.className = maintenanceOn
-                ? 'Status Status--bad'
-                : 'Status Status--good';
-            btnMaintenance.style.cursor = 'pointer';
-        }
-        if (maintStateLabel) {
-            maintStateLabel.textContent = maintenanceOn ? __('Manutenzione') : __('Attivo');
+            var icon = btnMaintenance.querySelector('.colorable');
+            if (icon) icon.setAttribute('fill', maintenanceOn ? '#ff4d61' : 'white');
         }
     }
 
@@ -802,6 +797,7 @@
                 cmdSt.className = 'Status Status--progress sidebar-cmd-status';
                 var lbl = cmdSt.querySelector('.StatusLabel');
                 if (lbl) lbl.textContent = __('In esecuzione');
+                sidebarItem.classList.add('has-status');
             }
         }
         // Parent: running count icon + progressing label
@@ -877,12 +873,15 @@
                     var count = cv ? parseInt(cv.textContent || '1', 10) - 1 : 0;
                     if (count <= 0) {
                         cb.parentNode.removeChild(cb);
-                        // No more running → show final status
+                        // No more running → hide group status
                         var gs = parentGroup.querySelector('.group-status');
                         if (gs) {
-                            gs.className = 'Status ' + (ok ? 'Status--good' : 'Status--bad') + ' group-status';
+                            gs.className = 'Status group-status';
+                            gs.style.display = 'none';
                             var gl = gs.querySelector('.StatusLabel');
                             if (gl) gl.parentNode.removeChild(gl);
+                            var gc = gs.querySelector('.StatusCircle');
+                            if (gc) gc.parentNode.removeChild(gc);
                         }
                     } else {
                         cv.textContent = String(count);

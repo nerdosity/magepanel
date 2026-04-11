@@ -75,9 +75,8 @@
 
                 <!-- SpaceHeaderToolBar: maintenance + dots menu -->
                 <div class="header-toolbar">
-                    <div id="btn-maintenance" class="Status Status--good" role="button" tabindex="0" style="cursor:pointer">
-                        <div id="maint-state-label" class="StatusLabel"><?= __('Attivo') ?></div>
-                        <div class="StatusCircle"></div>
+                    <div id="btn-maintenance" class="ToolbarButton normal" role="button" tabindex="0">
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zm0 3.6C7.362 3.6 3.6 7.362 3.6 12S7.362 20.4 12 20.4 20.4 16.638 20.4 12 16.638 3.6 12 3.6zm3.6 4.8v7.2H8.4V8.4h7.2z"/></svg></div></div><span id="maint-state-label"><?= __('Manutenzione') ?></span>
                     </div>
                     <div class="preset-dropdown" id="preset-dropdown">
                         <div role="button" tabindex="0" title="<?= htmlspecialchars(__('Preset')) ?>" class="DropdownMenu__Trigger" id="preset-trigger">
