@@ -194,31 +194,34 @@ html, body {
     }
 }
 
-/* ── Header (Komodor ClusterViewHeader) ── */
+/* ── ClusterViewHeader (Komodor) — layout vertical start ── */
 #workspace-header {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 0px 0px;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    z-index: 11;
     background: var(--surface);
-    padding: 18px 36px 0;
+    padding: 46px 36px 0;
 }
 
-/* Title row */
-.workspace-title-row {
-    align-items: center;
-    display: flex;
-    flex-flow: row wrap;
-    margin-bottom: 14px;
-}
-
-/* Title */
+/* ClusterViewHeaderTitle */
 .page-title {
-    font-size: 24px;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 18px;
     letter-spacing: -0.8px;
     white-space: nowrap;
-    line-height: 1;
     color: var(--text);
-    margin-right: 16px;
+}
+.page-title .title-accent { color: var(--teal) }
+
+/* Header toolbar — same row as title via wrapper */
+.workspace-title-row {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-flow: row wrap;
 }
 
 /* Header toolbar */
@@ -227,18 +230,13 @@ html, body {
     display: flex;
     flex-direction: row;
     font-size: 18px;
+    gap: 16px;
 }
+.header-toolbar .ToolbarButton { margin-right: 0 }
 
-.header-toolbar .ToolbarButton:last-child {
-    margin-right: 0;
-}
+/* ClusterViewHeader .Tabs */
+#workspace-header .Tabs { align-self: stretch; background: var(--surface) }
 
-/* Right side (lang selector) */
-.header-controls {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-}
 
 /* SpaceQuotas — Komodor */
 .SpaceQuotas{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;position:relative;cursor:pointer;user-select:none}
@@ -247,7 +245,7 @@ html, body {
 .SpaceQuotas .Quota{margin-left:18px}
 .SpaceQuotas .Quota:first-child{margin-left:0}
 .QuotaLabel{font-size:13px;color:rgb(128, 140, 169);font-weight:300;padding:0;margin:0 0 2px}
-.QuotaValues{display:flex;flex-direction:row;align-items:center}
+.QuotaValues{display:flex;flex-direction:row;align-items:center;min-height:20px}
 .QuotaValuesLabel .Total{opacity:0.5}
 .QuotaValues .Percentage{margin-left:8px}
 .Percentage{height:20px;width:32px;border-radius:2px;overflow:hidden}
@@ -315,7 +313,7 @@ html, body {
 }
 
 /* Tabs — Komodor */
-.Tabs { display: flex; flex-direction: column }
+.Tabs { display: flex; flex-direction: column; align-self: stretch }
 .Tabs .TabsBar { display: flex; flex-direction: row; font-weight: normal; position: relative }
 
 .Tabs .TabsBar .Tab {
@@ -534,11 +532,20 @@ html, body {
 .ToolbarButton__icon {
     position: relative;
 }
+.ToolbarButton__icon .Icon {
+    width: 22px;
+    height: 22px;
+}
+.ToolbarButton__icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
 .ToolbarButton:not(.iconOnly) > .ToolbarButton__icon {
     margin-right: 8px;
 }
 .ToolbarButton:hover:not(.disabled) {
-    color: var(--teal);
+    color: rgb(0, 209, 202);
 }
 .ToolbarButton:hover:not(.disabled) .ToolbarButton__icon .colorable {
     fill: #00d1ca;

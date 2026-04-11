@@ -65,24 +65,37 @@
         <!-- ── Header — ClusterViewHeader ── -->
         <div id="workspace-header">
 
-            <!-- SpaceHeaderContainer -->
+            <!-- Title row -->
             <div class="workspace-title-row">
+                <div class="page-title"><?php
+                    $words = preg_split('/(?<=\p{Ll})(?=\p{Lu})|\s+/u', PANEL_TITLE, 2);
+                    echo htmlspecialchars($words[0]);
+                    if (isset($words[1])) echo '<span class="title-accent">' . htmlspecialchars($words[1]) . '</span>';
+                ?></div>
 
-                <!-- SpaceHeaderTitle -->
-                <div class="page-title"><?= __('Deploy panel') ?></div>
-
-                <!-- SpaceHeaderToolBar: maintenance + dots menu -->
+                <?php
+                // ── Header toolbar icon (DRY helper) ──
+                // All icons: white circle 22x22 viewBox 0 0 24 24, dark path inside
+                $toolbarIcon = function(string $pathD, string $id = ''): string {
+                    $pathId = $id ? ' id="' . $id . '"' : '';
+                    return '<div class="ToolbarButton__icon"><div class="Icon layout vertical center-center">'
+                         . '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                         . '<circle class="colorable" cx="12" cy="12" r="12" fill="white"/>'
+                         . '<path' . $pathId . ' fill="#181b22" d="' . $pathD . '"/>'
+                         . '</svg></div></div>';
+                };
+                // All paths designed to fill ~5-19 area inside viewBox 0 0 24 24
+                $iconCheck  = 'M9.5 15.5L6 12l-1 1 4.5 4.5 9-9-1-1z';
+                $iconDots   = 'M7.5 11a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm4.5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm4.5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z';
+                $iconLang   = 'M6.5 8h4.5V6.5H6.5V8zm5.7 6.5l-1.7-1.6.01-.01c.7-.78 1.24-1.66 1.59-2.62h1.4V9h-3.5V7.8H9.5V9H6v1.16h5.06c-.33.84-.83 1.63-1.49 2.3-.43-.47-.79-.99-1.07-1.54H7.33c.34.72.8 1.38 1.38 1.96L5.9 15.7l.82.82 2.78-2.78 1.24 1.24.46-.98zM15.25 10h-1.17L11.2 18.5h1.16l.78-2.1h3.18l.78 2.1h1.16L15.25 10zm-1.67 4.88l1.28-3.5 1.28 3.5h-2.56z';
+                ?>
                 <div class="header-toolbar">
                     <div id="btn-maintenance" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="#00d1ca"/><path fill="#181b22" d="M4.5 19h15L12 5 4.5 19zm8.2-2.5h-1.4v-1.4h1.4v1.4zm0-2.8h-1.4V11h1.4v2.7z"/></svg></div></div><span id="maint-state-label"><?= __('Manutenzione') ?></span>
+                        <?= $toolbarIcon($iconCheck, 'maint-icon-path') ?><?= __('Manutenzione') ?>
                     </div>
                     <div class="preset-dropdown" id="preset-dropdown">
-                        <div role="button" tabindex="0" title="<?= htmlspecialchars(__('Preset')) ?>" class="DropdownMenu__Trigger" id="preset-trigger">
-                            <div class="Icon layout vertical center-center dotsCircle" style="width:22px;height:22px">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                    <path class="colorable" fill="white" fill-rule="nonzero" d="M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM7.692071 10.6925238c-.75323 0-1.363843.610613-1.363843 1.3638423s.610613 1.3638423 1.363843 1.3638423c.753229 0 1.363842-.610613 1.363842-1.3638423s-.610613-1.3638423-1.363842-1.3638423zm4.364295 0c-.753229 0-1.363842.610613-1.363842 1.3638423s.610613 1.3638423 1.363842 1.3638423 1.363842-.610613 1.363842-1.3638423-.610613-1.3638423-1.363842-1.3638423zm4.364296 0c-.75323 0-1.363843.610613-1.363843 1.3638423s.610613 1.3638423 1.363843 1.3638423c.753229 0 1.363842-.610613 1.363842-1.3638423s-.610613-1.3638423-1.363842-1.3638423z"/>
-                                </svg>
-                            </div>
+                        <div role="button" tabindex="0" title="<?= htmlspecialchars(__('Preset')) ?>" class="ToolbarButton iconOnly" id="preset-trigger">
+                            <?= $toolbarIcon($iconDots) ?>
                         </div>
                         <div class="preset-dropdown-menu" id="preset-menu">
                             <div class="preset-dropdown-item preset-confirm" data-preset="full_deploy" data-label="<?= htmlspecialchars(__('Full deploy (manutenzione + pulizia + compile + cache)')) ?>">
@@ -99,26 +112,28 @@
                             </div>
                         </div>
                     </div>
+                    <div class="preset-dropdown" id="lang-dropdown">
+                        <div role="button" tabindex="0" class="ToolbarButton iconOnly" id="lang-trigger">
+                            <?= $toolbarIcon($iconLang) ?>
+                        </div>
+                    <div class="preset-dropdown-menu" id="lang-menu">
+                        <?php foreach ($i18n->getAvailable() as $code => $label): ?>
+                        <div class="preset-dropdown-item lang-option<?= $code === $i18n->getLocale() ? ' selected' : '' ?>" data-lang="<?= htmlspecialchars($code) ?>"><?= htmlspecialchars($label) ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                    </div>
                 </div>
 
                 <div class="flex-auto"></div>
 
-                <div class="header-controls">
-                    <select id="lang-selector" class="lang-selector">
-                        <?php foreach ($i18n->getAvailable() as $code => $label): ?>
-                        <option value="<?= htmlspecialchars($code) ?>"<?= $code === $i18n->getLocale() ? ' selected' : '' ?>><?= htmlspecialchars($label) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
                 <!-- SpaceQuotas — system info -->
-                <div class="SpaceQuotas" id="header-sysinfo">
-                    <div class="Quota  theme-dark"><label class="QuotaLabel">PHP</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-php">—</div></div></div>
-                    <div class="Quota  theme-dark"><label class="QuotaLabel">Magento</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-mage">—</div></div></div>
-                    <div class="Quota  theme-dark"><label class="QuotaLabel">Storage</label><div class="QuotaValues"><div class="QuotaValuesLabel"><span class="Used" id="sysinfo-disk-used">—</span><span class="Total" id="sysinfo-disk-total">&nbsp;/&nbsp;—</span></div><div class="Percentage  theme-dark"><svg class="rc-progress-line" viewBox="0 0 100 1" preserveAspectRatio="none"><path class="rc-progress-line-trail" d="M 0,0.5
+                <div id="header-sysinfo" class="SpaceQuotas">
+                        <div class="Quota  theme-dark"><label class="QuotaLabel">PHP</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-php">—</div></div></div>
+                        <div class="Quota  theme-dark"><label class="QuotaLabel">Magento</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-mage">—</div></div></div>
+                        <div class="Quota  theme-dark"><label class="QuotaLabel">Storage</label><div class="QuotaValues"><div class="QuotaValuesLabel"><span class="Used" id="sysinfo-disk-used">—</span><span class="Total" id="sysinfo-disk-total">&nbsp;/&nbsp;—</span></div><div class="Percentage  theme-dark"><svg class="rc-progress-line" viewBox="0 0 100 1" preserveAspectRatio="none"><path class="rc-progress-line-trail" d="M 0,0.5
          L 100,0.5" stroke-linecap="square" stroke="#2b3343" stroke-width="1" fill-opacity="0"></path><path class="rc-progress-line-path" id="sysinfo-disk-bar" d="M 0,0.5
          L 100,0.5" stroke-linecap="square" stroke="#00d1ca" stroke-width="1" fill-opacity="0" style="stroke-dasharray: 0px, 100px; stroke-dashoffset: 0px; transition: stroke-dashoffset 0.3s, stroke-dasharray 0.3s, stroke, 0.3s linear;"></path></svg></div></div></div>
-                </div>
+                    </div>
             </div>
 
             <!-- Tabs — .Tabs .TabsBar (MagePanel3.html riga 7326) -->
@@ -149,7 +164,7 @@
                             <div class="flex-auto"></div>
                             <span id="static-count" class="static-count"></span>
                             <div id="btn-static" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                                <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Deploy static') ?>
+                                <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M9 7v10l8.5-5z"/></svg></div></div><?= __('Deploy static') ?>
                             </div>
                         </div>
 
@@ -246,7 +261,7 @@
                                                         <div class="ToolbarButton normal task-run-btn" role="button" tabindex="0"
                                                              data-task="<?= htmlspecialchars($id) ?>"
                                                              data-label="<?= htmlspecialchars(__($task['label'])) ?>">
-                                                            <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="evenodd" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
+                                                            <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M9 7v10l8.5-5z"/></svg></div></div><?= __('Esegui') ?>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -272,7 +287,7 @@
                 <div class="commands-badge-wrap">
                     <span class="group-badge" id="mage-commands-badge"></span>
                     <div class="ToolbarButton normal iconOnly cmd-reload" id="mage-reload" role="button" tabindex="0" title="<?= htmlspecialchars(__('Ricarica')) ?>">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center arrowLoopCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zm5.514193 5.6766098l-1.992287.2799977.206148 1.8455046c-2.059729-2.0652136-6.069098-2.0652136-8.127313.3382565-2.118613 2.4740001-1.922509 6.3075971.567968 8.5050449 1.435643 1.2672771 3.339935 1.7619649 5.174353 1.3626331 1.835431-.3997011 3.286675-1.6505911 4.021028-3.3924018l-2.06424-.9361636c-.612606 1.4529503-2.05458 2.2964453-3.620828 2.1291411-1.567881-.1674788-2.807621-1.3480568-3.171695-2.904652-.363692-1.5549607.29585-3.1469955 1.634527-3.9474055 1.283754-.767571 3.201208-.767571 4.381144.2713691l-1.662484.2956498.279997 1.9922868 4.86305-.7216245-.489368-5.1176362z"/></svg></div></div>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center arrowLoopCircle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M16.5 7.5A5.97 5.97 0 0012 5.5a6.5 6.5 0 106.16 4.4h-1.78A4.98 4.98 0 0112 17a5 5 0 010-10c1.38 0 2.62.56 3.5 1.5L13 11h5.5V5.5l-2 2z"/></svg></div></div>
                     </div>
                 </div>
             </div>
@@ -285,7 +300,7 @@
                 <div class="commands-badge-wrap">
                     <span class="group-badge" id="composer-commands-badge"></span>
                     <div class="ToolbarButton normal iconOnly cmd-reload" id="composer-reload" role="button" tabindex="0" title="<?= htmlspecialchars(__('Ricarica')) ?>">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center arrowLoopCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zm5.514193 5.6766098l-1.992287.2799977.206148 1.8455046c-2.059729-2.0652136-6.069098-2.0652136-8.127313.3382565-2.118613 2.4740001-1.922509 6.3075971.567968 8.5050449 1.435643 1.2672771 3.339935 1.7619649 5.174353 1.3626331 1.835431-.3997011 3.286675-1.6505911 4.021028-3.3924018l-2.06424-.9361636c-.612606 1.4529503-2.05458 2.2964453-3.620828 2.1291411-1.567881-.1674788-2.807621-1.3480568-3.171695-2.904652-.363692-1.5549607.29585-3.1469955 1.634527-3.9474055 1.283754-.767571 3.201208-.767571 4.381144.2713691l-1.662484.2956498.279997 1.9922868 4.86305-.7216245-.489368-5.1176362z"/></svg></div></div>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center arrowLoopCircle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M16.5 7.5A5.97 5.97 0 0012 5.5a6.5 6.5 0 106.16 4.4h-1.78A4.98 4.98 0 0112 17a5 5 0 010-10c1.38 0 2.62.56 3.5 1.5L13 11h5.5V5.5l-2 2z"/></svg></div></div>
                     </div>
                 </div>
             </div>
@@ -311,13 +326,13 @@
                 <!-- ResourceDetailsButtons (MagePanel4.html riga 8567) -->
                 <div id="detail-buttons" class="ResourceDetailsButtons">
                     <div id="detail-run" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center plusCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M9 7v10l8.5-5z"/></svg></div></div><?= __('Esegui') ?>
                     </div>
                     <div id="detail-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>
                     <div id="detail-help" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center questionCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M24 12c0 6.624-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0s12 5.376 12 12zm-13.028 1.902h2.13v-.26c0-.195.016-.368.048-.52.033-.152.084-.295.155-.43.07-.136.168-.275.293-.416.124-.14.279-.298.463-.471.195-.184.38-.371.553-.561.173-.19.325-.393.455-.61.13-.217.233-.45.309-.699.076-.25.114-.531.114-.846 0-.433-.087-.84-.26-1.22a2.953 2.953 0 00-.724-.983 3.373 3.373 0 00-1.114-.65A4.171 4.171 0 0011.964 6a3.61 3.61 0 00-1.318.228c-.39.151-.729.35-1.016.593a3.528 3.528 0 00-.715.821c-.19.304-.328.607-.415.91l1.87.781c.043-.173.111-.341.203-.504.092-.162.209-.309.35-.439.14-.13.303-.233.488-.309.184-.076.39-.114.617-.114.423 0 .757.125 1 .374.244.25.366.537.366.862 0 .315-.081.58-.244.797-.162.217-.39.455-.683.715-.281.239-.517.461-.707.667a3.22 3.22 0 00-.455.618c-.114.206-.198.42-.252.642a3.05 3.05 0 00-.081.724v.536zM12.012 18c.39 0 .724-.138 1-.415.277-.276.415-.61.415-1s-.138-.72-.415-.992a1.377 1.377 0 00-1-.406c-.39 0-.72.135-.992.406a1.35 1.35 0 00-.406.992c0 .39.135.724.406 1 .271.277.602.415.992.415z"/></svg></div></div>Help
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M11 17h2v2h-2v-2zm1-12a5 5 0 00-5 5h2a3 3 0 116 0c0 3-4.5 2.62-4.5 7h2c0-3.5 4.5-3.12 4.5-7a5 5 0 00-5-5z"/></svg></div></div>Help
                     </div>
                 </div>
                 <div class="flex-auto"></div>
@@ -353,7 +368,7 @@
                 </div>
                 <div class="terminal-actions">
                     <div id="btn-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>
                 </div>
             </div>
@@ -366,7 +381,7 @@
                     </div>
                     <div class="flex-auto"></div>
                     <div id="btn-clear" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Pulisci') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle class="colorable" cx="12" cy="12" r="12" fill="white"/><path fill="#181b22" d="M15.5 8.5l-1-1L12 10l-2.5-2.5-1 1L11 11l-2.5 2.5 1 1L12 12l2.5 2.5 1-1L13 11z"/></svg></div></div><?= __('Pulisci') ?>
                     </div>
                 </div>
                 <div id="terminal"></div>
