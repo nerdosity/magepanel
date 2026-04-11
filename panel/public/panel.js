@@ -511,11 +511,12 @@
         var sidebar = document.createElement('div');
         sidebar.className = 'ResourceSidebarItem selected';
 
-        var resItem = buildResourceItem(
-            (function () { var d = document.createElement('div'); d.className = 'ns-icon'; d.textContent = '>'; return d; })(),
-            ns,
-            cmds.length + ' ' + pluralize(cmds.length, 'comando', 'comandi')
-        );
+        var groupIcon = document.createElement('div');
+        groupIcon.className = 'cmd-icon-group';
+        groupIcon.appendChild(createSvg(16, 16, '0 0 24 24', [
+            {attrs: {d: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z', fill: '#fff'}}
+        ]));
+        var resItem = buildResourceItem(groupIcon, ns, cmds.length + ' ' + pluralize(cmds.length, 'comando', 'comandi'));
         sidebar.appendChild(resItem);
 
         var spacer = document.createElement('div');
@@ -609,15 +610,15 @@
         var item = document.createElement('div');
         item.className = 'ResourceSidebarItem';
 
-        // Hex icon
-        var hexSvg = createSvg(28, 28, '0 0 36 36', [
-            {attrs: {fill: 'rgba(128,140,169,0.25)', d: 'M28.055 32.557A2.871 2.871 0 0125.552 34H10.443a2.886 2.886 0 01-2.503-1.448l-7.552-13.1a2.915 2.915 0 010-2.906L7.94 3.448A2.892 2.892 0 0110.443 2h15.11c1.033 0 1.986.55 2.502 1.448l7.557 13.104a2.915 2.915 0 010 2.906l-7.557 13.099z'}},
-            {attrs: {d: 'M12 14l4 4-4 4', stroke: 'rgba(255,255,255,0.7)', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', fill: 'none'}},
-            {tag: 'line', attrs: {x1: '19', y1: '22', x2: '24', y2: '22', stroke: 'rgba(255,255,255,0.7)', 'stroke-width': '2', 'stroke-linecap': 'round'}}
-        ]);
-        var hexIcon = wrapIcon(hexSvg, 28);
+        // Command item icon: white bg, dark terminal prompt
+        var cmdIcon = document.createElement('div');
+        cmdIcon.className = 'cmd-icon-item';
+        cmdIcon.appendChild(createSvg(16, 16, '0 0 24 24', [
+            {attrs: {d: 'M7 10l4 3.5-4 3.5', fill: 'none', stroke: '#111318', 'stroke-width': '2.2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'}},
+            {tag: 'line', attrs: {x1: '14', y1: '17', x2: '18', y2: '17', stroke: '#111318', 'stroke-width': '2.2', 'stroke-linecap': 'round'}}
+        ]));
 
-        var resItem = buildResourceItem(hexIcon, cmd.name, cmd.desc);
+        var resItem = buildResourceItem(cmdIcon, cmd.name, cmd.desc);
         item.appendChild(resItem);
         item.appendChild(document.createElement('div')).className = 'flex-auto';
         item.appendChild(document.createElement('div')).className = 'ResourceSidebarItemButtons';

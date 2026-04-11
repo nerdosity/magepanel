@@ -451,15 +451,15 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: rgba(255,255,255,0.85);
     flex-shrink: 0;
     transition: background 0.15s;
 }
 .IconBtn__circle svg,
-.ToolbarButton__icon svg { width: 11px; height: 11px; display: block; }
+.ToolbarButton__icon svg { width: 14px; height: 14px; display: block; }
 .IconBtn:hover:not([disabled]) .IconBtn__circle,
 .IconBtn:hover:not([disabled]) .ToolbarButton__icon { background: var(--teal); }
 .IconBtn:hover:not([disabled]) .IconBtn__circle svg,
@@ -684,8 +684,33 @@ html, body {
 .ns-group .ReactCollapse--collapse { height: 0; overflow: hidden }
 .ns-group.expanded .ReactCollapse--collapse { height: auto; overflow: visible }
 
-/* --- custom: ns-icon (nostro, per il terminale prompt >) --- */
-.ns-icon { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; width: 28px; height: 28px; border-radius: 50%; background: rgb(43, 51, 67); color: rgba(255,255,255,.6); font-family: var(--mono); font-size: 13px; font-weight: 700 }
+/* --- Command list icons --- */
+
+/* Namespace group icon: colored background (warm orange-red) */
+.cmd-icon-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #e8573a, #d4442e);
+    flex-shrink: 0;
+}
+.cmd-icon-group svg { width: 16px; height: 16px; display: block; }
+
+/* Child command icon: white background, dark icon */
+.cmd-icon-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.85);
+    flex-shrink: 0;
+}
+.cmd-icon-item svg { width: 16px; height: 16px; display: block; }
 
 /* --- custom: run button (inside ResourceSidebarItemButtons) --- */
 .cmd-run-btn { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; position: relative; user-select: none; white-space: nowrap; color: rgba(255,255,255,0.9); background: transparent; border: 0; padding: 0; margin-right: 0 }
