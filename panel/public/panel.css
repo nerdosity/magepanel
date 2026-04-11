@@ -1292,6 +1292,8 @@ input[type="checkbox"] {
 @media (max-width: 768px) {
     /* IconBtn: icon only on mobile */
     .IconBtn__label { display: none; }
+    .ToolbarButton { font-size: 0; margin-right: 12px; }
+    .ToolbarButton .ToolbarButton__icon { margin-right: 0; }
 
     /* Hide desktop drawer, show mobile bottom nav */
     #drawer { display: none !important; }

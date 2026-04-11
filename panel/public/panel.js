@@ -186,9 +186,9 @@
 
     function setRunning(isRunning) {
         if (isRunning) runStartTime = Date.now();
-        btnRun.disabled  = isRunning;
-        btnStop.disabled = !isRunning;
-        if (btnStatic) btnStatic.disabled = isRunning;
+        if (isRunning) btnRun.classList.add('disabled'); else btnRun.classList.remove('disabled');
+        if (!isRunning) btnStop.classList.add('disabled'); else btnStop.classList.remove('disabled');
+        if (btnStatic) { if (isRunning) btnStatic.classList.add('disabled'); else btnStatic.classList.remove('disabled'); }
         document.querySelectorAll('.preset-dropdown-item, .task-run-btn').forEach(function (el) {
             if (isRunning) el.setAttribute('disabled', ''); else el.removeAttribute('disabled');
         });
@@ -201,10 +201,10 @@
 
     function updateClearBtn() {
         var hasOutput = term.querySelector('.line') || term.querySelector('.LogStageSection');
-        btnClear.disabled = !hasOutput;
+        if (!hasOutput) btnClear.classList.add('disabled'); else btnClear.classList.remove('disabled');
         if (detailClear) {
-            if (hasOutput) detailClear.removeAttribute('disabled');
-            else detailClear.setAttribute('disabled', '');
+            if (hasOutput) detailClear.classList.remove('disabled');
+            else detailClear.classList.add('disabled');
         }
     }
 
@@ -339,7 +339,7 @@
     function updateStaticCount() {
         var total = document.querySelectorAll('.static-opt:checked').length;
         if (staticCount) staticCount.textContent = total > 0 ? (total + ' ' + pluralize(total, 'selezionato', 'selezionati')) : '';
-        if (btnStatic) btnStatic.disabled = total === 0;
+        if (btnStatic) { if (total === 0) btnStatic.classList.add('disabled'); else btnStatic.classList.remove('disabled'); }
     }
 
     document.querySelectorAll('.static-opt').forEach(function (cb) { cb.addEventListener('change', updateStaticCount); });
