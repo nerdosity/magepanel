@@ -18,8 +18,8 @@
 
     var SVG_NS = 'http://www.w3.org/2000/svg';
     var SVG_PATH_CHECK   = 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM17.24141 7l-6.965641 6.6359475L6.75859 10.271895 5 11.9539213l3.517179 3.3640525L10.275769 17l1.75859-1.6820262L19 8.6820262 17.24141 7z';
-    var SVG_PATH_ERROR_X = 'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z';
-    var SVG_PATH_CIRCLE  = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z';
+    var SVG_PATH_ERROR_X = 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM16.23 8.45l-1.56-1.56L12.06 9.5 9.45 6.89 7.89 8.45l2.61 2.61-2.61 2.61 1.56 1.56 2.61-2.61 2.61 2.61 1.56-1.56-2.61-2.61 2.61-2.61z';
+    var SVG_PATH_CIRCLE  = 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0z';
     var SVG_PATH_CHEVRON = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
     var SVG_PATH_CHECK_SM = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z';
 
@@ -129,7 +129,7 @@
     var detailRun         = document.getElementById('detail-run');
     var detailStop        = document.getElementById('detail-stop');
     var detailContentBar  = document.getElementById('detail-content-bar');
-    var detailClear       = document.getElementById('detail-clear');
+    var detailClear       = null; // merged into btn-clear inside content bar
     var detailCmdFull     = document.getElementById('detail-cmd-full');
     var termHeader        = document.getElementById('terminal-header');
 
@@ -275,7 +275,7 @@
     }
 
     function appendLineEl(text, type) {
-        if (/^\[OK\] .*(exit \d)/.test(text) || /^\[ERRORE\] .*(exit \d|Exit \d)/.test(text)) type = 'exit';
+        if (/^[✓✗] .*(exit \d)/.test(text) || /^\[OK\]/.test(text) || /^\[ERRORE\]/.test(text)) type = 'exit';
         var safeType = /^[a-z\-]+$/.test(type) ? type : 'output';
 
         var es = term.querySelector('.term-empty-state');
@@ -395,9 +395,15 @@
     // ── Maintenance ──────────────────────────────────────────
 
     function updateMaintenanceUI() {
-        if (mainBadge) mainBadge.className = maintenanceOn ? 'badge badge-maintenance' : 'badge badge-hidden';
-        if (btnMaintenance) btnMaintenance.dataset.state = maintenanceOn ? 'on' : 'off';
-        if (maintStateLabel) maintStateLabel.textContent = maintenanceOn ? 'ON' : 'OFF';
+        if (btnMaintenance) {
+            btnMaintenance.className = maintenanceOn
+                ? 'Status Status--bad'
+                : 'Status Status--good';
+            btnMaintenance.style.cursor = 'pointer';
+        }
+        if (maintStateLabel) {
+            maintStateLabel.textContent = maintenanceOn ? __('Manutenzione') : __('Attivo');
+        }
     }
 
     if (btnMaintenance) {
@@ -489,7 +495,6 @@
                 });
                 if (opts.badge) opts.badge.textContent = total + ' ' + pluralize(total, 'comando', 'comandi');
                 var firstGroup = opts.container.querySelector('.ns-group');
-                if (firstGroup) firstGroup.classList.add('expanded');
             })
             .catch(function () { opts.container.textContent = opts.errorMsg; });
     }
@@ -515,7 +520,7 @@
 
         // Parent sidebar item
         var sidebar = document.createElement('div');
-        sidebar.className = 'ResourceSidebarItem selected';
+        sidebar.className = 'ResourceSidebarItem';
 
         var groupIcon = document.createElement('div');
         groupIcon.className = 'cmd-icon-group';
@@ -529,21 +534,10 @@
         spacer.className = 'flex-auto';
         sidebar.appendChild(spacer);
 
-        // Count badge
-        var info = document.createElement('div');
-        info.className = 'ResourceSidebarItemInfo';
-        var childInfo = document.createElement('div');
-        childInfo.className = 'ResourceChildrenInfo';
-        var infoItem = document.createElement('div');
-        infoItem.className = 'ResourceChildrenInfoItem';
-        infoItem.appendChild(wrapIcon(createSvg(14, 14, '0 0 24 24', [{attrs: {fill: '#00d1ca', d: SVG_PATH_CHECK_SM}}]), 14));
-        var countVal = document.createElement('div');
-        countVal.className = 'ResourceChildrenInfoItemValue';
-        countVal.textContent = cmds.length;
-        infoItem.appendChild(countVal);
-        childInfo.appendChild(infoItem);
-        info.appendChild(childInfo);
-        sidebar.appendChild(info);
+        // Status placeholder (empty, updated when commands run)
+        var groupStatus = document.createElement('div');
+        groupStatus.className = 'Status group-status';
+        sidebar.appendChild(groupStatus);
 
         sidebar.appendChild(document.createElement('div')).className = 'ResourceSidebarItemButtons';
 
@@ -575,10 +569,16 @@
         parent.addEventListener('click', function () {
             if (!group.classList.contains('expanded')) {
                 group.classList.add('expanded');
+                sidebar.classList.add('selected');
                 animateExpand(collapse);
             } else {
-                animateCollapse(collapse, function () { group.classList.remove('expanded'); });
+                animateCollapse(collapse, function () {
+                    group.classList.remove('expanded');
+                    sidebar.classList.remove('selected');
+                });
             }
+            // Deselect current command but keep terminal content
+            selectedCmd = null;
         });
 
         group.appendChild(parent);
@@ -627,6 +627,17 @@
         var resItem = buildResourceItem(cmdIcon, cmd.name, cmd.desc);
         item.appendChild(resItem);
         item.appendChild(document.createElement('div')).className = 'flex-auto';
+        // Status — hidden until command runs, then shows label + circle like Komodor
+        var cmdStatus = document.createElement('div');
+        cmdStatus.className = 'Status sidebar-cmd-status';
+        cmdStatus.style.display = 'none';
+        var cmdStatusLabel = document.createElement('div');
+        cmdStatusLabel.className = 'StatusLabel';
+        cmdStatus.appendChild(cmdStatusLabel);
+        var cmdStatusCircle = document.createElement('div');
+        cmdStatusCircle.className = 'StatusCircle';
+        cmdStatus.appendChild(cmdStatusCircle);
+        item.appendChild(cmdStatus);
         item.appendChild(document.createElement('div')).className = 'ResourceSidebarItemButtons';
 
         item.addEventListener('click', function () { selectCommand(runAction, cmd.name, cmd.desc); });
@@ -679,12 +690,28 @@
         if (detailArgs)       detailArgs.value = '';
         if (termHeader)       termHeader.style.display = 'none';
 
+        // Deselect only children, keep parent selected state
+        // Deselect all sidebar items (children AND parents)
         document.querySelectorAll('.ResourceSidebarItem').forEach(function (el) { el.classList.remove('selected'); });
+        // Select the clicked child AND its parent
         document.querySelectorAll('.ResourceListItemChildren .ResourceSidebarItem').forEach(function (el) {
             var t = el.querySelector('.ResourceItem__Title');
-            if (t && t.textContent === name) el.classList.add('selected');
+            if (t && t.textContent === name) {
+                el.classList.add('selected');
+                // Also select the parent group
+                var group = el.closest('.ResourceListItem');
+                if (group) {
+                    var parentSidebar = group.querySelector('.ResourceListItemParent .ResourceSidebarItem');
+                    if (parentSidebar) parentSidebar.classList.add('selected');
+                }
+            }
         });
-        clearOutput();
+        // Keep existing terminal content; only show placeholder if empty
+        var hasContent = term.querySelector('.line') || term.querySelector('.LogStageSection');
+        if (!hasContent) {
+            showCliPlaceholder();
+        }
+        updateClearBtn();
     }
 
     // ── Log stage header (CLI mode) ──────────────────────────
@@ -718,6 +745,7 @@
         titleEl.textContent = name;
         var elapsed = document.createElement('div');
         elapsed.className = 'elapsed';
+
         elapsed.textContent = 'just now';
 
         header.appendChild(chevron);
@@ -754,13 +782,71 @@
     function runSelectedCommand() {
         if (!selectedCmd) return;
         var args = detailArgs ? detailArgs.value.trim() : '';
-        clearOutput();
+        // Remove empty state placeholder if present, but keep existing output
+        var es = term.querySelector('.term-empty-state');
+        if (es) term.removeChild(es);
         setRunning(true);
         setDetailButtons(true);
 
         var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'bin/magento ';
         var stage = addLogStageHeader(prefix + selectedCmd.name + (args ? ' ' + args : ''), null);
         activeLogLines = stage.lines;
+
+        // Show sidebar command status as progressing
+        var sidebarItem = document.querySelector('.ResourceListItemChildren .ResourceSidebarItem.selected');
+        var parentGroup = sidebarItem ? sidebarItem.closest('.ResourceListItem') : null;
+        if (sidebarItem) {
+            var cmdSt = sidebarItem.querySelector('.sidebar-cmd-status');
+            if (cmdSt) {
+                cmdSt.style.display = '';
+                cmdSt.className = 'Status Status--progress sidebar-cmd-status';
+                var lbl = cmdSt.querySelector('.StatusLabel');
+                if (lbl) lbl.textContent = __('In esecuzione');
+            }
+        }
+        // Parent: running count icon + progressing label
+        if (parentGroup) {
+            // Add/update running count badge
+            var countBadge = parentGroup.querySelector('.running-count');
+            if (!countBadge) {
+                countBadge = document.createElement('div');
+                countBadge.className = 'ResourceSidebarItemInfo running-count';
+                var ci = document.createElement('div');
+                ci.className = 'ResourceChildrenInfo';
+                var cii = document.createElement('div');
+                cii.className = 'ResourceChildrenInfoItem ResourceChildrenInfoItemProgressing';
+                // doubleArrowLoopCircle icon from Komodor
+                cii.appendChild(wrapIcon(createSvg(14, 14, '0 0 24 24', [{attrs: {fill: '#629ada', 'fill-rule': 'nonzero', d: 'M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM6.881922 8.7483047L3.552316 12.525652l1.565987 1.2772945 1.180374-1.3839833c-.067318 2.8930479 2.680608 5.8398385 5.812511 5.7474854 1.764309-.0520257 3.345086-.8855417 4.392954-2.1701659l-1.665199-1.3496978c-.864323 1.3057431-2.39414 1.5564957-3.884853 1.1071323-1.429552-.4309271-2.74373-1.8402105-2.808391-3.4012631l1.351158 1.0244448 1.234877-1.5362861-3.849812-3.0923081zm5.345214-2.6741539l-.212915.0016237c-1.764309.0520257-3.345086.8855417-4.392954 2.1701659l1.671754 1.3345882c.864323-1.3057431 2.387585-1.5413861 3.878297-1.0920227 1.429553.4309271 2.743731 1.8402105 2.808392 3.4012631l-1.351158-1.0244448-1.234877 1.5362861 3.849812 3.0923081 3.329606-3.7773473-1.565987-1.2772945-1.180374 1.3839833c.067318-2.8930479-2.680609-5.8398385-5.812511-5.7474854z'}}]), 14));
+                var cv = document.createElement('div');
+                cv.className = 'ResourceChildrenInfoItemValue';
+                cv.textContent = '1';
+                cii.appendChild(cv);
+                ci.appendChild(cii);
+                countBadge.appendChild(ci);
+                // Insert before group-status
+                var gs = parentGroup.querySelector('.group-status');
+                if (gs) gs.parentNode.insertBefore(countBadge, gs);
+            } else {
+                var cv = countBadge.querySelector('.ResourceChildrenInfoItemValue');
+                if (cv) cv.textContent = String(parseInt(cv.textContent || '0', 10) + 1);
+            }
+            // Update group status
+            var gs = parentGroup.querySelector('.group-status');
+            if (gs) {
+                gs.className = 'Status Status--progress group-status';
+                if (!gs.querySelector('.StatusLabel')) {
+                    var gl = document.createElement('div');
+                    gl.className = 'StatusLabel';
+                    gl.textContent = __('In esecuzione');
+                    gs.insertBefore(gl, gs.firstChild);
+                }
+                if (!gs.querySelector('.StatusCircle')) {
+                    var gsc = document.createElement('div');
+                    gsc.className = 'StatusCircle';
+                    gs.appendChild(gsc);
+                }
+            }
+        }
 
         var url = BASE_URL
             + '?action=' + encodeURIComponent(selectedCmd.action)
@@ -775,6 +861,33 @@
             if (stage.iconPath) {
                 stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
                 stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
+            }
+            // Update sidebar command status: progress → good/bad
+            var cmdSt = sidebarItem ? sidebarItem.querySelector('.sidebar-cmd-status') : null;
+            if (cmdSt) {
+                cmdSt.className = 'Status ' + (ok ? 'Status--good' : 'Status--bad') + ' sidebar-cmd-status';
+                var lbl = cmdSt.querySelector('.StatusLabel');
+                if (lbl) lbl.textContent = ok ? __('Completato') : __('Errore');
+            }
+            // Update parent: decrement running count, update status
+            if (parentGroup) {
+                var cb = parentGroup.querySelector('.running-count');
+                if (cb) {
+                    var cv = cb.querySelector('.ResourceChildrenInfoItemValue');
+                    var count = cv ? parseInt(cv.textContent || '1', 10) - 1 : 0;
+                    if (count <= 0) {
+                        cb.parentNode.removeChild(cb);
+                        // No more running → show final status
+                        var gs = parentGroup.querySelector('.group-status');
+                        if (gs) {
+                            gs.className = 'Status ' + (ok ? 'Status--good' : 'Status--bad') + ' group-status';
+                            var gl = gs.querySelector('.StatusLabel');
+                            if (gl) gl.parentNode.removeChild(gl);
+                        }
+                    } else {
+                        cv.textContent = String(count);
+                    }
+                }
             }
             activeLogLines = null;
             loadSysInfo();

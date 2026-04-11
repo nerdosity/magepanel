@@ -75,15 +75,9 @@
 
                 <!-- SpaceHeaderToolBar: maintenance + dots menu -->
                 <div class="header-toolbar">
-                    <span id="maintenance-badge" class="badge badge-hidden"><?= __('MANUTENZIONE') ?></span>
-                    <div id="btn-maintenance" class="ToolbarButton normal" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon">
-                            <div class="Icon layout vertical center-center" style="width:22px;height:22px">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                    <path class="colorable" fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                </svg>
-                            </div>
-                        </div><?= __('Manutenzione') ?>: <strong id="maint-state-label">OFF</strong>
+                    <div id="btn-maintenance" class="Status Status--good" role="button" tabindex="0" style="cursor:pointer">
+                        <div id="maint-state-label" class="StatusLabel"><?= __('Attivo') ?></div>
+                        <div class="StatusCircle"></div>
                     </div>
                     <div class="preset-dropdown" id="preset-dropdown">
                         <div role="button" tabindex="0" title="<?= htmlspecialchars(__('Preset')) ?>" class="DropdownMenu__Trigger" id="preset-trigger">
@@ -338,17 +332,6 @@
                 </div>
             </div>
 
-            <!-- ResourceDetailsContentBar with Logs/Clear switch (MagePanel4.html riga 8669) -->
-            <div id="detail-content-bar" class="ResourceDetailsContentBar" style="display:none">
-                <div class="ResourceDetailsContentBar__Switch">
-                    <div class="ResourceDetailsContentBar__SwitchOption selected">Logs</div>
-                </div>
-                <div class="flex-auto"></div>
-                <div id="detail-clear" class="ToolbarButton normal" role="button" tabindex="0">
-                    <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Pulisci') ?>
-                </div>
-            </div>
-
             <!-- ═══ Tasks mode: console header ═══ -->
             <div id="terminal-header">
                 <div class="console-dots">
@@ -370,14 +353,21 @@
                     <div id="btn-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>
+                </div>
+            </div>
+
+            <!-- ═══ ResourceDetailsLayout__Content ═══ -->
+            <div class="ResourceDetailsLayout__Content">
+                <div id="detail-content-bar" class="ResourceDetailsContentBar" style="display:none">
+                    <div class="ResourceDetailsContentBar__Switch">
+                        <div class="ResourceDetailsContentBar__SwitchOption selected">Logs</div>
+                    </div>
+                    <div class="flex-auto"></div>
                     <div id="btn-clear" class="ToolbarButton normal" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Pulisci') ?>
                     </div>
                 </div>
-            </div>
-
-            <!-- ═══ ResourceDetailsLayout__Content (log output, shared) ═══ -->
-            <div id="terminal" class="ResourceDetailsLayout__Content">
+                <div id="terminal"></div>
             </div>
 
         </div><!-- #terminal-panel -->

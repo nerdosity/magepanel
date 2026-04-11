@@ -165,8 +165,8 @@ abstract class SseController extends AbstractController
     {
         $this->send(
             $exitCode === 0
-                ? '[OK] Completato (exit 0)'
-                : '[ERRORE] Processo terminato con exit ' . $exitCode,
+                ? '✓ completed (exit 0)'
+                : '✗ failed (exit ' . $exitCode . ')',
             $exitCode === 0 ? 'ok' : 'error'
         );
         $this->sendDone($exitCode);

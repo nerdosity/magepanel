@@ -271,6 +271,12 @@ msgstr "Default size"
 msgid "Massimizza"
 msgstr "Maximize"
 
+msgid "Attivo"
+msgstr "Active"
+
+msgid "In esecuzione"
+msgstr "Progressing"
+
 msgid "Generale"
 msgstr "General"
 

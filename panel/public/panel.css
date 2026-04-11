@@ -208,33 +208,36 @@ html, body {
 
 /* ── SpaceHeader — matches Komodor SpaceHeaderContainer ── */
 
-/* ClusterViewHeader — copied from Komodor AL PIXEL */
+/* SpaceHeader — copied from Komodor AL PIXEL */
 #workspace-header {
-    align-items: flex-start;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 0px 0px;
     display: flex;
     flex-direction: column;
-    z-index: 11;
+    font-weight: 200;
     background: var(--surface);
-    padding: 46px 36px 0;
 }
 
-/* Title row inside header */
+/* SpaceHeaderContainer */
 .workspace-title-row {
     align-items: center;
     display: flex;
+    min-height: 94px;
     flex-flow: row wrap;
-    width: 100%;
-    margin-bottom: 18px;
+    padding: 0 22px 0 0;
 }
 
-/* ClusterViewHeaderTitle */
+/* SpaceHeaderTitle */
 .page-title {
-    font-size: 30px;
-    font-weight: 300;
-    color: var(--text);
-    margin: 0;
+    display: flex;
+    flex-direction: column;
     margin-right: 32px;
+    min-width: 100px;
+    margin-left: 22px;
+    font-size: 26px;
+    letter-spacing: -0.9px;
+    white-space: nowrap;
+    line-height: 26px;
+    color: var(--text);
 }
 
 /* SpaceHeaderToolBar */
@@ -776,6 +779,8 @@ html, body {
 .ResourceChildrenInfoItem { align-items: center; display: flex; flex-direction: row; margin-right: 6px }
 .ResourceChildrenInfoItem .Icon { margin-right: 2px; opacity: 0.9 }
 .ResourceChildrenInfoItemValue { font-size: 12px }
+.ResourceChildrenInfoItemProgressing .Icon { animation: ResourceChildrenInfoProgressingAnimation 1.5s linear infinite; }
+@keyframes ResourceChildrenInfoProgressingAnimation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* --- SpaceSidebar (index4.html riga 3691) --- */
 .SpaceSidebarContainer { padding: 12px 0 }
@@ -1026,9 +1031,9 @@ html, body {
 #terminal {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 0;
+    padding: 12px 0 12px 8px;
     font-family: var(--mono);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: normal;
     line-height: 26px;
     background-color: var(--deep);
@@ -1055,19 +1060,19 @@ code {
 
 /* LogLine (index4.html riga 6134) */
 code.line {
-    display: block;
+    display: inline;
     font-size: inherit;
     line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-all;
+    white-space: normal;
     background: none;
     border-radius: 0;
-    margin: 0;
-    padding: 0 0 0 20px;
+    margin: 3px 0;
+    padding: 0;
     border: 0;
 }
+code.line::after { content: "\a "; white-space: pre; }
 
-code.line span { white-space: pre-wrap; word-break: break-all }
+code.line span { white-space: pre-line; word-break: break-all }
 
 /* LogStageSection (index4.html riga 6166) */
 .LogStageSection { margin-bottom: 12px; cursor: pointer }
@@ -1076,7 +1081,7 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 .LogStageSection:not(.LogStageSection--opened) .chevronDown svg { transform: rotate(-90deg) }
 
 /* LogStageSectionHeader (index4.html riga 6175) */
-.LogStageSectionHeader { align-items: center; display: flex; padding-left: 20px; padding-right: 20px }
+.LogStageSectionHeader { align-items: center; display: flex }
 .LogStageSectionHeader .status { margin-left: 8px }
 .LogStageSectionHeader .title { font-size: 15px; margin-left: 8px }
 .LogStageSectionHeader .command { color: rgb(233, 233, 234); font-family: var(--mono); margin-left: 8px }
@@ -1091,7 +1096,7 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 @keyframes StatusProgressAnimation { 0% { opacity: 1 } 100% { opacity: 0.3 } }
 
 /* Line type colors */
-.line-output    { color: rgba(255,255,255,.6) }
+.line-output    { color: rgb(255, 255, 255) }
 .line-ok        { color: var(--teal) }
 .line-error     { color: var(--err) }
 .line-warn      { color: var(--warn) }
@@ -1101,6 +1106,7 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 
 /* Exit status line — soft teal, slightly smaller */
 .line-exit      { color: rgba(0, 209, 202, 0.4); font-size: 13px; margin-top: 8px; letter-spacing: 0.01em }
+
 
 /* Tasks mode: div.line (simple block lines in bottom terminal) */
 div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: break-all; margin: 0; line-height: 1.5 }
@@ -1545,7 +1551,6 @@ input[type="checkbox"] {
     .ResourceListItemChildren .ResourceSidebarItem { padding-left: 36px; }
     .ResourceListItemChildren .ResourceItem__Subtitle { max-width: 160px; }
 
-    .LogStageSectionHeader { padding-left: 10px; padding-right: 10px; }
     .LogStageSectionHeader .title { font-size: 13px; }
     .LogStageSectionLines { margin-left: 10px; font-size: 13px; }
 

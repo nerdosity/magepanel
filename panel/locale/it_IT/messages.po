@@ -271,6 +271,12 @@ msgstr "Dimensione standard"
 msgid "Massimizza"
 msgstr "Massimizza"
 
+msgid "Attivo"
+msgstr "Attivo"
+
+msgid "In esecuzione"
+msgstr "In esecuzione"
+
 msgid "Generale"
 msgstr "Generale"
 
