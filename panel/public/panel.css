@@ -9,33 +9,35 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --bg:        rgb(35, 41, 53);
-    --surface:   rgb(30, 34, 43);
-    --deep:      rgb(17, 19, 24);
-    --hover:     rgb(43, 51, 67);
-    --drawer-bg: rgb(0, 0, 0);
+    --bg:           rgb(35, 41, 53);
+    --surface:      rgb(30, 34, 43);
+    --deep:         rgb(17, 19, 24);
+    --hover:        rgb(43, 51, 67);
+    --drawer-bg:    rgb(0, 0, 0);
 
-    --text:      rgb(236, 237, 239);
-    --text-70:   rgba(255,255,255,.7);
-    --text-40:   rgba(255,255,255,.4);
-    --meta:      rgb(128, 140, 169);
-    --border:    rgb(76, 84, 99);
-    --sep:       rgba(255,255,255,.08);
+    --text:         rgb(236, 237, 239);
+    --text-70:      rgba(255,255,255,.7);
+    --text-40:      rgba(255,255,255,.4);
+    --meta:         rgb(128, 140, 169);
+    --border:       rgb(76, 84, 99);
+    --border-dark:  rgb(24, 27, 34);
+    --table-border: rgb(50, 54, 68);
+    --sep:          rgba(255,255,255,.08);
 
-    --teal:      rgb(0, 209, 202);
-    --teal-h:    rgb(28, 168, 184);
-    --teal-a:    rgb(48, 140, 171);
-    --teal-link: rgb(0, 178, 172);
+    --teal:         rgb(0, 209, 202);
+    --teal-h:       rgb(28, 168, 184);
+    --teal-a:       rgb(48, 140, 171);
+    --teal-link:    rgb(0, 178, 172);
 
-    --err:       rgb(255, 77, 97);
-    --err-bg:    rgb(191, 64, 79);
-    --ok:        rgb(0, 209, 202);
-    --warn:      rgb(252, 163, 38);
-    --info:      rgb(74, 144, 226);
+    --err:          rgb(255, 77, 97);
+    --err-bg:       rgb(191, 64, 79);
+    --ok:           rgb(0, 209, 202);
+    --warn:         rgb(252, 163, 38);
+    --info:         rgb(74, 144, 226);
 
-    --drawer-w:  88px;
-    --radius:    3px;     /* MagePanel Button border-radius */
-    --radius-lg: 8px;
+    --drawer-w:     88px;
+    --radius:       3px;     /* MagePanel Button border-radius */
+    --radius-lg:    8px;
 
     --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono: 'Inconsolata', 'Fira Mono', 'Consolas', monospace;
@@ -47,8 +49,8 @@
 /* Copiato da index4.html riga 437-445 */
 html, body {
     height: 100%;
-    background-color: rgb(35, 41, 53);
-    color: rgb(236, 237, 239);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--font);
     font-size: 16px;
     font-weight: 300;
@@ -86,7 +88,7 @@ html, body {
 
 /* .Drawer .ItemLogo (MagePanel3.html righe 2929+2933) */
 #drawer .ItemLogo { margin: 24px 0 32px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center }
-.ItemLogo__version { font-size: 10px; color: rgb(128, 140, 169); margin-top: 6px }
+.ItemLogo__version { font-size: 10px; color: var(--meta); margin-top: 6px }
 
 /* .DrawerNavigation (index3.html riga 2945) */
 .DrawerNavigation {
@@ -110,10 +112,13 @@ html, body {
     width: 100%;
     margin: 0 0 8px;
     padding: 14px 0;
+    transition: color 0.2s;
 }
 
 /* .DrawerNavigation .NavButtonIcon (index3.html riga 2967) */
 .NavButtonIcon {
+    width: 28px;
+    height: 28px;
     margin-bottom: 8px;
     flex-shrink: 0;
     display: flex;
@@ -125,7 +130,7 @@ html, body {
 /* .DrawerNavigation .NavButton.selected / :hover (index3.html riga 2972) */
 .DrawerNavigation .NavButton.active,
 .DrawerNavigation .NavButton:hover {
-    color: rgb(0, 209, 202);
+    color: var(--teal);
 }
 
 .DrawerNavigation .NavButton.active .NavButtonIcon .colorable,
@@ -136,7 +141,7 @@ html, body {
 /* Sys-info in drawer bottom */
 .drawer-sysinfo {
     font-size: 10px;
-    color: rgb(128, 140, 169);
+    color: var(--meta);
     text-align: center;
     line-height: 1.5;
     padding: 0 8px;
@@ -164,18 +169,15 @@ html, body {
 #workspace.cli-layout #workspace-header {
     grid-column: 1 / -1;
     grid-row: 1;
-}
-
-#workspace.cli-layout #workspace-header {
     box-shadow: none;
-    border-bottom: 1px solid rgb(24, 27, 34);
+    border-bottom: 1px solid var(--border-dark);
 }
 
 #workspace.cli-layout #task-area {
     grid-column: 1;
     grid-row: 2;
     overflow-y: auto;
-    border-right: 1px solid rgb(24, 27, 34); /* MagePanel SpaceSidebar */
+    border-right: 1px solid var(--border-dark); /* MagePanel SpaceSidebar */
     padding: 0;
 }
 
@@ -191,7 +193,7 @@ html, body {
     /* ResourceDetailsLayout (index4.html riga 3082) */
     display: flex;
     flex-direction: column;
-    background-color: rgb(35, 41, 53);
+    background-color: var(--bg);
 }
 
 /* In CLI mode, terminal = ResourceDetailsLayout__Content */
@@ -215,7 +217,7 @@ html, body {
     display: flex;
     flex-direction: column;
     z-index: 11;
-    background: rgb(30, 34, 43);
+    background: var(--surface);
     padding: 46px 36px 0;
 }
 
@@ -224,7 +226,7 @@ html, body {
     font-size: 30px;
     font-weight: 300;
     margin-bottom: 18px;
-    color: rgb(236, 237, 239);
+    color: var(--text);
 }
 
 .workspace-title-row {
@@ -242,25 +244,24 @@ html, body {
 }
 
 /* Tabs (index3.html riga 7326) */
-.Tabs { display: flex; flex-direction: column }
-.Tabs { background: rgb(30, 34, 43) } /* ClusterViewHeader .Tabs */
+.Tabs { display: flex; flex-direction: column; background: var(--surface) }
 .TabsBar { display: flex; flex-direction: row; font-weight: normal; position: relative }
 
 /* Tab (index3.html riga 7337) */
 .Tab {
     border-bottom: 2px solid transparent;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-70);
     font-size: 16px;
     font-weight: normal;
     padding: 14px 8px;
     margin: 0 8px;
-    transition: color 0.2s;
+    transition: color 0.2s, border-color 0.25s ease;
 }
 
 .Tab:first-child { margin-left: 0 }
-.Tab.selected { color: rgb(0, 209, 202); border-color: transparent }
-.Tab:not(.selected):hover { color: rgb(0, 209, 202) }
+.Tab.selected { color: var(--teal); border-color: transparent }
+.Tab:not(.selected):hover { color: var(--teal) }
 .Tab.disabled { pointer-events: none; opacity: 0.3; cursor: default }
 
 /* Sliding tab indicator */
@@ -268,7 +269,7 @@ html, body {
     position: absolute;
     bottom: 0;
     height: 2px;
-    background: rgb(0, 209, 202);
+    background: var(--teal);
     border-radius: 1px;
     transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
@@ -295,13 +296,6 @@ html, body {
 
 /* ── Task area ────────────────────────────────────────────────── */
 
-#task-area {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: var(--bg);
-}
-
 /* Header separator (between presets and maintenance) */
 .header-sep {
     width: 1px;
@@ -323,6 +317,7 @@ html, body {
     position: relative;
     flex: 1 1 0%;
     overflow: hidden auto;
+    background: var(--bg);
 }
 
 /* TabContent container (index3.html riga 8348) */
@@ -336,19 +331,22 @@ html, body {
     display: none;
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgb(35, 41, 53);
+    background: var(--bg);
     padding: 36px;
     overflow: auto;
 }
 
-.task-group.active-group { display: block }
+.task-group.active-group {
+    display: block;
+    animation: fadeSlideIn 0.2s ease-out;
+}
 
 /* ClusterViewContent .TabContent a (index3.html riga 8363) */
-.task-group a { color: rgb(0, 209, 202) }
+.task-group a { color: var(--teal) }
 
 /* ClusterNamespaces card (index3.html riga 7701) */
 .ClusterNamespaces {
-    background-color: rgb(30, 34, 43);
+    background-color: var(--surface);
     box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 0px 0px;
     display: flex;
     flex-direction: column;
@@ -368,13 +366,13 @@ html, body {
 
 .ClusterNamespacesHeaderTitle { font-size: 20px; font-weight: normal }
 .ClusterNamespacesHeaderTotal { font-size: 16px; margin-left: 24px }
-.ClusterNamespacesHeaderTotal label { color: rgb(128, 140, 169); font-weight: normal; margin-right: 4px }
+.ClusterNamespacesHeaderTotal label { color: var(--meta); font-weight: normal; margin-right: 4px }
 
 /* Table (index3.html riga 7585) */
 .Table table { width: 100% }
-.Table thead { border-bottom: 1px solid rgb(50, 54, 68) }
+.Table thead { border-bottom: 1px solid var(--table-border) }
 .Table thead th { vertical-align: bottom; overflow: hidden }
-.Table tbody tr { border-bottom: 1px solid rgb(50, 54, 68) }
+.Table tbody tr { border-bottom: 1px solid var(--table-border) }
 .Table tbody tr:last-child { border: 0 }
 .Table tbody tr.rc-table-measure-row { border: 0 }
 .Table tbody td { font-size: 14px; vertical-align: middle; padding: 12px 28px }
@@ -395,7 +393,7 @@ html, body {
     align-items: center;
     cursor: pointer;
     font-weight: 300;
-    color: rgb(128, 140, 169);
+    color: var(--meta);
     font-size: 14px;
     user-select: none;
     padding: 12px 28px;
@@ -409,22 +407,23 @@ html, body {
 /* ClusterNamespacesTable (index3.html riga 7740) */
 .ClusterNamespacesTable { flex-grow: 1 }
 .ClusterNamespacesTableActions { align-items: center; display: flex; flex-direction: row; justify-content: flex-end; margin-left: 4px }
-.ClusterNamespacesTableActions .ToolbarButton:last-child { margin-right: 4px }
+.ClusterNamespacesTableActions .IconBtn:last-child { margin-right: 4px }
 
 /* ClusterSecretsTable — kept for Static Content panel (index3.html riga 7960) */
 .ClusterSecretsTable { border-collapse: separate; width: 100% }
-.ClusterSecretsTable thead th { border-bottom: 1px solid rgb(50, 54, 68); color: rgb(128, 140, 169); font-size: 14px; font-weight: 300; text-align: left; vertical-align: bottom; padding: 12px 28px }
+.ClusterSecretsTable thead th { border-bottom: 1px solid var(--table-border); color: var(--meta); font-size: 14px; font-weight: 300; text-align: left; vertical-align: bottom; padding: 12px 28px }
 .ClusterSecretsTable tbody { width: 100%; overflow: visible }
-.ClusterSecretsTable tbody td { border-bottom: 1px solid rgb(50, 54, 68); color: rgb(255, 255, 255); font-size: 16px; vertical-align: middle; padding: 16px 28px }
+.ClusterSecretsTable tbody td { border-bottom: 1px solid var(--table-border); color: rgb(255, 255, 255); font-size: 16px; vertical-align: middle; padding: 16px 28px }
 
 /* Task name as teal link (like MagePanel namespace names — index3.html riga 8617) */
-.task-link { color: rgb(0, 209, 202); cursor: pointer }
+.task-link { color: var(--teal); cursor: pointer }
 .task-link:hover { text-decoration: underline }
 
 /* Task run button in table */
 .task-run-btn { justify-content: flex-end }
 
-/* IconBtn — Komodor style: white circle icon + label */
+/* IconBtn — Komodor style: white circle icon + label
+   Also used in place of ToolbarButton throughout the UI */
 .IconBtn {
     align-items: center;
     cursor: pointer;
@@ -447,7 +446,8 @@ html, body {
 .IconBtn:hover:not([disabled]) { color: var(--teal); }
 .IconBtn[disabled] { opacity: 0.25; pointer-events: none; }
 
-.IconBtn__circle {
+.IconBtn__circle,
+.ToolbarButton__icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -458,13 +458,19 @@ html, body {
     flex-shrink: 0;
     transition: background 0.15s;
 }
-.IconBtn__circle svg { width: 11px; height: 11px; display: block; }
-.IconBtn:hover:not([disabled]) .IconBtn__circle { background: var(--teal); }
-.IconBtn:hover:not([disabled]) .IconBtn__circle svg { fill: #fff; stroke: #fff; }
-.IconBtn__circle svg { fill: rgb(17, 19, 24); stroke: rgb(17, 19, 24); }
+.IconBtn__circle svg,
+.ToolbarButton__icon svg { width: 11px; height: 11px; display: block; }
+.IconBtn:hover:not([disabled]) .IconBtn__circle,
+.IconBtn:hover:not([disabled]) .ToolbarButton__icon { background: var(--teal); }
+.IconBtn:hover:not([disabled]) .IconBtn__circle svg,
+.IconBtn:hover:not([disabled]) .ToolbarButton__icon svg { fill: #fff; stroke: #fff; }
+.IconBtn__circle svg,
+.ToolbarButton__icon svg { fill: var(--deep); stroke: var(--deep); }
+.ToolbarButton__icon .colorable { fill: var(--deep); }
+.IconBtn:hover:not([disabled]) .ToolbarButton__icon .colorable { fill: #fff; }
 
 /* Legacy Button (kept for modal buttons) */
-.Button { align-items: center; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; flex-direction: row; font-family: var(--font); font-size: 16px; font-weight: bold; letter-spacing: -0.3px; line-height: 16px; min-height: 46px; position: relative; background: transparent; border: 2px solid rgba(255,255,255,0.9); border-radius: 3px; padding: 0 18px }
+.Button { align-items: center; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; flex-direction: row; font-family: var(--font); font-size: 16px; font-weight: bold; letter-spacing: -0.3px; line-height: 16px; min-height: 46px; position: relative; background: transparent; border: 2px solid rgba(255,255,255,0.9); border-radius: 3px; padding: 0 18px; transition: background-color 0.15s, border-color 0.15s, opacity 0.15s; }
 .Button:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.8) }
 .Button:active { background-color: rgba(255,255,255,0.5) }
 .Button[disabled] { opacity: 0.3; pointer-events: none }
@@ -484,7 +490,17 @@ html, body {
 }
 
 /* Checkbox styling in tables */
-.ClusterSecretsTable input[type="checkbox"] { accent-color: rgb(0, 209, 202); cursor: pointer; width: 15px; height: 15px }
+.ClusterSecretsTable input[type="checkbox"] { accent-color: var(--teal); cursor: pointer; width: 15px; height: 15px }
+
+/* Checkbox label (used in static content deploy table) */
+.check-label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px; }
+.check-label:last-child { margin-bottom: 0; }
+
+/* Table cell vertical align top */
+.ClusterSecretsTable tbody td { vertical-align: top; }
+
+/* Muted text */
+.text-meta { color: var(--meta); }
 
 /* ================================================================
    COPIATO DA index4.html — CSS MagePanel originale
@@ -499,13 +515,13 @@ html, body {
 
 .mage-commands-loading {
     padding: 24px 22px;
-    color: rgb(128, 140, 169);
+    color: var(--meta);
     font-size: 13px;
 }
 
 /* Skeleton loader */
 .skel-group {
-    border-bottom: 1px solid rgb(24, 27, 34);
+    border-bottom: 1px solid var(--border-dark);
     padding: 6px 0;
 }
 
@@ -571,6 +587,7 @@ html, body {
     height: 100%;
     color: var(--meta);
     text-align: center;
+    animation: fadeSlideIn 0.3s ease-out;
 }
 
 .detail-empty-icon {
@@ -606,7 +623,7 @@ html, body {
 .ResourceItem__Icon { margin-top: 3px }
 .ResourceItem__Desc { display: flex; flex-direction: column; align-items: flex-start; min-width: 94px }
 .ResourceItem__Title { font-size: 16px; font-weight: 500; letter-spacing: -0.4px; margin-bottom: 4px; word-break: break-word }
-.ResourceItem__Subtitle { color: rgb(128, 140, 169); font-size: 13px; letter-spacing: -0.2px; white-space: nowrap }
+.ResourceItem__Subtitle { color: var(--meta); font-size: 13px; letter-spacing: -0.2px; white-space: nowrap }
 
 /* Troncamento solo nella sidebar sinistra (400px) — il pannello destro mostra tutto */
 .ResourceListItemChildren .ResourceItem__Subtitle { overflow: hidden; text-overflow: ellipsis; max-width: 220px }
@@ -614,7 +631,7 @@ html, body {
 
 /* --- ResourceList (index4.html riga 3237) --- */
 .ResourceList { display: flex; flex-direction: column }
-.ResourceListItem { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(24, 27, 34) }
+.ResourceListItem { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border-dark) }
 .ResourceListItemParent { position: relative }
 .ResourceListItemParent:hover { background-color: rgba(30, 34, 43, 0.5) }
 
@@ -634,9 +651,9 @@ html, body {
 .ReactCollapse--content {}
 
 /* --- ResourceSidebarItem (index4.html riga 3310) --- */
-.ResourceSidebarItem { align-items: center; background-color: rgba(0, 0, 0, 0); cursor: pointer; display: flex; flex-direction: row; position: relative; user-select: none; padding: 10px 22px 10px 19px }
+.ResourceSidebarItem { align-items: center; background-color: rgba(0, 0, 0, 0); cursor: pointer; display: flex; flex-direction: row; position: relative; user-select: none; padding: 10px 22px 10px 19px; transition: background-color 0.15s; }
 .ResourceSidebarItem:hover { background-color: rgba(30, 34, 43, 0.5) }
-.ResourceSidebarItem.selected { background-color: rgb(24, 27, 34) }
+.ResourceSidebarItem.selected { background-color: var(--border-dark) }
 
 /* --- ResourceSidebarItemButtons (index4.html riga 3341) --- */
 .ResourceSidebarItemButtons { align-items: center; display: flex; flex-direction: row; min-width: 22px; user-select: none }
@@ -650,10 +667,9 @@ html, body {
 /* --- Status (index4.html riga 6069) --- */
 .Status { align-items: center; display: flex; flex-direction: row; font-size: 12px; white-space: nowrap }
 .StatusCircle { background-color: rgb(255, 255, 255); flex-shrink: 0; height: 8px; margin-left: 6px; opacity: 0.9; width: 8px; border-radius: 8px }
-.Status--good .StatusCircle { background-color: rgb(0, 209, 202) }
-.Status--progress .StatusCircle { animation: StatusProgressAnimation 0.8s cubic-bezier(0.5, 0, 1, 1) 0s infinite alternate; background-color: rgb(74, 144, 226) }
-.Status--bad .StatusCircle { background-color: rgb(255, 77, 97) }
-@keyframes StatusProgressAnimation { 0% { opacity: 1 } 100% { opacity: 0 } }
+.Status--good .StatusCircle { background-color: var(--teal) }
+.Status--progress .StatusCircle { animation: StatusProgressAnimation 0.8s cubic-bezier(0.5, 0, 1, 1) 0s infinite alternate; background-color: var(--info) }
+.Status--bad .StatusCircle { background-color: var(--err) }
 
 /* --- ResourceChildrenInfo (index4.html riga 7138) --- */
 .ResourceChildrenInfo { align-items: center; display: flex; flex-direction: row }
@@ -673,13 +689,13 @@ html, body {
 
 /* --- custom: run button (inside ResourceSidebarItemButtons) --- */
 .cmd-run-btn { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; position: relative; user-select: none; white-space: nowrap; color: rgba(255,255,255,0.9); background: transparent; border: 0; padding: 0; margin-right: 0 }
-.cmd-run-btn:hover { color: rgb(0, 209, 202) }
+.cmd-run-btn:hover { color: var(--teal) }
 .cmd-run-btn:disabled { opacity: 0.2; pointer-events: none }
 
 /* --- custom: args input (in detail panel) --- */
-.mage-cmd-args-input { padding: 8px 14px; background: rgb(17, 19, 24); border: 1px solid rgb(76, 84, 99); border-radius: 3px; color: rgb(236, 237, 239); font-family: var(--mono); font-size: 13px; outline: none; transition: box-shadow 0.15s; width: 100% }
+.mage-cmd-args-input { padding: 8px 14px; background: var(--deep); border: 1px solid rgb(76, 84, 99); border-radius: 3px; color: var(--text); font-family: var(--mono); font-size: 13px; outline: none; transition: box-shadow 0.15s; width: 100% }
 .mage-cmd-args-input:focus { box-shadow: rgb(28, 168, 184) 0 0 0 2px }
-.mage-cmd-args-input::placeholder { color: rgba(255,255,255,.4) }
+.mage-cmd-args-input::placeholder { color: var(--text-40) }
 
 /* ================================================================
    PANNELLO DESTRO — copiato da index4.html (ResourceDetailsLayout)
@@ -687,7 +703,7 @@ html, body {
 
 /* --- ResourceDetailsLayout (index4.html riga 3082) --- */
 .ResourceDetailsLayout { display: flex; flex-direction: column; height: 100% }
-.ResourceDetailsLayout__Header { align-items: center; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(24, 27, 34); display: flex; flex-direction: row; padding: 18px 20px }
+.ResourceDetailsLayout__Header { align-items: center; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: var(--border-dark); display: flex; flex-direction: row; padding: 18px 20px }
 
 /* --- ResourceDetailsButtons (index4.html riga 6511) --- */
 .ResourceDetailsButtons { display: flex; align-items: center; margin-left: 42px }
@@ -698,63 +714,26 @@ html, body {
 
 /* --- ResourceProperty (index4.html riga 6660) --- */
 .ResourceProperty { font-size: 14px; min-height: 18px }
-.ResourceProperty__Label { color: rgb(128, 140, 169); font-weight: normal; white-space: nowrap; margin: 0 0 4px; padding: 0 }
+.ResourceProperty__Label { color: var(--meta); font-weight: normal; white-space: nowrap; margin: 0 0 4px; padding: 0 }
 .ResourceProperty__Value { color: rgb(255, 255, 255); margin: 0; padding: 0 }
-#detail-cmd-full { padding: 8px 0; line-height: 26px; font-family: Inconsolata, sans-serif }
+#detail-cmd-full { padding: 8px 0; line-height: 26px; font-family: var(--mono) }
 
 /* --- ResourceDetailsLayout__Content (index4.html riga 3134) --- */
-.ResourceDetailsLayout__Content { background-color: rgb(17, 19, 24); display: flex; flex-direction: column; position: relative; flex: 1 1 auto; margin: 0; overflow: hidden; padding: 0 }
+.ResourceDetailsLayout__Content { background-color: var(--deep); display: flex; flex-direction: column; position: relative; flex: 1 1 auto; margin: 0; overflow: hidden; padding: 0 }
 
 /* --- ResourceDetailsContentBar / Switch (index4.html riga 6522) --- */
 .ResourceDetailsContentBar { display: flex; align-items: center; height: 64px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgba(154, 169, 205, 0.2); padding: 14px 18px }
 .ResourceDetailsContentBar>*+* { margin-left: 18px }
 .ResourceDetailsContentBar__Switch { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 12px; font-weight: bold; letter-spacing: -0.3px; user-select: none; background: rgba(30, 34, 43, 0.9); border: 1px solid rgb(255, 255, 255); border-radius: 3px }
 .ResourceDetailsContentBar__SwitchOption { border-right: 1px solid rgb(255, 255, 255); padding: 6px 10px }
-.ResourceDetailsContentBar__SwitchOption.selected, .ResourceDetailsContentBar__SwitchOption.selected:hover { color: rgb(35, 41, 53); background: rgb(255, 255, 255) }
+.ResourceDetailsContentBar__SwitchOption.selected, .ResourceDetailsContentBar__SwitchOption.selected:hover { color: var(--bg); background: rgb(255, 255, 255) }
 .ResourceDetailsContentBar__SwitchOption:last-child { border: 0 }
 .ResourceDetailsContentBar__SwitchOption:hover { background: rgba(35, 41, 53, 0.8) }
-
-/* --- ToolbarButton — Komodor style: white circle + dark icon + label --- */
-.ToolbarButton {
-    align-items: center;
-    cursor: pointer;
-    display: inline-flex;
-    flex-direction: row;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.2px;
-    line-height: 1;
-    margin-right: 20px;
-    position: relative;
-    user-select: none;
-    white-space: nowrap;
-    gap: 7px;
-    color: rgba(255,255,255,0.85);
-    transition: color 0.15s;
-}
-.ToolbarButton:hover:not(.disabled) { color: var(--teal); }
-.ToolbarButton.disabled { opacity: 0.25; pointer-events: none; }
-
-.ToolbarButton__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    flex-shrink: 0;
-    transition: background 0.15s;
-}
-.ToolbarButton__icon svg { width: 11px; height: 11px; display: block; }
-.ToolbarButton__icon .colorable { fill: rgb(17, 19, 24); }
-.ToolbarButton:hover:not(.disabled) .ToolbarButton__icon { background: var(--teal); }
-.ToolbarButton:hover:not(.disabled) .ToolbarButton__icon .colorable { fill: #fff; }
 
 /* --- Logs area: #terminal already styled above --- */
 
 /* --- detail panel placeholder --- */
-.detail-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: rgb(128, 140, 169); font-size: 14px }
+.detail-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--meta); font-size: 14px }
 
 /* ── Maintenance badge + button ───────────────────────────────── */
 
@@ -771,37 +750,12 @@ html, body {
     background: rgba(255,77,97,.15);
     color: var(--err);
     border: 1px solid rgba(255,77,97,.4);
-    animation: pulse-danger 2s infinite;
+    animation: pulse-danger 2s infinite, badgeAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes pulse-danger { 0%,100%{opacity:1} 50%{opacity:.55} }
 
 .badge-hidden { display: none; }
-
-/* Maintenance — MagePanel Button.size-small with teal border */
-.btn-maintenance {
-    align-items: center;
-    background: rgba(0, 0, 0, 0);
-    border: 2px solid var(--teal);
-    border-radius: 3px;
-    color: var(--teal);
-    cursor: pointer;
-    display: flex;
-    font-family: var(--font);
-    font-size: 15px;
-    font-weight: bold;
-    gap: .3em;
-    letter-spacing: -0.3px;
-    line-height: 16px;
-    min-height: 32px;
-    padding: 0 14px;
-    transition: background 0.15s;
-    white-space: nowrap;
-}
-
-.btn-maintenance:hover { background: rgba(0,209,202,.1); }
-.btn-maintenance-on { background: rgba(255,77,97,.1); border-color: var(--err); color: var(--err); }
-.btn-maintenance-on:hover { background: rgba(255,77,97,.2); }
 
 /* Language selector */
 .lang-selector {
@@ -814,6 +768,7 @@ html, body {
     padding: 4px 8px;
     cursor: pointer;
     outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 .lang-selector:hover { border-color: rgba(255,255,255,0.3) }
 .lang-selector:focus { border-color: var(--teal) }
@@ -909,7 +864,7 @@ html, body {
     width: 0;
     background: var(--teal);
     border-radius: 2px;
-    transition: width 0.35s;
+    transition: width 0.35s ease;
 }
 
 .terminal-actions {
@@ -919,51 +874,6 @@ html, body {
     flex-shrink: 0;
 }
 
-/* Terminal buttons — MagePanel Button.size-xsmall */
-.terminal-btn {
-    align-items: center;
-    border-radius: 3px;
-    cursor: pointer;
-    display: inline-flex;
-    font-family: var(--font);
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: -0.3px;
-    min-height: 26px;
-    padding: 0 8px;
-    transition: all 0.15s;
-    white-space: nowrap;
-}
-
-/* Run: teal solid */
-#btn-run {
-    background: var(--teal);
-    border: 1px solid transparent;
-    color: var(--deep);
-}
-#btn-run:hover:not(:disabled) { background: var(--teal-h); }
-
-/* Stop: danger outline */
-#btn-stop {
-    background: transparent;
-    border: 1px solid var(--err);
-    color: var(--err);
-}
-#btn-stop:hover:not(:disabled) { background: rgba(255,77,97,.15); }
-
-/* Clear: ghost */
-#btn-clear {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,.18);
-    color: var(--text-70);
-}
-#btn-clear:hover:not(:disabled) { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.35); }
-
-#btn-run:disabled, #btn-stop:disabled, #btn-clear:disabled {
-    opacity: 0.3;
-    pointer-events: none;
-}
-
 /* ── Terminal output area ─────────────────────────────────────── */
 
 /* Copiato da index4.html: code (riga 537), LogLine (riga 6134), LogsOutput (riga 3154) */
@@ -971,11 +881,11 @@ html, body {
     flex: 1;
     overflow-y: auto;
     padding: 18px 0;
-    font-family: Inconsolata, sans-serif;
+    font-family: var(--mono);
     font-size: 16px;
     font-weight: normal;
     line-height: 26px;
-    background-color: rgb(17, 19, 24);
+    background-color: var(--deep);
     color: rgb(255, 255, 255);
 }
 
@@ -986,7 +896,7 @@ code {
     color: rgb(255, 255, 255);
     cursor: text;
     display: block;
-    font-family: Inconsolata, sans-serif;
+    font-family: var(--mono);
     font-size: 16px;
     font-weight: normal;
     line-height: 26px;
@@ -1016,19 +926,19 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 /* LogStageSection (index4.html riga 6166) */
 .LogStageSection { margin-bottom: 12px; cursor: pointer }
 .LogStageSection--opened { margin-bottom: 24px }
-.LogStageSection .chevronDown svg { transition: transform 0.1s }
+.LogStageSection .chevronDown svg { transition: transform 0.1s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) }
 .LogStageSection:not(.LogStageSection--opened) .chevronDown svg { transform: rotate(-90deg) }
 
 /* LogStageSectionHeader (index4.html riga 6175) */
 .LogStageSectionHeader { align-items: center; display: flex; padding-left: 20px; padding-right: 20px }
 .LogStageSectionHeader .status { margin-left: 8px }
 .LogStageSectionHeader .title { font-size: 15px; margin-left: 8px }
-.LogStageSectionHeader .command { color: rgb(233, 233, 234); font-family: Inconsolata, sans-serif; margin-left: 8px }
-.LogStageSectionHeader .elapsed { color: rgb(128, 140, 169); font-size: 13px; margin-left: 8px }
+.LogStageSectionHeader .command { color: rgb(233, 233, 234); font-family: var(--mono); margin-left: 8px }
+.LogStageSectionHeader .elapsed { color: var(--meta); font-size: 13px; margin-left: 8px }
 .LogStageSectionHeader .elapsed::before { content: "\2022"; margin-right: 8px }
 
 /* LogStageSectionLines (index4.html riga 6206) */
-.LogStageSectionLines { cursor: default; font-family: Inconsolata, sans-serif; font-size: 15px; margin-top: 10px; margin-left: 24px }
+.LogStageSectionLines { cursor: default; font-family: var(--mono); font-size: 15px; margin-top: 10px; margin-left: 24px }
 
 /* Progress pulse for running state */
 .progress-pulse svg { animation: StatusProgressAnimation 0.8s cubic-bezier(0.5, 0, 1, 1) 0s infinite alternate }
@@ -1036,12 +946,12 @@ code.line span { white-space: pre-wrap; word-break: break-all }
 
 /* Line type colors */
 .line-output    { color: rgba(255,255,255,.6) }
-.line-ok        { color: rgb(0, 209, 202) }
-.line-error     { color: rgb(255, 77, 97) }
-.line-warn      { color: rgb(252, 163, 38) }
-.line-info      { color: rgb(74, 144, 226) }
-.line-header    { color: rgb(0, 209, 202); font-weight: 700 }
-.line-separator { color: rgba(255,255,255,.4); font-size: 11px; opacity: .5 }
+.line-ok        { color: var(--teal) }
+.line-error     { color: var(--err) }
+.line-warn      { color: var(--warn) }
+.line-info      { color: var(--info) }
+.line-header    { color: var(--teal); font-weight: 700 }
+.line-separator { color: var(--text-40); font-size: 11px; opacity: .5 }
 
 /* Exit status line — soft teal, slightly smaller */
 .line-exit      { color: rgba(0, 209, 202, 0.4); font-size: 13px; margin-top: 8px; letter-spacing: 0.01em }
@@ -1065,6 +975,7 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: overlayFadeIn 0.2s ease-out;
 }
 
 /* DialogContainer (index3.html) */
@@ -1082,13 +993,14 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
     overflow: visible;
     width: 450px;
     max-width: calc(100vw - 2rem);
+    animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ModalSizer (index3.html) */
 .ModalSizer { display: flex; flex-direction: column; height: 100%; max-height: 100vh; flex: 1 1 0% }
 
 /* ModalTitle (index3.html) */
-.ModalTitle { color: rgb(30, 34, 43); font-size: 24px; font-weight: bold; letter-spacing: -0.04rem; margin: 0; padding: 24px 32px 18px }
+.ModalTitle { color: var(--surface); font-size: 24px; font-weight: bold; letter-spacing: -0.04rem; margin: 0; padding: 24px 32px 18px }
 
 /* ModalContainer (index3.html) */
 .ModalContainer { display: flex; position: relative; max-height: 100%; min-height: 0; flex: 1 1 0% }
@@ -1102,6 +1014,12 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
 .DeployButtons > * { margin-left: 8px }
 .DeployButtons > :last-child { margin-left: 0 }
 
+/* Commands badge wrapper */
+.commands-badge-wrap { padding: 8px 22px 12px 32px; }
+
+/* Modal text */
+.modal-text { font-size: 16px; line-height: 1.5; margin-bottom: 24px; }
+
 /* ── Scrollbars ──────────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 16px; }
@@ -1111,34 +1029,14 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
     border: 5px solid transparent;
     border-radius: 16px;
 }
-::-webkit-scrollbar-thumb { box-shadow: rgba(128,140,169,.35) 0 0 0 10px inset; }
+::-webkit-scrollbar-thumb { box-shadow: rgba(128,140,169,.35) 0 0 0 10px inset; transition: box-shadow 0.15s; }
 ::-webkit-scrollbar-thumb:hover { box-shadow: rgba(128,140,169,.65) 0 0 0 10px inset; }
 
 /* ── Transitions & Animations ────────────────────────────────── */
 
-/* Tab underline slide */
-.Tab {
-    transition: color 0.2s, border-color 0.25s ease;
-}
-
-/* Nav buttons */
-.DrawerNavigation .NavButton {
-    transition: color 0.2s;
-}
-
-/* Task group fade in */
-.task-group.active-group {
-    animation: fadeSlideIn 0.2s ease-out;
-}
-
 @keyframes fadeSlideIn {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Modal overlay + container */
-.DialogOverlay {
-    animation: overlayFadeIn 0.2s ease-out;
 }
 
 @keyframes overlayFadeIn {
@@ -1146,27 +1044,9 @@ div.line { display: block; padding: 0 20px; white-space: pre-wrap; word-break: b
     to   { opacity: 1; }
 }
 
-.DialogContainer {
-    animation: modalSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @keyframes modalSlideIn {
     from { opacity: 0; transform: scale(0.92) translateY(12px); }
     to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* Buttons — hover/active */
-.Button {
-    transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
-}
-
-.ToolbarButton {
-    transition: color 0.15s;
-}
-
-/* CLI sidebar item selection */
-.ResourceSidebarItem {
-    transition: background-color 0.15s;
 }
 
 /* Detail panels — slide in when shown */
@@ -1191,7 +1071,11 @@ div.line, code.line {
     to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Badge pulse (already exists, keeping) */
+/* Badge appear */
+@keyframes badgeAppear {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+}
 
 /* ns-group chevron rotation */
 .ns-group .ResourceListItemParentArrow .Icon {
@@ -1222,43 +1106,9 @@ div.line, code.line {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* LogStageSection chevron */
-.LogStageSection .chevronDown svg {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Language selector dropdown */
-.lang-selector {
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
 /* Checkbox tick */
 input[type="checkbox"] {
     transition: box-shadow 0.15s;
-}
-
-/* Badge appear */
-.badge-maintenance {
-    animation: badgeAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes badgeAppear {
-    from { opacity: 0; transform: scale(0.8); }
-    to   { opacity: 1; transform: scale(1); }
-}
-
-/* Scrollbar thumb */
-::-webkit-scrollbar-thumb {
-    transition: box-shadow 0.15s;
-}
-
-/* Empty state in terminal */
-.term-empty-state {
-    animation: fadeSlideIn 0.3s ease-out;
-}
-
-/* Progress bar smooth */
-#progress-bar {
-    transition: width 0.35s ease;
 }
 
 /* Maintenance button state change */
@@ -1467,13 +1317,13 @@ input[type="checkbox"] {
         padding-top: 12px;
     }
     .ClusterSecretsTable tbody td:last-child {
-        border-bottom: 1px solid rgb(50, 54, 68);
+        border-bottom: 1px solid var(--table-border);
         padding-bottom: 12px;
     }
 
     /* Task run button: smaller icon */
-    .ClusterNamespacesTableActions .ToolbarButton { font-size: 14px; margin-right: 4px; }
-    .ClusterNamespacesTableActions .ToolbarButton .Icon { width: 18px !important; height: 18px !important; }
+    .ClusterNamespacesTableActions .IconBtn { font-size: 14px; margin-right: 4px; }
+    .ClusterNamespacesTableActions .IconBtn .Icon { width: 18px !important; height: 18px !important; }
 
     /* Terminal panel */
     #terminal-panel {
@@ -1493,7 +1343,6 @@ input[type="checkbox"] {
 
     #progress-text { font-size: 10px; max-width: 120px; }
 
-    .terminal-btn { font-size: 11px; min-height: 22px; padding: 0 6px; }
 
     #terminal {
         font-size: 13px;
@@ -1527,9 +1376,9 @@ input[type="checkbox"] {
     /* Terminal resize handle: easier to grab on touch */
     #terminal-resize-handle { height: 8px; }
 
-    /* Toolbar buttons */
-    .ToolbarButton { font-size: 14px; margin-right: 16px; }
-    .ToolbarButton__icon .Icon { width: 18px !important; height: 18px !important; }
+    /* IconBtn in toolbar contexts */
+    .ClusterNamespacesTableActions .IconBtn { font-size: 14px; margin-right: 16px; }
+    .ClusterNamespacesTableActions .IconBtn .ToolbarButton__icon .Icon { width: 18px !important; height: 18px !important; }
 
     /* Modal */
     .DialogContainer {

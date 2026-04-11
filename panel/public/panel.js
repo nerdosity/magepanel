@@ -8,144 +8,260 @@
     var PRESETS  = window.PANEL_PRESETS  || {};
     var I18N     = window.PANEL_I18N     || {};
 
-    /** Translate a string using the i18n dictionary loaded from .po */
+    // ── Helpers ──────────────────────────────────────────────
+
     function __(s) { return I18N[s] || s; }
 
-    // DOM refs
+    function clearChildren(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+
+    function pluralize(n, singular, plural) { return n === 1 ? __(singular) : __(plural); }
+
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var SVG_PATH_CHECK   = 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM17.24141 7l-6.965641 6.6359475L6.75859 10.271895 5 11.9539213l3.517179 3.3640525L10.275769 17l1.75859-1.6820262L19 8.6820262 17.24141 7z';
+    var SVG_PATH_ERROR_X = 'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z';
+    var SVG_PATH_CIRCLE  = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z';
+    var SVG_PATH_CHEVRON = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
+    var SVG_PATH_CHECK_SM = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z';
+
+    function createSvg(w, h, viewBox, children) {
+        var svg = document.createElementNS(SVG_NS, 'svg');
+        svg.setAttribute('width', w);
+        svg.setAttribute('height', h);
+        svg.setAttribute('viewBox', viewBox);
+        for (var i = 0; i < children.length; i++) {
+            var c = children[i];
+            var el = document.createElementNS(SVG_NS, c.tag || 'path');
+            var attrs = c.attrs || {};
+            for (var k in attrs) { if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]); }
+            svg.appendChild(el);
+        }
+        return svg;
+    }
+
+    function wrapIcon(svg, size, extraClass) {
+        var w = document.createElement('div');
+        w.className = 'Icon layout vertical center-center' + (extraClass ? ' ' + extraClass : '');
+        w.style.cssText = 'width:' + size + 'px;height:' + size + 'px';
+        w.appendChild(svg);
+        return w;
+    }
+
+    function buildEmptyState(iconContent, titleText, subtitleText) {
+        var el = document.createElement('div');
+        el.className = 'term-empty-state';
+        var icon = document.createElement('div');
+        icon.className = 'detail-empty-icon';
+        if (typeof iconContent === 'string') {
+            icon.textContent = iconContent;
+            icon.style.fontSize = '28px';
+        } else {
+            icon.appendChild(iconContent);
+        }
+        el.appendChild(icon);
+        var t = document.createElement('div');
+        t.className = 'detail-empty-title';
+        t.textContent = titleText;
+        el.appendChild(t);
+        var s = document.createElement('div');
+        s.className = 'detail-empty-sub';
+        s.textContent = subtitleText;
+        el.appendChild(s);
+        return el;
+    }
+
+    function animateExpand(el, onDone) {
+        el.style.height = '0px';
+        el.style.overflow = 'hidden';
+        el.style.transition = 'height 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+        requestAnimationFrame(function () { el.style.height = el.scrollHeight + 'px'; });
+        var done = function () {
+            el.style.height = ''; el.style.overflow = ''; el.style.transition = '';
+            el.removeEventListener('transitionend', done);
+            if (onDone) onDone();
+        };
+        el.addEventListener('transitionend', done);
+    }
+
+    function animateCollapse(el, onDone) {
+        el.style.height = el.scrollHeight + 'px';
+        el.style.overflow = 'hidden';
+        el.style.transition = 'height 0.2s ease-out';
+        requestAnimationFrame(function () { el.style.height = '0px'; });
+        var done = function () {
+            el.style.height = ''; el.style.overflow = ''; el.style.transition = '';
+            el.removeEventListener('transitionend', done);
+            if (onDone) onDone();
+        };
+        el.addEventListener('transitionend', done);
+    }
+
+    // ── DOM refs ─────────────────────────────────────────────
+
     var term              = document.getElementById('terminal');
     var btnRun            = document.getElementById('btn-run');
     var btnStop           = document.getElementById('btn-stop');
     var btnClear          = document.getElementById('btn-clear');
     var btnStatic         = document.getElementById('btn-static');
-    var btnMaintenance      = document.getElementById('btn-maintenance');
-    var maintStateLabel     = document.getElementById('maint-state-label');
-    var mainBadge           = document.getElementById('maintenance-badge');
-    var confirmModal        = document.getElementById('confirm-modal');
-    var confirmModalTitle   = document.getElementById('confirm-modal-title');
-    var confirmModalText    = document.getElementById('confirm-modal-text');
-    var confirmModalOk      = document.getElementById('confirm-modal-ok');
-    var confirmModalCancel  = document.getElementById('confirm-modal-cancel');
+    var btnMaintenance    = document.getElementById('btn-maintenance');
+    var maintStateLabel   = document.getElementById('maint-state-label');
+    var mainBadge         = document.getElementById('maintenance-badge');
+    var confirmModal      = document.getElementById('confirm-modal');
+    var confirmModalTitle = document.getElementById('confirm-modal-title');
+    var confirmModalText  = document.getElementById('confirm-modal-text');
+    var confirmModalOk    = document.getElementById('confirm-modal-ok');
+    var confirmModalCancel= document.getElementById('confirm-modal-cancel');
     var pendingConfirmAction = null;
     var progressBar       = document.getElementById('progress-bar');
     var progressText      = document.getElementById('progress-text');
     var sysInfo           = document.getElementById('sys-info');
-    var mageCommandsList      = document.getElementById('mage-commands-list');
-    var mageCommandsBadge     = document.getElementById('mage-commands-badge');
+    var mageCommandsList  = document.getElementById('mage-commands-list');
+    var mageCommandsBadge = document.getElementById('mage-commands-badge');
     var composerCommandsList  = document.getElementById('composer-commands-list');
     var composerCommandsBadge = document.getElementById('composer-commands-badge');
-    var navTasks              = document.getElementById('nav-tasks');
-    var navCommands           = document.getElementById('nav-commands');
-    var navComposer           = document.getElementById('nav-composer');
+    var navTasks          = document.getElementById('nav-tasks');
+    var navCommands       = document.getElementById('nav-commands');
+    var navComposer       = document.getElementById('nav-composer');
+    var detailHeader      = document.getElementById('detail-header');
+    var detailTitle       = document.getElementById('detail-title');
+    var detailSubtitle    = document.getElementById('detail-subtitle');
+    var detailProps       = document.getElementById('detail-props');
+    var detailArgs        = document.getElementById('detail-args');
+    var detailRun         = document.getElementById('detail-run');
+    var detailStop        = document.getElementById('detail-stop');
+    var detailContentBar  = document.getElementById('detail-content-bar');
+    var detailClear       = document.getElementById('detail-clear');
+    var detailCmdFull     = document.getElementById('detail-cmd-full');
+    var termHeader        = document.getElementById('terminal-header');
 
-    var currentEs            = null;
-    var stopRequested        = false;
-    var maintenanceOn        = false;
-    var commandsLoaded       = false;
+    var currentEs          = null;
+    var stopRequested      = false;
+    var maintenanceOn      = false;
+    var commandsLoaded     = false;
     var composerCommandsLoaded = false;
+    var activeLogLines     = null;
+    var selectedCmd        = null;
+    var runStartTime       = null;
 
-    // ================================================================
-    //  Terminal
-    // ================================================================
+    // ── Operation helpers ────────────────────────────────────
 
-    function clearOutput() {
-        while (term.firstChild) term.removeChild(term.firstChild);
-        setProgress(0, '');
-        // Restore appropriate placeholder
-        var workspace = document.getElementById('workspace');
-        if (workspace && workspace.classList.contains('cli-layout')) {
-            if (selectedCmd) {
-                // Command selected but not run yet — show "press Run" hint
-                var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'php bin/magento ';
-                var hint = document.createElement('div');
-                hint.className = 'term-empty-state';
-                var hIcon = document.createElement('div');
-                hIcon.className = 'detail-empty-icon';
-                hIcon.textContent = '\u25B6';
-                hIcon.style.fontSize = '32px';
-                hint.appendChild(hIcon);
-                var hTitle = document.createElement('div');
-                hTitle.className = 'detail-empty-title';
-                hTitle.textContent = prefix + selectedCmd.name;
-                hint.appendChild(hTitle);
-                var hSub = document.createElement('div');
-                hSub.className = 'detail-empty-sub';
-                hSub.textContent = __('Premi Esegui per avviare il comando');
-                hint.appendChild(hSub);
-                term.appendChild(hint);
-            }
-            // If no command selected, showDetailEmptyState handles it
-        } else {
-            showTasksPlaceholder();
+    function formatElapsed(ms) {
+        var secs = Math.round(ms / 1000);
+        if (secs < 60) return secs + 's';
+        var mins = Math.floor(secs / 60);
+        var s = secs % 60;
+        return mins + 'm ' + (s < 10 ? '0' : '') + s + 's';
+    }
+
+    function getElapsedLabel() {
+        if (!runStartTime) return '';
+        return ' (' + formatElapsed(Date.now() - runStartTime) + ')';
+    }
+
+    function setDetailButtons(running) {
+        if (detailRun)  { if (running) detailRun.setAttribute('disabled', ''); else detailRun.removeAttribute('disabled'); }
+        if (detailStop) { if (!running) detailStop.setAttribute('disabled', ''); else detailStop.removeAttribute('disabled'); }
+    }
+
+    function beginOperation() {
+        clearOutput();
+        setRunning(true);
+        stopRequested = false;
+    }
+
+    function finishOperation(ok) {
+        setProgress(100, (ok ? __('Completato') : __('Errori')) + getElapsedLabel());
+        setRunning(false);
+        loadSysInfo();
+    }
+
+    function stopExecution(warnMsg) {
+        stopRequested = true;
+        fetch(BASE_URL + '?action=stop_cmd');
+        if (currentEs) {
+            currentEs.close(); currentEs = null;
+            addLine(warnMsg, 'warn');
+            setRunning(false);
         }
-        updateClearBtn();
+    }
+
+    function setRunning(isRunning) {
+        if (isRunning) runStartTime = Date.now();
+        btnRun.disabled  = isRunning;
+        btnStop.disabled = !isRunning;
+        if (btnStatic) btnStatic.disabled = isRunning;
+        document.querySelectorAll('.IconBtn[data-preset], .task-run-btn').forEach(function (el) {
+            if (isRunning) el.setAttribute('disabled', ''); else el.removeAttribute('disabled');
+        });
+    }
+
+    function setProgress(pct, label) {
+        if (progressBar)  progressBar.style.width = pct + '%';
+        if (progressText) progressText.textContent = label;
     }
 
     function updateClearBtn() {
         var hasOutput = term.querySelector('.line') || term.querySelector('.LogStageSection');
         btnClear.disabled = !hasOutput;
-        // Also update the detail-clear button in CLI mode
         if (detailClear) {
             if (hasOutput) detailClear.removeAttribute('disabled');
             else detailClear.setAttribute('disabled', '');
         }
     }
 
+    // ── Terminal ─────────────────────────────────────────────
+
     function showTasksPlaceholder() {
-        // Only if terminal is empty (no output from a previous run)
         if (term.querySelector('.line') || term.querySelector('.LogStageSection')) return;
-        while (term.firstChild) term.removeChild(term.firstChild);
-        var el = document.createElement('div');
-        el.className = 'term-empty-state';
-        var icon = document.createElement('div');
-        icon.className = 'detail-empty-icon';
-        icon.textContent = '\u25B8';
-        icon.style.fontSize = '28px';
-        el.appendChild(icon);
-        var t = document.createElement('div');
-        t.className = 'detail-empty-title';
-        t.textContent = __('Seleziona un task e premi Esegui');
-        el.appendChild(t);
-        var s = document.createElement('div');
-        s.className = 'detail-empty-sub';
-        s.textContent = __('Oppure usa i preset in alto per operazioni rapide.');
-        el.appendChild(s);
-        term.appendChild(el);
+        clearChildren(term);
+        term.appendChild(buildEmptyState('\u25B8', __('Seleziona un task e premi Esegui'), __('Oppure usa i preset in alto per operazioni rapide.')));
     }
 
-    var activeLogLines = null; // current LogStageSectionLines container
+    function showCliPlaceholder() {
+        clearChildren(term);
+        if (selectedCmd) {
+            var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'php bin/magento ';
+            term.appendChild(buildEmptyState('\u25B6', prefix + selectedCmd.name, __('Premi Esegui per avviare il comando')));
+        }
+    }
 
-    // ANSI escape patterns (both real \x1b[ and literal bracket [ forms from 2>&1)
+    function clearOutput() {
+        clearChildren(term);
+        setProgress(0, '');
+        var workspace = document.getElementById('workspace');
+        if (workspace && workspace.classList.contains('cli-layout')) {
+            showCliPlaceholder();
+        } else {
+            showTasksPlaceholder();
+        }
+        updateClearBtn();
+    }
+
+    // ── ANSI handling + line rendering ───────────────────────
+
     var ansiStripRe = /\x1b\[[0-9;]*[A-Za-z]|\[\d*[AHJKm]|\[\d*;\d*[Hf]/g;
     var cursorUpCountRe = /\x1b\[(\d*)A|\[(\d*)A/g;
 
     function addLine(text, type) {
-        // Skip the "▶ bin/magento ..." header line in CLI mode — already shown in stage header
         if (type === 'header' && activeLogLines) return;
 
-        // Count cursor-up sequences before stripping (progress bar updates)
-        var ups = 0;
-        var match;
+        var ups = 0, match;
         var re = new RegExp(cursorUpCountRe.source, 'g');
         while ((match = re.exec(text)) !== null) {
             ups += parseInt(match[1] || match[2] || '1', 10);
         }
 
-        // Strip all ANSI escape sequences
         var clean = text.replace(ansiStripRe, '').trim();
         if (clean === '') return;
 
-        // If cursor-up detected: replace last N lines (in-place progress update)
         if (ups > 0) {
             var container = activeLogLines || term;
             var subLines = clean.split('\n');
-            // Remove last `ups` lines
             var existingLines = container.querySelectorAll('.line');
             var toRemove = Math.min(ups, existingLines.length);
             for (var i = 0; i < toRemove; i++) {
                 var el = existingLines[existingLines.length - 1 - i];
                 if (el) el.parentNode.removeChild(el);
             }
-            // Append replacement lines
             for (var j = 0; j < subLines.length; j++) {
                 var sl = subLines[j].trim();
                 if (sl !== '') appendLineEl(sl, type);
@@ -159,13 +275,9 @@
     }
 
     function appendLineEl(text, type) {
-        // Dim exit status lines
-        if (/^\[OK\] .*(exit \d)/.test(text) || /^\[ERRORE\] .*(exit \d|Exit \d)/.test(text)) {
-            type = 'exit';
-        }
+        if (/^\[OK\] .*(exit \d)/.test(text) || /^\[ERRORE\] .*(exit \d|Exit \d)/.test(text)) type = 'exit';
         var safeType = /^[a-z\-]+$/.test(type) ? type : 'output';
 
-        // Remove empty state on first real line
         var es = term.querySelector('.term-empty-state');
         if (es) term.removeChild(es);
 
@@ -188,141 +300,75 @@
     function addSeparator(label) {
         var div = document.createElement('div');
         div.className = 'line line-separator';
-        var dashes = '─'.repeat(Math.max(0, 50 - label.length));
-        div.textContent = '─── ' + label + ' ' + dashes;
+        div.textContent = '\u2500\u2500\u2500 ' + label + ' ' + '\u2500'.repeat(Math.max(0, 50 - label.length));
         term.appendChild(div);
         term.scrollTop = term.scrollHeight;
     }
 
-    function setProgress(pct, label) {
-        if (progressBar)  progressBar.style.width = pct + '%';
-        if (progressText) progressText.textContent = label;
-    }
-
-    // ================================================================
-    //  SSE helpers
-    // ================================================================
+    // ── SSE ──────────────────────────────────────────────────
 
     function openSse(url, onDone) {
         var es = new EventSource(url);
         currentEs = es;
-
         es.onmessage = function (e) {
             try { var d = JSON.parse(e.data); addLine(d.line, d.type); }
             catch (ex) { addLine(e.data, 'output'); }
         };
-
         es.addEventListener('done', function (e) {
             es.close(); currentEs = null;
             onDone(parseInt(e.data, 10) === 0);
         });
-
         es.onerror = function () {
             es.close(); currentEs = null;
             addLine(__('Errore di connessione SSE'), 'error');
             onDone(false);
         };
-
         return es;
     }
 
     function runTask(taskId) {
         return new Promise(function (resolve) {
-            var url = BASE_URL
-                + '?action=stream'
-                + '&task='  + encodeURIComponent(taskId)
-;
-            openSse(url, resolve);
+            openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId), resolve);
         });
     }
 
-    // ================================================================
-    //  Running state
-    // ================================================================
-
-    var runStartTime = null;
-
-    function formatElapsed(ms) {
-        var secs = Math.round(ms / 1000);
-        if (secs < 60) return secs + 's';
-        var mins = Math.floor(secs / 60);
-        var s = secs % 60;
-        return mins + 'm ' + (s < 10 ? '0' : '') + s + 's';
-    }
-
-    function getElapsedLabel() {
-        if (!runStartTime) return '';
-        return ' (' + formatElapsed(Date.now() - runStartTime) + ')';
-    }
-
-    function setRunning(isRunning) {
-        if (isRunning) {
-            runStartTime = Date.now();
-        }
-        btnRun.disabled  = isRunning;
-        btnStop.disabled = !isRunning;
-        if (btnStatic) btnStatic.disabled = isRunning;
-
-        document.querySelectorAll('.Button[data-preset], .task-run-btn').forEach(function (el) {
-            if (isRunning) el.setAttribute('disabled', ''); else el.removeAttribute('disabled');
-        });
-    }
-
-
-    // ================================================================
-    //  Static content deploy
-    // ================================================================
+    // ── Static content deploy ────────────────────────────────
 
     var staticCount = document.getElementById('static-count');
 
     function updateStaticCount() {
         var total = document.querySelectorAll('.static-opt:checked').length;
-        if (staticCount) {
-            staticCount.textContent = total > 0 ? (total + ' ' + (total === 1 ? __('selezionato') : __('selezionati'))) : '';
-        }
+        if (staticCount) staticCount.textContent = total > 0 ? (total + ' ' + pluralize(total, 'selezionato', 'selezionati')) : '';
         if (btnStatic) btnStatic.disabled = total === 0;
     }
 
-    // Listen to all static checkboxes
-    document.querySelectorAll('.static-opt').forEach(function (cb) {
-        cb.addEventListener('change', updateStaticCount);
-    });
-    updateStaticCount(); // init
+    document.querySelectorAll('.static-opt').forEach(function (cb) { cb.addEventListener('change', updateStaticCount); });
+    updateStaticCount();
 
     if (btnStatic) {
         btnStatic.addEventListener('click', function () {
             var themes  = Array.from(document.querySelectorAll('.static-theme:checked')).map(function (c) { return c.value; });
             var locales = Array.from(document.querySelectorAll('.static-locale:checked')).map(function (c) { return c.value; });
             var areas   = Array.from(document.querySelectorAll('.static-area:checked')).map(function (c) { return c.value; });
+            if (!areas.length) { alert(__("Seleziona almeno un'area")); return; }
 
-            if (!areas.length)   { alert(__("Seleziona almeno un'area")); return; }
-
-            var summary = __('Area') + ': ' + (areas.length ? areas.join(', ') : '\u2014') + '\n'
-                + __('Temi') + ': ' + (themes.length ? themes.join(', ') : '\u2014') + '\n'
-                + __('Lingue') + ': ' + (locales.length ? locales.join(', ') : '\u2014');
+            var summary = __('Area') + ': ' + (areas.join(', ') || '\u2014') + '\n'
+                + __('Temi') + ': ' + (themes.join(', ') || '\u2014') + '\n'
+                + __('Lingue') + ': ' + (locales.join(', ') || '\u2014');
 
             showConfirm(__('Deploy static'), summary, function () {
                 var qs = 'action=static';
-                themes.forEach(function (t)  { qs += '&themes[]='  + encodeURIComponent(t); });
+                themes.forEach(function (t) { qs += '&themes[]=' + encodeURIComponent(t); });
                 locales.forEach(function (l) { qs += '&locales[]=' + encodeURIComponent(l); });
-                areas.forEach(function (a)   { qs += '&areas[]='   + encodeURIComponent(a); });
-
-                clearOutput();
-                setRunning(true);
-                stopRequested = false;
+                areas.forEach(function (a) { qs += '&areas[]=' + encodeURIComponent(a); });
+                beginOperation();
                 setProgress(0, __('Static content deploy...'));
-
-                openSse(BASE_URL + '?' + qs, function (ok) {
-                    setProgress(100, (ok ? __('Completato') : __('Errori')) + getElapsedLabel());
-                    setRunning(false);
-                });
+                openSse(BASE_URL + '?' + qs, function (ok) { finishOperation(ok); });
             });
         });
     }
 
-    // ================================================================
-    //  Generic confirm modal
-    // ================================================================
+    // ── Confirm modal ────────────────────────────────────────
 
     function showConfirm(title, text, onConfirm) {
         if (confirmModalTitle) confirmModalTitle.textContent = title;
@@ -343,30 +389,14 @@
             if (action) action();
         });
     }
+    if (confirmModalCancel) confirmModalCancel.addEventListener('click', hideConfirm);
 
-    if (confirmModalCancel) {
-        confirmModalCancel.addEventListener('click', hideConfirm);
-    }
-
-    // ================================================================
-    //  Maintenance
-    // ================================================================
+    // ── Maintenance ──────────────────────────────────────────
 
     function updateMaintenanceUI() {
         if (mainBadge) mainBadge.className = maintenanceOn ? 'badge badge-maintenance' : 'badge badge-hidden';
-        if (btnMaintenance) {
-            btnMaintenance.dataset.state = maintenanceOn ? 'on' : 'off';
-        }
+        if (btnMaintenance) btnMaintenance.dataset.state = maintenanceOn ? 'on' : 'off';
         if (maintStateLabel) maintStateLabel.textContent = maintenanceOn ? 'ON' : 'OFF';
-    }
-
-    function runMaintenanceTask(taskId) {
-        clearOutput();
-        setRunning(true);
-        openSse(
-            BASE_URL + '?action=stream&task=' + encodeURIComponent(taskId),
-            function () { setRunning(false); loadSysInfo(); }
-        );
     }
 
     if (btnMaintenance) {
@@ -375,14 +405,14 @@
                 ? __('Disattivare la modalità manutenzione? Il sito tornerà online.')
                 : __('Attivare la modalità manutenzione? Il sito sarà irraggiungibile.');
             showConfirm(__('Manutenzione'), msg, function () {
-                runMaintenanceTask(maintenanceOn ? 'maintenance_disable' : 'maintenance_enable');
+                beginOperation();
+                openSse(BASE_URL + '?action=stream&task=' + encodeURIComponent(maintenanceOn ? 'maintenance_disable' : 'maintenance_enable'),
+                    function () { setRunning(false); loadSysInfo(); });
             });
         });
     }
 
-    // ================================================================
-    //  System info + command availability
-    // ================================================================
+    // ── System info ──────────────────────────────────────────
 
     function loadSysInfo() {
         fetch(BASE_URL + '?action=detect')
@@ -398,263 +428,149 @@
                 }
                 maintenanceOn = !!data.maintenance;
                 updateMaintenanceUI();
-
-                // No command warnings — all tasks use php natively
             })
-            .catch(function () {
-                if (sysInfo) sysInfo.textContent = __('Info non disponibili');
-            });
+            .catch(function () { if (sysInfo) sysInfo.textContent = __('Info non disponibili'); });
     }
 
-    // ================================================================
-    //  Magento commands (lazy load)
-    // ================================================================
+    // ── Command list loading (shared for Mage + Composer) ────
 
     function showLoader(container) {
-        while (container.firstChild) container.removeChild(container.firstChild);
+        clearChildren(container);
         container.className = 'SpaceSidebarContainer';
-        // Build 4 skeleton groups, each with 3-5 child rows
         var counts = [4, 3, 5, 3];
         for (var g = 0; g < counts.length; g++) {
             var group = document.createElement('div');
             group.className = 'skel-group';
-            // Group header: icon + two text bars
-            var header = document.createElement('div');
-            header.className = 'skel-row skel-header';
-            var circle = document.createElement('div');
-            circle.className = 'skel-bone skel-circle';
-            var col = document.createElement('div');
-            col.className = 'skel-col';
-            var bar1 = document.createElement('div');
-            bar1.className = 'skel-bone skel-bar';
-            bar1.style.width = (60 + Math.round(Math.random() * 60)) + 'px';
-            var bar2 = document.createElement('div');
-            bar2.className = 'skel-bone skel-bar skel-bar-sm';
-            bar2.style.width = '48px';
-            col.appendChild(bar1);
-            col.appendChild(bar2);
-            header.appendChild(circle);
-            header.appendChild(col);
-            group.appendChild(header);
-            // Child rows
+            group.appendChild(buildSkelRow('skel-header', 'skel-circle', 60 + Math.round(Math.random() * 60), 48));
             for (var c = 0; c < counts[g]; c++) {
-                var row = document.createElement('div');
-                row.className = 'skel-row skel-child';
-                var hex = document.createElement('div');
-                hex.className = 'skel-bone skel-hex';
-                var col2 = document.createElement('div');
-                col2.className = 'skel-col';
-                var b1 = document.createElement('div');
-                b1.className = 'skel-bone skel-bar';
-                b1.style.width = (80 + Math.round(Math.random() * 100)) + 'px';
-                var b2 = document.createElement('div');
-                b2.className = 'skel-bone skel-bar skel-bar-sm';
-                b2.style.width = (100 + Math.round(Math.random() * 80)) + 'px';
-                col2.appendChild(b1);
-                col2.appendChild(b2);
-                row.appendChild(hex);
-                row.appendChild(col2);
-                group.appendChild(row);
+                group.appendChild(buildSkelRow('skel-child', 'skel-hex', 80 + Math.round(Math.random() * 100), 100 + Math.round(Math.random() * 80)));
             }
             container.appendChild(group);
         }
     }
 
-    function loadMagentoCommands() {
-        if (commandsLoaded) return;
-        commandsLoaded = true;
-        showLoader(mageCommandsList);
+    function buildSkelRow(rowClass, shapeClass, bar1W, bar2W) {
+        var row = document.createElement('div');
+        row.className = 'skel-row ' + rowClass;
+        var shape = document.createElement('div');
+        shape.className = 'skel-bone ' + shapeClass;
+        var col = document.createElement('div');
+        col.className = 'skel-col';
+        var b1 = document.createElement('div');
+        b1.className = 'skel-bone skel-bar';
+        b1.style.width = bar1W + 'px';
+        var b2 = document.createElement('div');
+        b2.className = 'skel-bone skel-bar skel-bar-sm';
+        b2.style.width = bar2W + 'px';
+        col.appendChild(b1);
+        col.appendChild(b2);
+        row.appendChild(shape);
+        row.appendChild(col);
+        return row;
+    }
 
-        fetch(BASE_URL + '?action=commands')
+    function loadCommandList(opts) {
+        if (opts.loaded) return;
+        opts.loaded = true;
+        showLoader(opts.container);
+
+        fetch(BASE_URL + '?action=' + opts.fetchAction)
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if (data.error) {
-                    mageCommandsList.textContent = __('Errore') + ': ' + data.error;
-                    return;
-                }
-
-                while (mageCommandsList.firstChild) mageCommandsList.removeChild(mageCommandsList.firstChild);
-                mageCommandsList.className = 'SpaceSidebarContainer';
-
+                if (data.error) { opts.container.textContent = __('Errore') + ': ' + data.error; return; }
+                clearChildren(opts.container);
+                opts.container.className = 'SpaceSidebarContainer';
                 var total = 0;
                 Object.keys(data.groups).forEach(function (ns) {
                     var cmds = data.groups[ns];
                     total += cmds.length;
-                    mageCommandsList.appendChild(buildNsGroup(ns, cmds, 'run'));
+                    opts.container.appendChild(buildNsGroup(ns, cmds, opts.runAction));
                 });
-
-                if (mageCommandsBadge) mageCommandsBadge.textContent = total + ' ' + (total === 1 ? __('comando') : __('comandi'));
-
-                // Auto-expand first group and select first command
-                var firstGroup = mageCommandsList.querySelector('.ns-group');
+                if (opts.badge) opts.badge.textContent = total + ' ' + pluralize(total, 'comando', 'comandi');
+                var firstGroup = opts.container.querySelector('.ns-group');
                 if (firstGroup) firstGroup.classList.add('expanded');
-                var firstCmd = mageCommandsList.querySelector('.ResourceListItemChildren .ResourceSidebarItem');
+                var firstCmd = opts.container.querySelector('.ResourceListItemChildren .ResourceSidebarItem');
                 if (firstCmd) firstCmd.click();
             })
-            .catch(function (err) {
-                console.error('loadMagentoCommands error:', err);
-                mageCommandsList.textContent = __('Impossibile caricare i comandi');
-            });
+            .catch(function () { opts.container.textContent = opts.errorMsg; });
     }
 
-    function buildNsGroup(ns, cmds, runAction) {
-        var svgNs = 'http://www.w3.org/2000/svg';
+    var mageOpts = { container: mageCommandsList, badge: mageCommandsBadge, fetchAction: 'commands', runAction: 'run', loaded: false, errorMsg: __('Impossibile caricare i comandi') };
+    var composerOpts = { container: composerCommandsList, badge: composerCommandsBadge, fetchAction: 'composer_commands', runAction: 'run_composer', loaded: false, errorMsg: __('Impossibile caricare i comandi composer') };
 
-        // ResourceListItem
+    // ── Build command list UI ────────────────────────────────
+
+    function buildNsGroup(ns, cmds, runAction) {
         var group = document.createElement('div');
         group.className = 'ResourceListItem ns-group';
 
-        // ResourceListItemParent
         var parent = document.createElement('div');
         parent.className = 'ResourceListItemParent';
 
-        // ResourceSidebarItem (parent row)
+        // Parent sidebar item
         var sidebar = document.createElement('div');
         sidebar.className = 'ResourceSidebarItem selected';
 
-        // ResourceItem
-        var resItem = document.createElement('div');
-        resItem.className = 'ResourceItem';
+        var resItem = buildResourceItem(
+            (function () { var d = document.createElement('div'); d.className = 'ns-icon'; d.textContent = '>'; return d; })(),
+            ns,
+            cmds.length + ' ' + pluralize(cmds.length, 'comando', 'comandi')
+        );
+        sidebar.appendChild(resItem);
 
-        // ResourceItem__Icon > ResourceIcon > ns-icon (nostra icona custom)
-        var iconWrap = document.createElement('div');
-        iconWrap.className = 'ResourceItem__Icon';
-        var resIcon = document.createElement('div');
-        resIcon.className = 'ResourceIcon';
-        resIcon.style.cssText = 'width:28px;height:28px';
-        var nsIcon = document.createElement('div');
-        nsIcon.className = 'ns-icon';
-        nsIcon.textContent = '>';
-        resIcon.appendChild(nsIcon);
-        iconWrap.appendChild(resIcon);
-
-        // ResourceItem__Desc
-        var desc = document.createElement('div');
-        desc.className = 'ResourceItem__Desc';
-        var title = document.createElement('div');
-        title.className = 'ResourceItem__Title';
-        title.textContent = ns;
-        var subtitle = document.createElement('div');
-        subtitle.className = 'ResourceItem__Subtitle';
-        subtitle.textContent = cmds.length + ' ' + (cmds.length === 1 ? __('comando') : __('comandi'));
-        desc.appendChild(title);
-        desc.appendChild(subtitle);
-
-        resItem.appendChild(iconWrap);
-        resItem.appendChild(desc);
-
-        // flex-auto
         var spacer = document.createElement('div');
         spacer.className = 'flex-auto';
+        sidebar.appendChild(spacer);
 
-        // ResourceSidebarItemInfo > ResourceChildrenInfo > count
+        // Count badge
         var info = document.createElement('div');
         info.className = 'ResourceSidebarItemInfo';
         var childInfo = document.createElement('div');
         childInfo.className = 'ResourceChildrenInfo';
         var infoItem = document.createElement('div');
         infoItem.className = 'ResourceChildrenInfoItem';
-        // Teal check circle icon (14×14, nostra versione)
-        var checkIcon = document.createElement('div');
-        checkIcon.className = 'Icon layout vertical center-center';
-        checkIcon.style.cssText = 'width:14px;height:14px';
-        var checkSvg = document.createElementNS(svgNs, 'svg');
-        checkSvg.setAttribute('width', '14');
-        checkSvg.setAttribute('height', '14');
-        checkSvg.setAttribute('viewBox', '0 0 24 24');
-        var checkPath = document.createElementNS(svgNs, 'path');
-        checkPath.setAttribute('fill', '#00d1ca');
-        checkPath.setAttribute('d', 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
-        checkSvg.appendChild(checkPath);
-        checkIcon.appendChild(checkSvg);
+        infoItem.appendChild(wrapIcon(createSvg(14, 14, '0 0 24 24', [{attrs: {fill: '#00d1ca', d: SVG_PATH_CHECK_SM}}]), 14));
         var countVal = document.createElement('div');
         countVal.className = 'ResourceChildrenInfoItemValue';
         countVal.textContent = cmds.length;
-        infoItem.appendChild(checkIcon);
         infoItem.appendChild(countVal);
         childInfo.appendChild(infoItem);
         info.appendChild(childInfo);
-
-        // ResourceSidebarItemButtons (empty for parent)
-        var buttons = document.createElement('div');
-        buttons.className = 'ResourceSidebarItemButtons';
-
-        sidebar.appendChild(resItem);
-        sidebar.appendChild(spacer);
         sidebar.appendChild(info);
-        sidebar.appendChild(buttons);
 
-        // ResourceListItemParentArrow
+        sidebar.appendChild(document.createElement('div')).className = 'ResourceSidebarItemButtons';
+
+        // Arrow
         var arrow = document.createElement('div');
         arrow.className = 'ResourceListItemParentArrow';
-        var arrowIcon = document.createElement('div');
-        arrowIcon.className = 'Icon layout vertical center-center';
-        arrowIcon.style.cssText = 'width:20px;height:20px';
-        var arrowSvg = document.createElementNS(svgNs, 'svg');
-        arrowSvg.setAttribute('width', '20');
-        arrowSvg.setAttribute('height', '20');
-        arrowSvg.setAttribute('viewBox', '0 0 24 24');
-        var arrowG = document.createElementNS(svgNs, 'g');
-        arrowG.setAttribute('transform', 'rotate(-90, 12, 12)');
-        var arrowPath = document.createElementNS(svgNs, 'path');
-        arrowPath.setAttribute('fill', 'white');
-        arrowPath.setAttribute('d', 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z');
-        arrowG.appendChild(arrowPath);
-        arrowSvg.appendChild(arrowG);
-        arrowIcon.appendChild(arrowSvg);
-        arrow.appendChild(arrowIcon);
+        var arrowSvg = createSvg(20, 20, '0 0 24 24', [{tag: 'g', attrs: {transform: 'rotate(-90, 12, 12)'}}, {attrs: {fill: 'white', d: SVG_PATH_CHEVRON}}]);
+        // Move the path inside the g
+        var gEl = arrowSvg.querySelector('g');
+        var pEl = arrowSvg.querySelector('path');
+        if (gEl && pEl) { arrowSvg.removeChild(pEl); gEl.appendChild(pEl); }
+        arrow.appendChild(wrapIcon(arrowSvg, 20));
 
         parent.appendChild(sidebar);
         parent.appendChild(arrow);
 
-        // ReactCollapse--collapse > ReactCollapse--content > ResourceListItemChildren
+        // Collapse container
         var collapse = document.createElement('div');
         collapse.className = 'ReactCollapse--collapse';
         var content = document.createElement('div');
         content.className = 'ReactCollapse--content';
         var children = document.createElement('div');
         children.className = 'ResourceListItemChildren';
-
-        cmds.forEach(function (cmd) {
-            children.appendChild(buildCmdItem(cmd, runAction));
-        });
+        cmds.forEach(function (cmd) { children.appendChild(buildCmdItem(cmd, runAction)); });
         content.appendChild(children);
         collapse.appendChild(content);
 
+        // Expand/collapse animation
         parent.addEventListener('click', function () {
-            var isExpanding = !group.classList.contains('expanded');
-            if (isExpanding) {
+            if (!group.classList.contains('expanded')) {
                 group.classList.add('expanded');
-                // Animate open: set height explicitly then transition to scrollHeight
-                collapse.style.height = '0px';
-                collapse.style.overflow = 'hidden';
-                collapse.style.transition = 'height 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
-                requestAnimationFrame(function () {
-                    collapse.style.height = collapse.scrollHeight + 'px';
-                });
-                var onEnd = function () {
-                    collapse.style.height = '';
-                    collapse.style.overflow = '';
-                    collapse.style.transition = '';
-                    collapse.removeEventListener('transitionend', onEnd);
-                };
-                collapse.addEventListener('transitionend', onEnd);
+                animateExpand(collapse);
             } else {
-                // Animate close: set current height, then transition to 0
-                collapse.style.height = collapse.scrollHeight + 'px';
-                collapse.style.overflow = 'hidden';
-                collapse.style.transition = 'height 0.2s ease-out';
-                requestAnimationFrame(function () {
-                    collapse.style.height = '0px';
-                });
-                var onEnd2 = function () {
-                    group.classList.remove('expanded');
-                    collapse.style.height = '';
-                    collapse.style.overflow = '';
-                    collapse.style.transition = '';
-                    collapse.removeEventListener('transitionend', onEnd2);
-                };
-                collapse.addEventListener('transitionend', onEnd2);
+                animateCollapse(collapse, function () { group.classList.remove('expanded'); });
             }
         });
 
@@ -663,92 +579,83 @@
         return group;
     }
 
-    // ── Detail panel (right side in CLI mode) ──────────────────
-    var detailHeader     = document.getElementById('detail-header');
-    var detailTitle      = document.getElementById('detail-title');
-    var detailSubtitle   = document.getElementById('detail-subtitle');
-    var detailProps      = document.getElementById('detail-props');
-    var detailArgs       = document.getElementById('detail-args');
-    var detailRun        = document.getElementById('detail-run');
-    var detailStop       = document.getElementById('detail-stop');
-    var detailContentBar = document.getElementById('detail-content-bar');
-    var detailClear      = document.getElementById('detail-clear');
-    var termHeader       = document.getElementById('terminal-header');
-    var selectedCmd      = null; // { action, name, desc }
+    function buildResourceItem(iconEl, titleText, subtitleText) {
+        var resItem = document.createElement('div');
+        resItem.className = 'ResourceItem';
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'ResourceItem__Icon';
+        var resIcon = document.createElement('div');
+        resIcon.className = 'ResourceIcon';
+        resIcon.style.cssText = 'width:28px;height:28px';
+        resIcon.appendChild(iconEl);
+        iconWrap.appendChild(resIcon);
+        var desc = document.createElement('div');
+        desc.className = 'ResourceItem__Desc';
+        var title = document.createElement('div');
+        title.className = 'ResourceItem__Title';
+        title.textContent = titleText;
+        var subtitle = document.createElement('div');
+        subtitle.className = 'ResourceItem__Subtitle';
+        subtitle.textContent = subtitleText;
+        desc.appendChild(title);
+        desc.appendChild(subtitle);
+        resItem.appendChild(iconWrap);
+        resItem.appendChild(desc);
+        return resItem;
+    }
 
-    var detailCmdFull = document.getElementById('detail-cmd-full');
+    function buildCmdItem(cmd, runAction) {
+        runAction = runAction || 'run';
+        var item = document.createElement('div');
+        item.className = 'ResourceSidebarItem';
+
+        // Hex icon
+        var hexSvg = createSvg(28, 28, '0 0 36 36', [
+            {attrs: {fill: 'rgba(128,140,169,0.25)', d: 'M28.055 32.557A2.871 2.871 0 0125.552 34H10.443a2.886 2.886 0 01-2.503-1.448l-7.552-13.1a2.915 2.915 0 010-2.906L7.94 3.448A2.892 2.892 0 0110.443 2h15.11c1.033 0 1.986.55 2.502 1.448l7.557 13.104a2.915 2.915 0 010 2.906l-7.557 13.099z'}},
+            {attrs: {d: 'M12 14l4 4-4 4', stroke: 'rgba(255,255,255,0.7)', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', fill: 'none'}},
+            {tag: 'line', attrs: {x1: '19', y1: '22', x2: '24', y2: '22', stroke: 'rgba(255,255,255,0.7)', 'stroke-width': '2', 'stroke-linecap': 'round'}}
+        ]);
+        var hexIcon = wrapIcon(hexSvg, 28);
+
+        var resItem = buildResourceItem(hexIcon, cmd.name, cmd.desc);
+        item.appendChild(resItem);
+        item.appendChild(document.createElement('div')).className = 'flex-auto';
+        item.appendChild(document.createElement('div')).className = 'ResourceSidebarItemButtons';
+
+        item.addEventListener('click', function () { selectCommand(runAction, cmd.name, cmd.desc); });
+        return item;
+    }
+
+    // ── Detail panel (CLI mode) ──────────────────────────────
 
     function showDetailEmptyState() {
         removeDetailEmptyState();
-
-        // Show the detail panels with placeholder content
         if (detailHeader)     detailHeader.style.display = '';
         if (detailProps)      detailProps.style.display = '';
         if (detailContentBar) detailContentBar.style.display = '';
         if (termHeader)       termHeader.style.display = 'none';
 
-        // Fill header with placeholder
         if (detailTitle)    detailTitle.textContent = '\u2014';
         if (detailSubtitle) detailSubtitle.textContent = __('Seleziona un comando dalla lista');
         if (detailCmdFull)  detailCmdFull.textContent = '\u2014';
         if (detailArgs)     { detailArgs.value = ''; detailArgs.disabled = true; }
-        if (detailRun)  detailRun.setAttribute('disabled', '');
+        setDetailButtons(false);
         if (detailStop) detailStop.setAttribute('disabled', '');
-
-        // Mark as empty state
         if (detailHeader) detailHeader.dataset.emptyState = '1';
 
-        // Replace terminal with centered empty state
-        while (term.firstChild) term.removeChild(term.firstChild);
-        var empty = document.createElement('div');
-        empty.className = 'term-empty-state';
-
-        var svgNs = 'http://www.w3.org/2000/svg';
-        var iconWrap = document.createElement('div');
-        iconWrap.className = 'detail-empty-icon';
-        var svg = document.createElementNS(svgNs, 'svg');
-        svg.setAttribute('width', '48');
-        svg.setAttribute('height', '48');
-        svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('fill', 'none');
-        svg.setAttribute('stroke', 'currentColor');
-        svg.setAttribute('stroke-width', '1.2');
-        svg.setAttribute('stroke-linecap', 'round');
-        svg.setAttribute('stroke-linejoin', 'round');
-        var r = document.createElementNS(svgNs, 'rect');
-        r.setAttribute('x', '2'); r.setAttribute('y', '3');
-        r.setAttribute('width', '20'); r.setAttribute('height', '18');
-        r.setAttribute('rx', '3');
-        svg.appendChild(r);
-        var pa = document.createElementNS(svgNs, 'path');
-        pa.setAttribute('d', 'M7 10l3 3-3 3');
-        svg.appendChild(pa);
-        var ln = document.createElementNS(svgNs, 'line');
-        ln.setAttribute('x1', '14'); ln.setAttribute('y1', '16');
-        ln.setAttribute('x2', '17'); ln.setAttribute('y2', '16');
-        svg.appendChild(ln);
-        iconWrap.appendChild(svg);
-        empty.appendChild(iconWrap);
-
-        var t = document.createElement('div');
-        t.className = 'detail-empty-title';
-        t.textContent = __('Seleziona un comando');
-        empty.appendChild(t);
-
-        var s = document.createElement('div');
-        s.className = 'detail-empty-sub';
-        s.textContent = __('Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo.');
-        empty.appendChild(s);
-
-        term.appendChild(empty);
+        clearChildren(term);
+        var termSvg = createSvg(48, 48, '0 0 24 24', [
+            {tag: 'rect', attrs: {x: '2', y: '3', width: '20', height: '18', rx: '3', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'}},
+            {attrs: {d: 'M7 10l3 3-3 3', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'}},
+            {tag: 'line', attrs: {x1: '14', y1: '16', x2: '17', y2: '16', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'}}
+        ]);
+        term.appendChild(buildEmptyState(termSvg, __('Seleziona un comando'), __('Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo.')));
     }
 
     function removeDetailEmptyState() {
-        if (detailHeader && detailHeader.dataset.emptyState) {
-            delete detailHeader.dataset.emptyState;
-        }
+        if (detailHeader && detailHeader.dataset.emptyState) delete detailHeader.dataset.emptyState;
         if (detailArgs) detailArgs.disabled = false;
-        if (detailRun)  detailRun.removeAttribute('disabled');
+        setDetailButtons(false);
     }
 
     function selectCommand(action, name, desc) {
@@ -756,94 +663,52 @@
         selectedCmd = { action: action, name: name };
         var prefix = action === 'run_composer' ? 'composer ' : 'php bin/magento ';
 
-        // Populate detail header
-        if (detailTitle)    detailTitle.textContent = name;
-        if (detailSubtitle) detailSubtitle.textContent = desc || '';
-        if (detailCmdFull)  detailCmdFull.textContent = prefix + name;
+        if (detailTitle)      detailTitle.textContent = name;
+        if (detailSubtitle)   detailSubtitle.textContent = desc || '';
+        if (detailCmdFull)    detailCmdFull.textContent = prefix + name;
         if (detailHeader)     detailHeader.style.display = '';
         if (detailProps)      detailProps.style.display = '';
         if (detailContentBar) detailContentBar.style.display = '';
         if (detailArgs)       detailArgs.value = '';
+        if (termHeader)       termHeader.style.display = 'none';
 
-        // Hide the console header (Tasks mode), show detail header instead
-        if (termHeader) termHeader.style.display = 'none';
-
-        // Mark selected in sidebar
-        document.querySelectorAll('.ResourceSidebarItem').forEach(function (el) {
-            el.classList.remove('selected');
-        });
-        // Find and select the clicked item (by title text)
+        document.querySelectorAll('.ResourceSidebarItem').forEach(function (el) { el.classList.remove('selected'); });
         document.querySelectorAll('.ResourceListItemChildren .ResourceSidebarItem').forEach(function (el) {
             var t = el.querySelector('.ResourceItem__Title');
             if (t && t.textContent === name) el.classList.add('selected');
         });
-
         clearOutput();
     }
 
-    // Copiato da index4.html riga 8683-8716 (LogStageSection)
+    // ── Log stage header (CLI mode) ──────────────────────────
+
     function addLogStageHeader(name, success) {
         var es = term.querySelector('.term-empty-state');
         if (es) term.removeChild(es);
 
-        var svgNs = 'http://www.w3.org/2000/svg';
-
-        // LogStageSection (index4.html riga 6166)
         var section = document.createElement('div');
         section.className = 'LogStageSection LogStageSection--opened';
-
-        // LogStageSectionHeader (index4.html riga 8685)
         var header = document.createElement('div');
         header.className = 'LogStageSectionHeader';
 
-        // Chevron icon 16×16 (index4.html riga 8686)
-        var chevron = document.createElement('div');
-        chevron.className = 'Icon layout vertical center-center chevronDown';
-        chevron.style.cssText = 'width:16px;height:16px';
-        var chevSvg = document.createElementNS(svgNs, 'svg');
-        chevSvg.setAttribute('width', '16');
-        chevSvg.setAttribute('height', '16');
-        chevSvg.setAttribute('viewBox', '0 0 24 24');
-        var chevPath = document.createElementNS(svgNs, 'path');
-        chevPath.setAttribute('fill', 'white');
-        chevPath.setAttribute('d', 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z');
-        chevSvg.appendChild(chevPath);
-        var chevPath2 = document.createElementNS(svgNs, 'path');
-        chevPath2.setAttribute('fill', 'none');
-        chevPath2.setAttribute('d', 'M0 0h24v24H0V0z');
-        chevSvg.appendChild(chevPath2);
-        chevron.appendChild(chevSvg);
+        // Chevron
+        var chevSvg = createSvg(16, 16, '0 0 24 24', [
+            {attrs: {fill: 'white', d: SVG_PATH_CHEVRON}},
+            {attrs: {fill: 'none', d: 'M0 0h24v24H0V0z'}}
+        ]);
+        var chevron = wrapIcon(chevSvg, 16, 'chevronDown');
 
-        // Status icon 22×22 (index4.html riga 8697)
-        var statusIcon = document.createElement('div');
-        statusIcon.className = 'Icon layout vertical center-center checkCircle status';
-        statusIcon.style.cssText = 'width:22px;height:22px';
-        var icon = document.createElementNS(svgNs, 'svg');
-        icon.setAttribute('width', '22');
-        icon.setAttribute('height', '22');
-        icon.setAttribute('viewBox', '0 0 24 24');
-        var iconPath = document.createElementNS(svgNs, 'path');
-        iconPath.setAttribute('fill-rule', 'nonzero');
-        if (success === true) {
-            iconPath.setAttribute('fill', '#00d1ca');
-            iconPath.setAttribute('d', 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM17.24141 7l-6.965641 6.6359475L6.75859 10.271895 5 11.9539213l3.517179 3.3640525L10.275769 17l1.75859-1.6820262L19 8.6820262 17.24141 7z');
-        } else if (success === false) {
-            iconPath.setAttribute('fill', '#ff4d61');
-            iconPath.setAttribute('d', 'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z');
-        } else {
-            iconPath.setAttribute('fill', '#629ada');
-            iconPath.setAttribute('d', 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z');
-            statusIcon.classList.add('progress-pulse');
-        }
-        icon.appendChild(iconPath);
-        statusIcon.appendChild(icon);
+        // Status icon
+        var statusColor = success === true ? '#00d1ca' : success === false ? '#ff4d61' : '#629ada';
+        var statusPath = success === true ? SVG_PATH_CHECK : success === false ? SVG_PATH_ERROR_X : SVG_PATH_CIRCLE;
+        var statusSvg = createSvg(22, 22, '0 0 24 24', [{attrs: {'fill-rule': 'nonzero', fill: statusColor, d: statusPath}}]);
+        var statusIcon = wrapIcon(statusSvg, 22, 'checkCircle status');
+        if (success === null) statusIcon.classList.add('progress-pulse');
+        var iconPath = statusSvg.querySelector('path');
 
-        // Title (index4.html riga 8707)
         var titleEl = document.createElement('div');
         titleEl.className = 'title';
         titleEl.textContent = name;
-
-        // Elapsed (index4.html riga 8708)
         var elapsed = document.createElement('div');
         elapsed.className = 'elapsed';
         elapsed.textContent = 'just now';
@@ -853,46 +718,20 @@
         header.appendChild(titleEl);
         header.appendChild(elapsed);
 
-        // LogStageSectionLines (index4.html riga 8716)
         var lines = document.createElement('div');
         lines.className = 'LogStageSectionLines';
 
-        // Chevron click toggles LogStageSectionLines visibility with animation
         chevron.addEventListener('click', function (e) {
             e.stopPropagation();
-            var isOpening = !section.classList.contains('LogStageSection--opened');
-            if (isOpening) {
+            if (!section.classList.contains('LogStageSection--opened')) {
                 section.classList.add('LogStageSection--opened');
                 lines.style.display = '';
-                lines.style.height = '0px';
-                lines.style.overflow = 'hidden';
-                lines.style.transition = 'height 0.2s ease-out';
-                requestAnimationFrame(function () {
-                    lines.style.height = lines.scrollHeight + 'px';
-                });
-                var done = function () {
-                    lines.style.height = '';
-                    lines.style.overflow = '';
-                    lines.style.transition = '';
-                    lines.removeEventListener('transitionend', done);
-                };
-                lines.addEventListener('transitionend', done);
+                animateExpand(lines);
             } else {
-                lines.style.height = lines.scrollHeight + 'px';
-                lines.style.overflow = 'hidden';
-                lines.style.transition = 'height 0.2s ease-out';
-                requestAnimationFrame(function () {
-                    lines.style.height = '0px';
-                });
-                var done2 = function () {
+                animateCollapse(lines, function () {
                     section.classList.remove('LogStageSection--opened');
                     lines.style.display = 'none';
-                    lines.style.height = '';
-                    lines.style.overflow = '';
-                    lines.style.transition = '';
-                    lines.removeEventListener('transitionend', done2);
-                };
-                lines.addEventListener('transitionend', done2);
+                });
             }
         });
 
@@ -903,206 +742,44 @@
         return { section: section, iconPath: iconPath, lines: lines };
     }
 
+    // ── Run selected command (CLI mode) ──────────────────────
+
     function runSelectedCommand() {
         if (!selectedCmd) return;
         var args = detailArgs ? detailArgs.value.trim() : '';
         clearOutput();
         setRunning(true);
-        if (detailRun)  detailRun.setAttribute('disabled', '');
-        if (detailStop) detailStop.removeAttribute('disabled');
+        setDetailButtons(true);
 
-        // Add MagePanel-style stage header (blue = running)
         var prefix = selectedCmd.action === 'run_composer' ? 'composer ' : 'bin/magento ';
         var stage = addLogStageHeader(prefix + selectedCmd.name + (args ? ' ' + args : ''), null);
         activeLogLines = stage.lines;
 
         var url = BASE_URL
             + '?action=' + encodeURIComponent(selectedCmd.action)
-            + '&name='  + encodeURIComponent(selectedCmd.name)
-            + '&args='  + encodeURIComponent(args);
+            + '&name=' + encodeURIComponent(selectedCmd.name)
+            + '&args=' + encodeURIComponent(args);
+
         openSse(url, function (ok) {
             setRunning(false);
-            if (detailRun)  detailRun.removeAttribute('disabled');
-            if (detailStop) detailStop.setAttribute('disabled', '');
-
-            // Update stage header: stop pulsing, set check (teal) or X (red)
+            setDetailButtons(false);
             var pulser = stage.section.querySelector('.progress-pulse');
             if (pulser) pulser.classList.remove('progress-pulse');
             if (stage.iconPath) {
                 stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
-                stage.iconPath.setAttribute('d', ok
-                    ? 'M20.486563 3.5134371c4.684583 4.6845827 4.684583 12.2885431 0 16.9731258-4.684583 4.6845828-12.288543 4.6845828-16.973126 0-4.684583-4.6845827-4.684583-12.2885431 0-16.9731258 4.684583-4.6845828 12.288543-4.6845828 16.973126 0zM17.24141 7l-6.965641 6.6359475L6.75859 10.271895 5 11.9539213l3.517179 3.3640525L10.275769 17l1.75859-1.6820262L19 8.6820262 17.24141 7z'
-                    : 'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'
-                );
+                stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
             }
-
             activeLogLines = null;
             loadSysInfo();
         });
     }
 
-    if (detailRun) {
-        detailRun.addEventListener('click', function () {
-            if (!detailRun.hasAttribute('disabled')) runSelectedCommand();
-        });
-    }
+    if (detailRun)  detailRun.addEventListener('click', function () { if (!detailRun.hasAttribute('disabled')) runSelectedCommand(); });
+    if (detailStop) detailStop.addEventListener('click', function () { stopExecution(__('Comando interrotto')); setDetailButtons(false); });
+    if (detailArgs) detailArgs.addEventListener('keydown', function (e) { if (e.key === 'Enter') runSelectedCommand(); });
+    if (detailClear) detailClear.addEventListener('click', function () { clearOutput(); });
 
-    if (detailStop) {
-        detailStop.addEventListener('click', function () {
-            stopRequested = true;
-            // Send SIGTERM to the running process via server
-            fetch(BASE_URL + '?action=stop_cmd');
-            if (currentEs) {
-                currentEs.close(); currentEs = null;
-                addLine(__('Comando interrotto'), 'warn');
-                setRunning(false);
-                if (detailRun)  detailRun.removeAttribute('disabled');
-                if (detailStop) detailStop.setAttribute('disabled', '');
-            }
-        });
-    }
-
-    if (detailArgs) {
-        detailArgs.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') runSelectedCommand();
-        });
-    }
-
-    if (detailClear) {
-        detailClear.addEventListener('click', function () { clearOutput(); });
-    }
-
-    function buildCmdItem(cmd, runAction) {
-        runAction = runAction || 'run';
-        var svgNs = 'http://www.w3.org/2000/svg';
-
-        // ResourceSidebarItem (child row)
-        var item = document.createElement('div');
-        item.className = 'ResourceSidebarItem';
-
-        // ResourceItem (icon + desc)
-        var resItem = document.createElement('div');
-        resItem.className = 'ResourceItem';
-
-        // ResourceItem__Icon > ResourceIcon (28×28 — nostra icona, esagono con >)
-        var iconWrap = document.createElement('div');
-        iconWrap.className = 'ResourceItem__Icon';
-        var resIcon = document.createElement('div');
-        resIcon.className = 'ResourceIcon';
-        resIcon.style.cssText = 'width:28px;height:28px';
-        var iconInner = document.createElement('div');
-        iconInner.className = 'Icon layout vertical center-center';
-        iconInner.style.cssText = 'width:28px;height:28px';
-        // Hex outline SVG (nostra icona — non copiata da MagePanel)
-        var svg = document.createElementNS(svgNs, 'svg');
-        svg.setAttribute('width', '28');
-        svg.setAttribute('height', '28');
-        svg.setAttribute('viewBox', '0 0 36 36');
-        // Hex background (grigio come MagePanel, non bianco)
-        var hexBg = document.createElementNS(svgNs, 'path');
-        hexBg.setAttribute('fill', 'rgba(128,140,169,0.25)');
-        hexBg.setAttribute('d', 'M28.055 32.557A2.871 2.871 0 0125.552 34H10.443a2.886 2.886 0 01-2.503-1.448l-7.552-13.1a2.915 2.915 0 010-2.906L7.94 3.448A2.892 2.892 0 0110.443 2h15.11c1.033 0 1.986.55 2.502 1.448l7.557 13.104a2.915 2.915 0 010 2.906l-7.557 13.099z');
-        // Terminal prompt icon (> _) inside hex
-        var promptPath = document.createElementNS(svgNs, 'path');
-        promptPath.setAttribute('d', 'M12 14l4 4-4 4');
-        promptPath.setAttribute('stroke', 'rgba(255,255,255,0.7)');
-        promptPath.setAttribute('stroke-width', '2');
-        promptPath.setAttribute('stroke-linecap', 'round');
-        promptPath.setAttribute('stroke-linejoin', 'round');
-        promptPath.setAttribute('fill', 'none');
-        var underline = document.createElementNS(svgNs, 'line');
-        underline.setAttribute('x1', '19');
-        underline.setAttribute('y1', '22');
-        underline.setAttribute('x2', '24');
-        underline.setAttribute('y2', '22');
-        underline.setAttribute('stroke', 'rgba(255,255,255,0.7)');
-        underline.setAttribute('stroke-width', '2');
-        underline.setAttribute('stroke-linecap', 'round');
-        svg.appendChild(hexBg);
-        svg.appendChild(promptPath);
-        svg.appendChild(underline);
-        iconInner.appendChild(svg);
-        resIcon.appendChild(iconInner);
-        iconWrap.appendChild(resIcon);
-
-        // ResourceItem__Desc
-        var desc = document.createElement('div');
-        desc.className = 'ResourceItem__Desc';
-        var title = document.createElement('div');
-        title.className = 'ResourceItem__Title';
-        title.textContent = cmd.name;
-        var subtitle = document.createElement('div');
-        subtitle.className = 'ResourceItem__Subtitle';
-        subtitle.textContent = cmd.desc;
-        desc.appendChild(title);
-        desc.appendChild(subtitle);
-
-        resItem.appendChild(iconWrap);
-        resItem.appendChild(desc);
-
-        // flex-auto
-        var spacer = document.createElement('div');
-        spacer.className = 'flex-auto';
-
-        // ResourceSidebarItemButtons (empty, like MagePanel children)
-        var buttons = document.createElement('div');
-        buttons.className = 'ResourceSidebarItemButtons';
-
-        // Click row → select command, show detail panel on the right
-        item.addEventListener('click', function () {
-            selectCommand(runAction, cmd.name, cmd.desc);
-        });
-
-        // Assemble (same order as index4.html line 7899-7957)
-        item.appendChild(resItem);
-        item.appendChild(spacer);
-        item.appendChild(buttons);
-        return item;
-    }
-
-    // ================================================================
-    //  Composer commands (lazy load)
-    // ================================================================
-
-    function loadComposerCommands() {
-        if (composerCommandsLoaded) return;
-        composerCommandsLoaded = true;
-        showLoader(composerCommandsList);
-
-        fetch(BASE_URL + '?action=composer_commands')
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.error) {
-                    composerCommandsList.textContent = __('Errore') + ': ' + data.error;
-                    return;
-                }
-
-                while (composerCommandsList.firstChild) composerCommandsList.removeChild(composerCommandsList.firstChild);
-                composerCommandsList.className = 'SpaceSidebarContainer';
-
-                var total = 0;
-                Object.keys(data.groups).forEach(function (ns) {
-                    var cmds = data.groups[ns];
-                    total += cmds.length;
-                    composerCommandsList.appendChild(buildNsGroup(ns, cmds, 'run_composer'));
-                });
-
-                if (composerCommandsBadge) composerCommandsBadge.textContent = total + ' ' + (total === 1 ? __('comando') : __('comandi'));
-
-                var firstGroup = composerCommandsList.querySelector('.ns-group');
-                if (firstGroup) firstGroup.classList.add('expanded');
-                var firstCmd = composerCommandsList.querySelector('.ResourceListItemChildren .ResourceSidebarItem');
-                if (firstCmd) firstCmd.click();
-            })
-            .catch(function (err) {
-                console.error('loadComposerCommands error:', err);
-                composerCommandsList.textContent = __('Impossibile caricare i comandi composer');
-            });
-    }
-
-    // ================================================================
-    //  Group tab activation
-    // ================================================================
+    // ── Group tabs ───────────────────────────────────────────
 
     var tabIndicator = document.getElementById('tab-indicator');
 
@@ -1122,9 +799,7 @@
             t.classList.toggle('selected', isActive);
             if (isActive) activeTab = t;
         });
-        document.querySelectorAll('.task-group').forEach(function (g) {
-            g.classList.toggle('active-group', g.dataset.id === groupId);
-        });
+        document.querySelectorAll('.task-group').forEach(function (g) { g.classList.toggle('active-group', g.dataset.id === groupId); });
         moveTabIndicator(activeTab);
         try { localStorage.setItem('panel_active_group', groupId); } catch (e) {}
     }
@@ -1132,16 +807,12 @@
     document.querySelectorAll('.group-tab').forEach(function (tab) {
         tab.addEventListener('click', function () { activateGroupTab(this.dataset.group); });
     });
-
-    // Reposition indicator on resize
     window.addEventListener('resize', function () {
         var active = document.querySelector('.group-tab.selected');
         if (active) moveTabIndicator(active);
     });
 
-    // ================================================================
-    //  Terminal resize handle
-    // ================================================================
+    // ── Terminal resize handle ────────────────────────────────
 
     (function () {
         var handle = document.getElementById('terminal-resize-handle');
@@ -1149,54 +820,32 @@
         if (!handle || !panel) return;
         var startY, startH;
         handle.addEventListener('mousedown', function (e) {
-            startY = e.clientY;
-            startH = panel.offsetHeight;
+            startY = e.clientY; startH = panel.offsetHeight;
             handle.classList.add('dragging');
             document.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onUp);
             e.preventDefault();
         });
-        function onMove(e) {
-            var delta = startY - e.clientY; // drag up = bigger terminal
-            var newH  = Math.max(80, Math.min(window.innerHeight * 0.8, startH + delta));
-            panel.style.height = newH + 'px';
-        }
-        function onUp() {
-            handle.classList.remove('dragging');
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
-        }
+        function onMove(e) { panel.style.height = Math.max(80, Math.min(window.innerHeight * 0.8, startH + (startY - e.clientY))) + 'px'; }
+        function onUp() { handle.classList.remove('dragging'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
     })();
 
-    // ================================================================
-    //  Section switching (Tasks / Magento CLI / Composer) — drawer nav
-    // ================================================================
+    // ── Section switching ────────────────────────────────────
 
     function switchSection(section) {
-        var isTasks    = section === 'tasks';
-        var isCli      = section === 'cli';
-        var isComposer = section === 'composer';
-        var isCmdMode  = isCli || isComposer;
+        var isTasks = section === 'tasks', isCli = section === 'cli', isComposer = section === 'composer';
+        var isCmdMode = isCli || isComposer;
 
-        // Drawer active states
-        if (navTasks)    navTasks.classList.toggle('active',    isTasks);
+        if (navTasks)    navTasks.classList.toggle('active', isTasks);
         if (navCommands) navCommands.classList.toggle('active', isCli);
         if (navComposer) navComposer.classList.toggle('active', isComposer);
+        document.querySelectorAll('.mobile-nav-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.section === section); });
 
-        // Mobile nav sync
-        document.querySelectorAll('.mobile-nav-btn').forEach(function (b) {
-            b.classList.toggle('active', b.dataset.section === section);
-        });
-
-        // CLI layout: grid (sidebar commands | terminal right)
         var workspace = document.getElementById('workspace');
         if (workspace) workspace.classList.toggle('cli-layout', isCmdMode);
-
-        // Reset inline height from resize handle when entering/leaving CLI mode
         var termPanel = document.getElementById('terminal-panel');
         if (termPanel) termPanel.style.height = '';
 
-        // Containers
         var taskGroups        = document.getElementById('task-groups');
         var mageContainer     = document.getElementById('mage-commands-container');
         var composerContainer = document.getElementById('composer-commands-container');
@@ -1207,91 +856,49 @@
         if (composerContainer) composerContainer.style.display = isComposer ? '' : 'none';
         if (groupTabs)         groupTabs.style.display         = isTasks ? '' : 'none';
 
-        // Hide/show header preset buttons (only in Tasks section)
-        document.querySelectorAll('.header-controls .Button[data-preset]').forEach(function (btn) {
-            btn.style.display = isTasks ? '' : 'none';
-        });
+        document.querySelectorAll('.header-controls .IconBtn[data-preset]').forEach(function (btn) { btn.style.display = isTasks ? '' : 'none'; });
         var headerSep = document.querySelector('.header-sep');
         if (headerSep) headerSep.style.display = isTasks ? '' : 'none';
 
-        // Toggle detail panel vs console header based on mode
-        if (detailHeader)     detailHeader.style.display     = 'none'; // hidden until a cmd is selected
+        if (detailHeader)     detailHeader.style.display     = 'none';
         if (detailProps)      detailProps.style.display       = 'none';
         if (detailContentBar) detailContentBar.style.display = 'none';
         if (termHeader)       termHeader.style.display       = isTasks ? '' : 'none';
 
-        // Show appropriate empty state
-        if (isCmdMode) {
-            showDetailEmptyState();
-        } else {
-            removeDetailEmptyState();
-            showTasksPlaceholder();
-        }
+        if (isCmdMode) { showDetailEmptyState(); } else { removeDetailEmptyState(); showTasksPlaceholder(); }
 
-        // Reset selection when switching sections
         selectedCmd = null;
-
-        if (isCli) loadMagentoCommands();
-        if (isComposer) loadComposerCommands();
+        if (isCli)      loadCommandList(mageOpts);
+        if (isComposer) loadCommandList(composerOpts);
     }
 
     if (navTasks)    navTasks.addEventListener('click',    function () { switchSection('tasks'); });
     if (navCommands) navCommands.addEventListener('click', function () { switchSection('cli'); });
     if (navComposer) navComposer.addEventListener('click', function () { switchSection('composer'); });
 
-    // Mobile bottom nav
+    // Mobile nav — switchSection already syncs everything
     document.querySelectorAll('.mobile-nav-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var section = this.dataset.section;
-            switchSection(section);
-            document.querySelectorAll('.mobile-nav-btn').forEach(function (b) {
-                b.classList.toggle('active', b.dataset.section === section);
-            });
-            // Also sync drawer nav
-            if (navTasks)    navTasks.classList.toggle('active',    section === 'tasks');
-            if (navCommands) navCommands.classList.toggle('active', section === 'cli');
-            if (navComposer) navComposer.classList.toggle('active', section === 'composer');
-        });
+        btn.addEventListener('click', function () { switchSection(this.dataset.section); });
     });
 
-    // ================================================================
-    //  Event listeners
-    // ================================================================
+    // ── Event listeners ──────────────────────────────────────
 
-    // Task table: click "Esegui" → confirm modal → run single task
     document.querySelectorAll('.task-run-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var taskId = this.dataset.task;
             var taskLabel = this.dataset.label;
             showConfirm(__('Esegui task'), __('Eseguire') + ' "' + taskLabel + '"?', function () {
-                clearOutput();
-                setRunning(true);
-                stopRequested = false;
+                beginOperation();
                 addSeparator(taskLabel);
                 setProgress(0, taskLabel);
-                runTask(taskId).then(function (ok) {
-                    setProgress(100, (ok ? __('Completato') : __('Errore')) + getElapsedLabel());
-                    setRunning(false);
-                    loadSysInfo();
-                });
+                runTask(taskId).then(function (ok) { finishOperation(ok); });
             });
         });
     });
 
-    // Terminal buttons
-    btnStop.addEventListener('click', function () {
-        stopRequested = true;
-        fetch(BASE_URL + '?action=stop_cmd');
-        if (currentEs) {
-            currentEs.close(); currentEs = null;
-            addLine(__("Operazione interrotta"), 'warn');
-            setRunning(false);
-        }
-    });
-
+    btnStop.addEventListener('click', function () { stopExecution(__('Operazione interrotta')); });
     btnClear.addEventListener('click', clearOutput);
 
-    // Presets: confirm modal → run multiple tasks in sequence
     document.querySelectorAll('.preset-confirm').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var presetKey = this.dataset.preset;
@@ -1299,53 +906,36 @@
             var ids = PRESETS[presetKey] || [];
             if (!ids.length) return;
             showConfirm(__('Esegui preset'), presetLabel + '\n\n' + __('Eseguire') + ' ' + ids.length + ' ' + __('operazioni') + '?', function () {
-                clearOutput();
-                setRunning(true);
-                stopRequested = false;
+                beginOperation();
                 (async function () {
                     var allOk = true;
                     for (var i = 0; i < ids.length; i++) {
-                        if (stopRequested) { addLine(__("Interrotto"), 'warn'); break; }
+                        if (stopRequested) { addLine(__('Interrotto'), 'warn'); break; }
                         setProgress(Math.round((i / ids.length) * 100), '[' + (i + 1) + '/' + ids.length + ']');
                         var ok = await runTask(ids[i]);
                         if (!ok) allOk = false;
                     }
-                    setProgress(100, (allOk ? __('Completato') : __('Errori')) + getElapsedLabel());
-                    setRunning(false);
-                    loadSysInfo();
+                    finishOperation(allOk);
                 })();
             });
         });
     });
 
-    // ================================================================
-    //  Init
-    // ================================================================
+    // ── Init ─────────────────────────────────────────────────
 
-    // Activate group tab (restore last or fall back to first)
     (function () {
-        // No transition on first paint
         if (tabIndicator) tabIndicator.style.transition = 'none';
         var saved = null;
         try { saved = localStorage.getItem('panel_active_group'); } catch (e) {}
         var target = saved && document.querySelector('.group-tab[data-group="' + CSS.escape(saved) + '"]')
-            ? saved
-            : (document.querySelector('.group-tab') || {}).dataset.group || '__static';
+            ? saved : (document.querySelector('.group-tab') || {}).dataset.group || '__static';
         activateGroupTab(target);
-        // Re-enable transition after first paint
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                if (tabIndicator) tabIndicator.style.transition = '';
-            });
-        });
+        requestAnimationFrame(function () { requestAnimationFrame(function () { if (tabIndicator) tabIndicator.style.transition = ''; }); });
     })();
 
     clearOutput();
     loadSysInfo();
 
-    // ================================================================
-    //  Language selector
-    // ================================================================
     var langSelector = document.getElementById('lang-selector');
     if (langSelector) {
         langSelector.addEventListener('change', function () {

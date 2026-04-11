@@ -16,6 +16,7 @@ require_once PANEL_ROOT . '/Model/MagentoInfo.php';
 require_once PANEL_ROOT . '/Model/CommandChecker.php';
 require_once PANEL_ROOT . '/Model/I18n.php';
 require_once PANEL_ROOT . '/Controller/AbstractController.php';
+require_once PANEL_ROOT . '/Controller/SseController.php';
 
 // ── Security headers (applied to every response) ────────────────
 header('X-Frame-Options: DENY');
@@ -84,8 +85,8 @@ switch ($action) {
         break;
 
     case 'commands':
-        require_once PANEL_ROOT . '/Controller/CommandsController.php';
-        (new CommandsController($authenticated))->handle();
+        require_once PANEL_ROOT . '/Controller/ListCommandsController.php';
+        (new ListCommandsController($authenticated, 'php bin/magento'))->handle();
         break;
 
     case 'run':
@@ -94,8 +95,8 @@ switch ($action) {
         break;
 
     case 'composer_commands':
-        require_once PANEL_ROOT . '/Controller/ComposerCommandsController.php';
-        (new ComposerCommandsController($authenticated))->handle();
+        require_once PANEL_ROOT . '/Controller/ListCommandsController.php';
+        (new ListCommandsController($authenticated, 'composer'))->handle();
         break;
 
     case 'run_composer':

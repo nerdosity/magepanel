@@ -36,7 +36,7 @@
         <nav class="DrawerNavigation flex-auto">
 
             <div class="Item NavButton active" id="nav-tasks">
-                <div class="NavButtonIcon" style="width:28px;height:28px">
+                <div class="NavButtonIcon">
                     <svg viewBox="0 0 22 22" width="28" height="28" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <rect x="1" y="3" width="4.5" height="4.5" rx="0.5"/>
                         <rect x="8" y="4.5" width="13" height="1.8" rx="0.9"/>
@@ -49,7 +49,7 @@
             </div>
 
             <div class="Item NavButton" id="nav-commands">
-                <div class="NavButtonIcon" style="width:28px;height:28px">
+                <div class="NavButtonIcon">
                     <svg viewBox="0 0 22 22" width="28" height="28" fill="none" stroke="currentColor"
                          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                          xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +61,7 @@
             </div>
 
             <div class="Item NavButton" id="nav-composer">
-                <div class="NavButtonIcon" style="width:28px;height:28px">
+                <div class="NavButtonIcon">
                     <svg viewBox="0 0 22 22" width="28" height="28" fill="none" stroke="currentColor"
                          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                          xmlns="http://www.w3.org/2000/svg">
@@ -161,28 +161,28 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="vertical-align:top">
-                                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
+                                    <td>
+                                        <label class="check-label">
                                             <input type="checkbox" class="static-opt static-area" value="frontend"> Frontend
                                         </label>
-                                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                                        <label class="check-label">
                                             <input type="checkbox" class="static-opt static-area" value="adminhtml"> Adminhtml
                                         </label>
                                     </td>
-                                    <td style="vertical-align:top">
+                                    <td>
                                         <?php foreach ($themes as $theme): ?>
-                                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
+                                        <label class="check-label">
                                             <input type="checkbox" class="static-opt static-theme" value="<?= htmlspecialchars($theme) ?>">
                                             <?= htmlspecialchars($theme) ?>
                                         </label>
                                         <?php endforeach; ?>
                                         <?php if (empty($themes)): ?>
-                                        <span style="color:rgb(128,140,169)"><?= __('Nessun tema in app/design/frontend') ?></span>
+                                        <span class="text-meta"><?= __('Nessun tema in app/design/frontend') ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td style="vertical-align:top">
+                                    <td>
                                         <?php foreach ($locales as $locale): ?>
-                                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
+                                        <label class="check-label">
                                             <input type="checkbox" class="static-opt static-locale" value="<?= htmlspecialchars($locale) ?>">
                                             <?= htmlspecialchars($locale) ?>
                                         </label>
@@ -268,7 +268,7 @@
                 <div id="mage-commands-list" class="mage-commands-loading">
                     <?= __('Caricamento...') ?>
                 </div>
-                <div style="padding:8px 22px 12px 32px">
+                <div class="commands-badge-wrap">
                     <span class="group-badge" id="mage-commands-badge"></span>
                 </div>
             </div>
@@ -278,7 +278,7 @@
                 <div id="composer-commands-list" class="mage-commands-loading">
                     <?= __('Caricamento...') ?>
                 </div>
-                <div style="padding:8px 22px 12px 32px">
+                <div class="commands-badge-wrap">
                     <span class="group-badge" id="composer-commands-badge"></span>
                 </div>
             </div>
@@ -321,7 +321,7 @@
                     <div class="ResourceProperty__Label"><?= __('Comando:') ?></div>
                     <div id="detail-cmd-full" class="ResourceProperty__Value"></div>
                 </div>
-                <div class="ResourceProperty" style="flex:1">
+                <div class="ResourceProperty flex-auto">
                     <div class="ResourceProperty__Label"><?= __('Argomenti:') ?></div>
                     <div class="ResourceProperty__Value">
                         <input type="text" id="detail-args" class="mage-cmd-args-input" placeholder="<?= htmlspecialchars(__('argomenti opzionali...')) ?>">
@@ -386,7 +386,7 @@
                 <div class="ModalTitle" id="confirm-modal-title"><?= __('Conferma') ?></div>
                 <div class="ModalContainer">
                     <div class="ModalContent withTitle">
-                        <p id="confirm-modal-text" style="font-size:16px;line-height:1.5;margin-bottom:24px"></p>
+                        <p id="confirm-modal-text" class="modal-text"></p>
                         <div class="DeployButtons">
                             <div id="confirm-modal-ok" class="Button green solid size-small" role="button"><?= __('Conferma') ?></div>
                             <div id="confirm-modal-cancel" class="Button light size-small" role="button"><?= __('Annulla') ?></div>
