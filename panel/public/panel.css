@@ -998,6 +998,21 @@ html, body {
     transition: width 0.35s ease;
 }
 
+/* Console dots — functional */
+.console-dot { cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; }
+.console-dot:hover { transform: scale(1.3); }
+.console-dot-red:hover { box-shadow: 0 0 4px #ff5f57; }
+.console-dot-yellow:hover { box-shadow: 0 0 4px #febc2e; }
+.console-dot-green:hover { box-shadow: 0 0 4px #28c840; }
+
+/* Console states */
+#terminal-panel.console-collapsed #terminal,
+#terminal-panel.console-collapsed #terminal-resize-handle { display: none; }
+#terminal-panel.console-collapsed { height: auto !important; min-height: auto; flex-shrink: 0; }
+
+#terminal-panel.console-maximized { flex: 1 1 auto; height: auto !important; }
+#terminal-panel.console-maximized #terminal { flex: 1; }
+
 .terminal-actions {
     display: flex;
     align-items: center;

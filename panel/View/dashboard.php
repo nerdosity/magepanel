@@ -315,7 +315,7 @@
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center plusCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="nonzero" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
                     </div>
                     <div id="detail-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center crossCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Stop') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>
                     <div id="detail-help" class="ToolbarButton normal" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center questionCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="nonzero" d="M24 12c0 6.624-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0s12 5.376 12 12zm-13.028 1.902h2.13v-.26c0-.195.016-.368.048-.52.033-.152.084-.295.155-.43.07-.136.168-.275.293-.416.124-.14.279-.298.463-.471.195-.184.38-.371.553-.561.173-.19.325-.393.455-.61.13-.217.233-.45.309-.699.076-.25.114-.531.114-.846 0-.433-.087-.84-.26-1.22a2.953 2.953 0 00-.724-.983 3.373 3.373 0 00-1.114-.65A4.171 4.171 0 0011.964 6a3.61 3.61 0 00-1.318.228c-.39.151-.729.35-1.016.593a3.528 3.528 0 00-.715.821c-.19.304-.328.607-.415.91l1.87.781c.043-.173.111-.341.203-.504.092-.162.209-.309.35-.439.14-.13.303-.233.488-.309.184-.076.39-.114.617-.114.423 0 .757.125 1 .374.244.25.366.537.366.862 0 .315-.081.58-.244.797-.162.217-.39.455-.683.715-.281.239-.517.461-.707.667a3.22 3.22 0 00-.455.618c-.114.206-.198.42-.252.642a3.05 3.05 0 00-.081.724v.536zM12.012 18c.39 0 .724-.138 1-.415.277-.276.415-.61.415-1s-.138-.72-.415-.992a1.377 1.377 0 00-1-.406c-.39 0-.72.135-.992.406a1.35 1.35 0 00-.406.992c0 .39.135.724.406 1 .271.277.602.415.992.415z"/></svg></div></div>Help
@@ -352,9 +352,9 @@
             <!-- ═══ Tasks mode: console header ═══ -->
             <div id="terminal-header">
                 <div class="console-dots">
-                    <span class="console-dot console-dot-red"></span>
-                    <span class="console-dot console-dot-yellow"></span>
-                    <span class="console-dot console-dot-green"></span>
+                    <span class="console-dot console-dot-red" id="console-minimize" title="<?= htmlspecialchars(__('Minimizza')) ?>"></span>
+                    <span class="console-dot console-dot-yellow" id="console-default" title="<?= htmlspecialchars(__('Dimensione standard')) ?>"></span>
+                    <span class="console-dot console-dot-green" id="console-maximize" title="<?= htmlspecialchars(__('Massimizza')) ?>"></span>
                 </div>
                 <span id="console-title">console</span>
                 <div id="progress-wrap">
@@ -368,7 +368,7 @@
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 36 36"><path class="colorable" fill="white" fill-rule="evenodd" d="M18 0c9.936 0 18 8.064 18 18s-8.064 18-18 18S0 27.936 0 18 8.064 0 18 0zm-4 10v16l13-8z"/></svg></div></div><?= __('Esegui') ?>
                     </div>
                     <div id="btn-stop" class="ToolbarButton normal disabled" role="button" tabindex="0">
-                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center crossCircle" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Stop') ?>
+                        <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path class="colorable" fill="white" fill-rule="evenodd" d="M12 0c6.624 0 12 5.376 12 12s-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0zM8 8h8v8H8z"/></svg></div></div><?= __('Stop') ?>
                     </div>
                     <div id="btn-clear" class="ToolbarButton normal" role="button" tabindex="0">
                         <div class="ToolbarButton__icon"><div class="Icon layout vertical center-center" style="width:22px;height:22px"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 23 23"><path class="colorable" fill="white" fill-rule="nonzero" d="M19.33 3.78A11 11 0 1 1 3.77 19.33 11 11 0 0 1 19.33 3.78zm-3.1 4.67l-1.56-1.56L11.56 10 8.45 6.9 6.89 8.45l3.11 3.1-3.11 3.12 1.56 1.55 3.1-3.1 3.12 3.1 1.55-1.55-3.1-3.11 3.1-3.11z"/></svg></div></div><?= __('Pulisci') ?>

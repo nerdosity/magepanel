@@ -262,6 +262,15 @@ msgstr "selezionato"
 msgid "selezionati"
 msgstr "selezionati"
 
+msgid "Minimizza"
+msgstr "Minimizza"
+
+msgid "Dimensione standard"
+msgstr "Dimensione standard"
+
+msgid "Massimizza"
+msgstr "Massimizza"
+
 msgid "Generale"
 msgstr "Generale"
 

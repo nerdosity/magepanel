@@ -347,6 +347,7 @@
 
     if (btnStatic) {
         btnStatic.addEventListener('click', function () {
+            if (btnStatic.classList.contains('disabled')) return;
             var themes  = Array.from(document.querySelectorAll('.static-theme:checked')).map(function (c) { return c.value; });
             var locales = Array.from(document.querySelectorAll('.static-locale:checked')).map(function (c) { return c.value; });
             var areas   = Array.from(document.querySelectorAll('.static-area:checked')).map(function (c) { return c.value; });
@@ -489,8 +490,6 @@
                 if (opts.badge) opts.badge.textContent = total + ' ' + pluralize(total, 'comando', 'comandi');
                 var firstGroup = opts.container.querySelector('.ns-group');
                 if (firstGroup) firstGroup.classList.add('expanded');
-                var firstCmd = opts.container.querySelector('.ResourceListItemChildren .ResourceSidebarItem');
-                if (firstCmd) firstCmd.click();
             })
             .catch(function () { opts.container.textContent = opts.errorMsg; });
     }
@@ -947,6 +946,29 @@
 
     btnStop.addEventListener('click', function () { stopExecution(__('Operazione interrotta')); });
     btnClear.addEventListener('click', clearOutput);
+
+    // Console dots: red=minimize, yellow=default(260px), green=maximize
+    var termPanelEl = document.getElementById('terminal-panel');
+    var consoleMin = document.getElementById('console-minimize');
+    var consoleDef = document.getElementById('console-default');
+    var consoleMax = document.getElementById('console-maximize');
+
+    function setConsoleState(state) {
+        if (!termPanelEl) return;
+        termPanelEl.classList.remove('console-collapsed', 'console-maximized');
+        termPanelEl.style.height = '';
+        if (state === 'min') {
+            termPanelEl.classList.add('console-collapsed');
+        } else if (state === 'max') {
+            termPanelEl.classList.add('console-maximized');
+        } else {
+            termPanelEl.style.height = '260px';
+        }
+    }
+
+    if (consoleMin) consoleMin.addEventListener('click', function () { setConsoleState('min'); });
+    if (consoleDef) consoleDef.addEventListener('click', function () { setConsoleState('default'); });
+    if (consoleMax) consoleMax.addEventListener('click', function () { setConsoleState('max'); });
 
     document.querySelectorAll('.preset-confirm').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
