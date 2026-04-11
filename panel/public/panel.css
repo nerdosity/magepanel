@@ -136,15 +136,6 @@ html, body {
 }
 
 /* Sys-info in drawer bottom */
-.drawer-sysinfo {
-    font-size: 10px;
-    color: var(--meta);
-    text-align: center;
-    line-height: 1.5;
-    padding: 0 8px;
-    margin-bottom: 20px;
-}
-
 /* ── Workspace ────────────────────────────────────────────────── */
 
 #workspace {
@@ -209,6 +200,7 @@ html, body {
 #workspace-header {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     background: var(--surface);
     padding: 46px 36px 0;
 }
@@ -216,6 +208,7 @@ html, body {
 /* ClusterViewHeaderTitle row */
 .workspace-title-row {
     align-items: center;
+    align-self: stretch;
     display: flex;
     flex-flow: row wrap;
     margin-bottom: 30px;
@@ -250,6 +243,17 @@ html, body {
     flex-direction: row;
     padding: 0;
 }
+
+/* SpaceQuotas — Komodor computed */
+.SpaceQuotas{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;position:relative;cursor:pointer;user-select:none}
+#workspace-header .SpaceQuotas{margin:12px 0 12px 12px}
+.Quota{display:flex;flex-direction:column;align-items:flex-start;font-size:13px;white-space:nowrap;margin-left:18px}
+.QuotaLabel{color:rgb(128, 140, 169);font-size:12px;margin-bottom:2px}
+.QuotaValues{align-items:center;display:flex;flex-direction:row}
+.QuotaValuesLabel{font-size:14px;font-weight:500;letter-spacing:-0.3px;white-space:nowrap}
+.QuotaValuesLabel .Total{opacity:0.5}
+.Percentage{margin-left:6px;width:32px}
+.Percentage svg.rc-progress-line{display:block;width:100%;height:4px}
 
 /* DropdownMenu trigger — Komodor exact */
 .DropdownMenu__Trigger {
@@ -312,19 +316,19 @@ html, body {
 }
 
 /* Tabs (index3.html riga 7326) */
-.Tabs { display: flex; flex-direction: column; background: var(--surface) }
+.Tabs { display: flex; flex-direction: column; background: var(--surface); align-self: stretch }
 .TabsBar { display: flex; flex-direction: row; font-weight: normal; position: relative }
 
 /* Tab — Komodor ClusterViewHeader */
 .Tab {
     border-bottom: 2px solid transparent;
     cursor: pointer;
-    color: var(--text-70);
+    color: rgb(160, 164, 176);
     font-size: 16px;
     font-weight: normal;
     padding: 10px 0;
     margin-right: 28px;
-    transition: color 0.2s, border-color 0.25s ease;
+    transition: color 0.2s ease 0s;
 }
 
 .Tab:last-of-type { margin-right: 0 }
@@ -344,23 +348,6 @@ html, body {
 }
 
 .tabs-spacer { flex: 1; }
-
-/* Sys info pill in tabs bar */
-.sys-info-pill {
-    display: inline-flex;
-    align-items: center;
-    background: var(--deep);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 2px 10px;
-    font-size: 11px;
-    color: var(--meta);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 340px;
-    font-family: var(--mono);
-}
 
 /* ── Task area ────────────────────────────────────────────────── */
 

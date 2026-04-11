@@ -6,7 +6,7 @@
     <meta name="referrer" content="no-referrer">
     <title>Deploy Panel — Nerdosity</title>
     <link rel="icon" type="image/svg+xml" href="public/favicon.svg">
-    <link rel="stylesheet" href="public/panel.css">
+    <link rel="stylesheet" href="public/panel.css?v=<?= filemtime(PANEL_ROOT . '/public/panel.css') ?>">
 </head>
 <body>
 
@@ -57,8 +57,6 @@
 
         </nav>
 
-        <div id="sys-info" class="drawer-sysinfo"></div>
-
     </div>
 
     <!-- ── Workspace ──────────────────────────────────────────── -->
@@ -105,13 +103,21 @@
 
                 <div class="flex-auto"></div>
 
-                <!-- SpaceQuotas equivalent: lang selector -->
                 <div class="header-controls">
                     <select id="lang-selector" class="lang-selector">
                         <?php foreach ($i18n->getAvailable() as $code => $label): ?>
                         <option value="<?= htmlspecialchars($code) ?>"<?= $code === $i18n->getLocale() ? ' selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+
+                <!-- SpaceQuotas — system info -->
+                <div class="SpaceQuotas" id="header-sysinfo">
+                    <div class="Quota  theme-dark"><label class="QuotaLabel">PHP</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-php">—</div></div></div>
+                    <div class="Quota  theme-dark"><label class="QuotaLabel">Magento</label><div class="QuotaValues"><div class="QuotaValuesLabel" id="sysinfo-mage">—</div></div></div>
+                    <div class="Quota  theme-dark"><label class="QuotaLabel">Storage</label><div class="QuotaValues"><div class="QuotaValuesLabel"><span class="Used" id="sysinfo-disk-used">—</span><span class="Total" id="sysinfo-disk-total">&nbsp;/&nbsp;—</span></div><div class="Percentage  theme-dark"><svg class="rc-progress-line" viewBox="0 0 100 1" preserveAspectRatio="none"><path class="rc-progress-line-trail" d="M 0,0.5
+         L 100,0.5" stroke-linecap="square" stroke="#2b3343" stroke-width="1" fill-opacity="0"></path><path class="rc-progress-line-path" id="sysinfo-disk-bar" d="M 0,0.5
+         L 100,0.5" stroke-linecap="square" stroke="#00d1ca" stroke-width="1" fill-opacity="0" style="stroke-dasharray: 0px, 100px; stroke-dashoffset: 0px; transition: stroke-dashoffset 0.3s, stroke-dasharray 0.3s, stroke, 0.3s linear;"></path></svg></div></div></div>
                 </div>
             </div>
 
@@ -415,7 +421,7 @@
     };
     var PANEL_I18N = <?= $i18n->toJson() ?>;
 </script>
-<script src="public/panel.js"></script>
+<script src="public/panel.js?v=<?= filemtime(PANEL_ROOT . '/public/panel.js') ?>"></script>
 
 </body>
 </html>

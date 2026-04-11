@@ -113,7 +113,6 @@
     var pendingConfirmAction = null;
     var progressBar       = document.getElementById('progress-bar');
     var progressText      = document.getElementById('progress-text');
-    var sysInfo           = document.getElementById('sys-info');
     var mageCommandsList  = document.getElementById('mage-commands-list');
     var mageCommandsBadge = document.getElementById('mage-commands-badge');
     var composerCommandsList  = document.getElementById('composer-commands-list');
@@ -425,22 +424,33 @@
 
     // ── System info ──────────────────────────────────────────
 
+    var sysinfoPhp      = document.getElementById('sysinfo-php');
+    var sysinfoMage     = document.getElementById('sysinfo-mage');
+    var sysinfoDiskUsed = document.getElementById('sysinfo-disk-used');
+    var sysinfoDiskTotal= document.getElementById('sysinfo-disk-total');
+    var sysinfoDiskBar  = document.getElementById('sysinfo-disk-bar');
+
     function loadSysInfo() {
         fetch(BASE_URL + '?action=detect')
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if (sysInfo) {
-                    sysInfo.textContent = '';
-                    sysInfo.appendChild(document.createTextNode('PHP ' + data.php));
-                    sysInfo.appendChild(document.createElement('br'));
-                    sysInfo.appendChild(document.createTextNode('Mage ' + data.magento));
-                    sysInfo.appendChild(document.createElement('br'));
-                    sysInfo.appendChild(document.createTextNode(data.disk_free));
+                if (sysinfoPhp)       sysinfoPhp.textContent       = data.php;
+                if (sysinfoMage)      sysinfoMage.textContent      = data.magento;
+                if (sysinfoDiskUsed)  sysinfoDiskUsed.textContent  = data.disk_free;
+                if (sysinfoDiskTotal) sysinfoDiskTotal.textContent = '\u00a0/\u00a0' + data.disk_total;
+                if (sysinfoDiskBar) {
+                    var pct = parseFloat(data.disk_used_pct) || 0;
+                    sysinfoDiskBar.style.strokeDasharray = pct + 'px, 100px';
+                    sysinfoDiskBar.setAttribute('stroke', pct > 90 ? '#ff4d61' : pct > 70 ? '#febc2e' : '#00d1ca');
                 }
                 maintenanceOn = !!data.maintenance;
                 updateMaintenanceUI();
             })
-            .catch(function () { if (sysInfo) sysInfo.textContent = __('Info non disponibili'); });
+            .catch(function () {
+                if (sysinfoPhp)      sysinfoPhp.textContent      = '—';
+                if (sysinfoMage)     sysinfoMage.textContent     = '—';
+                if (sysinfoDiskUsed) sysinfoDiskUsed.textContent = '—';
+            });
     }
 
     // ── Command list loading (shared for Mage + Composer) ────
