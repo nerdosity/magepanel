@@ -262,6 +262,12 @@ msgstr "selected"
 msgid "selezionati"
 msgstr "selected"
 
+msgid "Generale"
+msgstr "General"
+
+msgid "Ricarica"
+msgstr "Reload"
+
 msgid "Seleziona un task e premi Esegui"
 msgstr "Select a task and press Run"
 

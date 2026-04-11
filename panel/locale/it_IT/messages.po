@@ -262,6 +262,12 @@ msgstr "selezionato"
 msgid "selezionati"
 msgstr "selezionati"
 
+msgid "Generale"
+msgstr "Generale"
+
+msgid "Ricarica"
+msgstr "Ricarica"
+
 msgid "Seleziona un task e premi Esegui"
 msgstr "Seleziona un task e premi Esegui"
 

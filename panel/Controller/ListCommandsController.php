@@ -36,7 +36,7 @@ class ListCommandsController extends SseController
             if ($name === '' || $name === 'help' || $name === 'list') {
                 continue;
             }
-            $ns = str_contains($name, ':') ? explode(':', $name, 2)[0] : '_generale';
+            $ns = str_contains($name, ':') ? explode(':', $name, 2)[0] : '_general';
             $grouped[$ns][] = [
                 'name' => $name,
                 'desc' => $entry['description'] ?? '',

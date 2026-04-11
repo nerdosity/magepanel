@@ -158,8 +158,8 @@
     }
 
     function setDetailButtons(running) {
-        if (detailRun)  { if (running) detailRun.setAttribute('disabled', ''); else detailRun.removeAttribute('disabled'); }
-        if (detailStop) { if (!running) detailStop.setAttribute('disabled', ''); else detailStop.removeAttribute('disabled'); }
+        if (detailRun)  { if (running) detailRun.classList.add('disabled'); else detailRun.classList.remove('disabled'); }
+        if (detailStop) { if (!running) detailStop.classList.add('disabled'); else detailStop.classList.remove('disabled'); }
     }
 
     function beginOperation() {
@@ -189,7 +189,7 @@
         btnRun.disabled  = isRunning;
         btnStop.disabled = !isRunning;
         if (btnStatic) btnStatic.disabled = isRunning;
-        document.querySelectorAll('.IconBtn[data-preset], .task-run-btn').forEach(function (el) {
+        document.querySelectorAll('.preset-dropdown-item, .task-run-btn').forEach(function (el) {
             if (isRunning) el.setAttribute('disabled', ''); else el.removeAttribute('disabled');
         });
     }
@@ -498,9 +498,16 @@
     var mageOpts = { container: mageCommandsList, badge: mageCommandsBadge, fetchAction: 'commands', runAction: 'run', loaded: false, errorMsg: __('Impossibile caricare i comandi') };
     var composerOpts = { container: composerCommandsList, badge: composerCommandsBadge, fetchAction: 'composer_commands', runAction: 'run_composer', loaded: false, errorMsg: __('Impossibile caricare i comandi composer') };
 
+    // Reload buttons
+    var mageReload = document.getElementById('mage-reload');
+    var composerReload = document.getElementById('composer-reload');
+    if (mageReload) mageReload.addEventListener('click', function () { mageOpts.loaded = false; loadCommandList(mageOpts); });
+    if (composerReload) composerReload.addEventListener('click', function () { composerOpts.loaded = false; loadCommandList(composerOpts); });
+
     // ── Build command list UI ────────────────────────────────
 
     function buildNsGroup(ns, cmds, runAction) {
+        var displayNs = ns === '_general' ? __('Generale') : ns;
         var group = document.createElement('div');
         group.className = 'ResourceListItem ns-group';
 
@@ -516,7 +523,7 @@
         groupIcon.appendChild(createSvg(16, 16, '0 0 24 24', [
             {attrs: {d: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z', fill: '#fff'}}
         ]));
-        var resItem = buildResourceItem(groupIcon, ns, cmds.length + ' ' + pluralize(cmds.length, 'comando', 'comandi'));
+        var resItem = buildResourceItem(groupIcon, displayNs, cmds.length + ' ' + pluralize(cmds.length, 'comando', 'comandi'));
         sidebar.appendChild(resItem);
 
         var spacer = document.createElement('div');
@@ -775,10 +782,40 @@
         });
     }
 
-    if (detailRun)  detailRun.addEventListener('click', function () { if (!detailRun.hasAttribute('disabled')) runSelectedCommand(); });
+    if (detailRun)  detailRun.addEventListener('click', function () { if (!detailRun.classList.contains('disabled')) runSelectedCommand(); });
     if (detailStop) detailStop.addEventListener('click', function () { stopExecution(__('Comando interrotto')); setDetailButtons(false); });
     if (detailArgs) detailArgs.addEventListener('keydown', function (e) { if (e.key === 'Enter') runSelectedCommand(); });
     if (detailClear) detailClear.addEventListener('click', function () { clearOutput(); });
+
+    // Help button — runs help <command> in terminal
+    var detailHelp = document.getElementById('detail-help');
+    if (detailHelp) {
+        detailHelp.addEventListener('click', function () {
+            if (!selectedCmd) return;
+            var action = selectedCmd.action;
+            clearOutput();
+            setRunning(true);
+            setDetailButtons(true);
+            var prefix = action === 'run_composer' ? 'composer ' : 'bin/magento ';
+            var stage = addLogStageHeader('help ' + selectedCmd.name, null);
+            activeLogLines = stage.lines;
+            var url = BASE_URL
+                + '?action=' + encodeURIComponent(action)
+                + '&name=help'
+                + '&args=' + encodeURIComponent(selectedCmd.name);
+            openSse(url, function (ok) {
+                setRunning(false);
+                setDetailButtons(false);
+                var pulser = stage.section.querySelector('.progress-pulse');
+                if (pulser) pulser.classList.remove('progress-pulse');
+                if (stage.iconPath) {
+                    stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
+                    stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
+                }
+                activeLogLines = null;
+            });
+        });
+    }
 
     // ── Group tabs ───────────────────────────────────────────
 
@@ -857,9 +894,7 @@
         if (composerContainer) composerContainer.style.display = isComposer ? '' : 'none';
         if (groupTabs)         groupTabs.style.display         = isTasks ? '' : 'none';
 
-        document.querySelectorAll('.header-controls .IconBtn[data-preset]').forEach(function (btn) { btn.style.display = isTasks ? '' : 'none'; });
-        var headerSep = document.querySelector('.header-sep');
-        if (headerSep) headerSep.style.display = isTasks ? '' : 'none';
+        if (presetDropdown) presetDropdown.style.display = isTasks ? '' : 'none';
 
         if (detailHeader)     detailHeader.style.display     = 'none';
         if (detailProps)      detailProps.style.display       = 'none';
@@ -897,11 +932,26 @@
         });
     });
 
+    // Preset dropdown toggle
+    var presetDropdown = document.getElementById('preset-dropdown');
+    var presetTrigger = document.getElementById('preset-trigger');
+    if (presetTrigger && presetDropdown) {
+        presetTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            presetDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function () {
+            presetDropdown.classList.remove('open');
+        });
+    }
+
     btnStop.addEventListener('click', function () { stopExecution(__('Operazione interrotta')); });
     btnClear.addEventListener('click', clearOutput);
 
     document.querySelectorAll('.preset-confirm').forEach(function (btn) {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (presetDropdown) presetDropdown.classList.remove('open');
             var presetKey = this.dataset.preset;
             var presetLabel = this.dataset.label || presetKey;
             var ids = PRESETS[presetKey] || [];
