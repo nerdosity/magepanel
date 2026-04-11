@@ -208,33 +208,32 @@ html, body {
 
 /* ── SpaceHeader — matches Komodor SpaceHeaderContainer ── */
 
-/* SpaceHeader */
+/* ClusterViewHeader — copied from Komodor AL PIXEL */
 #workspace-header {
+    align-items: flex-start;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 0px 0px;
     display: flex;
     flex-direction: column;
-    font-weight: 200;
+    z-index: 11;
     background: var(--surface);
+    padding: 46px 36px 0;
 }
 
-/* SpaceHeaderContainer */
+/* Title row inside header */
 .workspace-title-row {
     align-items: center;
     display: flex;
-    min-height: 94px;
     flex-flow: row wrap;
-    padding: 0 22px 0 0;
+    width: 100%;
+    margin-bottom: 18px;
 }
 
-/* SpaceHeaderTitle — first child gets left margin */
+/* ClusterViewHeaderTitle */
 .page-title {
-    font-size: 26px;
-    letter-spacing: -0.9px;
-    white-space: nowrap;
-    line-height: 26px;
+    font-size: 30px;
+    font-weight: 300;
     color: var(--text);
     margin: 0;
-    margin-left: 22px;
     margin-right: 32px;
 }
 
@@ -408,7 +407,7 @@ html, body {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: var(--bg);
-    padding: 18px 22px;
+    padding: 36px;
     overflow: auto;
 }
 
@@ -437,21 +436,21 @@ html, body {
     display: flex;
     flex-direction: row;
     min-height: 30px;
-    margin: 16px 20px;
+    margin: 24px 28px;
 }
 
-.ClusterNamespacesHeaderTitle { font-size: 18px; font-weight: normal }
+.ClusterNamespacesHeaderTitle { font-size: 20px; font-weight: normal }
 .ClusterNamespacesHeaderTotal { font-size: 16px; margin-left: 24px }
 .ClusterNamespacesHeaderTotal label { color: var(--meta); font-weight: normal; margin-right: 4px }
 
 /* Table (index3.html riga 7585) */
-.Table table { width: 100% }
+.Table table { width: 100%; border-collapse: collapse }
 .Table thead { border-bottom: 1px solid var(--table-border) }
 .Table thead th { vertical-align: bottom; overflow: hidden }
 .Table tbody tr { border-bottom: 1px solid var(--table-border) }
 .Table tbody tr:last-child { border: 0 }
 .Table tbody tr.rc-table-measure-row { border: 0 }
-.Table tbody td { font-size: 14px; vertical-align: middle; padding: 10px 20px }
+.Table tbody td { font-size: 14px; vertical-align: middle; padding: 12px 28px }
 
 /* rc-table wrapper (index3.html riga 7620) */
 .Table.rc-table { position: relative }
@@ -472,7 +471,7 @@ html, body {
     color: var(--meta);
     font-size: 14px;
     user-select: none;
-    padding: 10px 20px;
+    padding: 12px 28px;
 }
 .Table .SortableHeaderCell:not(.sortable) { cursor: default; pointer-events: none }
 .Table .SortableHeaderCell.left { justify-content: flex-start }
@@ -487,7 +486,7 @@ html, body {
 
 /* ClusterSecretsTable — kept for Static Content panel (index3.html riga 7960) */
 .ClusterSecretsTable { border-collapse: separate; width: 100% }
-.ClusterSecretsTable thead th { border-bottom: 1px solid var(--table-border); color: var(--meta); font-size: 13px; font-weight: 300; text-align: left; vertical-align: bottom; padding: 10px 20px }
+.ClusterSecretsTable thead th { border-bottom: 1px solid var(--table-border); color: var(--meta); font-size: 14px; font-weight: 300; text-align: left; vertical-align: bottom; padding: 12px 28px }
 .ClusterSecretsTable tbody { width: 100%; overflow: visible }
 .ClusterSecretsTable tbody td { border-bottom: 1px solid var(--table-border); color: rgb(255, 255, 255); font-size: 14px; vertical-align: top; padding: 12px 20px }
 
