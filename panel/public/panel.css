@@ -686,31 +686,37 @@ html, body {
 
 /* --- Command list icons --- */
 
-/* Namespace group icon: colored background (warm orange-red) */
+/* Namespace group icon: colored circle */
 .cmd-icon-group {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #e8573a, #d4442e);
     flex-shrink: 0;
 }
 .cmd-icon-group svg { width: 16px; height: 16px; display: block; }
 
-/* Child command icon: white background, dark icon */
+/* Child command icon: white hexagon with dark icon */
 .cmd-icon-item {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 28px;
     height: 28px;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.85);
     flex-shrink: 0;
+    position: relative;
 }
-.cmd-icon-item svg { width: 16px; height: 16px; display: block; }
+.cmd-icon-item svg { position: relative; z-index: 1; width: 14px; height: 14px; display: block; }
+.cmd-icon-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
 
 /* --- custom: run button (inside ResourceSidebarItemButtons) --- */
 .cmd-run-btn { align-items: center; cursor: pointer; display: flex; flex-direction: row; font-size: 16px; font-weight: 400; letter-spacing: -0.3px; line-height: 16px; position: relative; user-select: none; white-space: nowrap; color: rgba(255,255,255,0.9); background: transparent; border: 0; padding: 0; margin-right: 0 }
