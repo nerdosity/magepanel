@@ -1,75 +1,30 @@
 [
-    {
-        "target": "#nav-tasks",
-        "text": "tour_nav_tasks",
-        "placement": "right"
-    },
-    {
-        "target": "#nav-commands",
-        "text": "tour_mage",
-        "placement": "right"
-    },
-    {
-        "target": "#nav-composer",
-        "text": "tour_composer",
-        "placement": "right"
-    },
-    {
-        "target": ".page-title",
-        "text": "tour_title",
-        "placement": "bottom"
-    },
-    {
-        "target": "#btn-maintenance",
-        "text": "tour_maintenance",
-        "placement": "bottom"
-    },
-    {
-        "target": "#preset-trigger",
-        "text": "tour_presets",
-        "placement": "bottom"
-    },
-    {
-        "target": "#lang-trigger",
-        "text": "tour_lang",
-        "placement": "bottom"
-    },
-    {
-        "target": "#header-sysinfo",
-        "text": "tour_sysinfo",
-        "placement": "bottom"
-    },
-    {
-        "target": ".group-tab",
-        "text": "tour_tab",
-        "placement": "bottom",
-        "each": true
-    },
-    {
-        "target": ".task-group",
-        "text": "tour_task_group",
-        "placement": "top",
-        "each": true
-    },
-    {
-        "target": ".task-run-btn",
-        "text": "tour_task_run",
-        "placement": "left",
-        "each": true
-    },
-    {
-        "target": "#terminal-header",
-        "text": "tour_console",
-        "placement": "top"
-    },
-    {
-        "target": "#terminal",
-        "text": "tour_terminal",
-        "placement": "top"
-    },
-    {
-        "target": "#nav-help",
-        "text": "tour_help",
-        "placement": "right"
-    }
+    { "target": "#nav-tasks",           "text": "tour_nav_tasks",  "placement": "right" },
+    { "target": "#nav-commands",        "text": "tour_nav_mage",   "placement": "right" },
+    { "target": "#nav-composer",        "text": "tour_nav_composer","placement": "right" },
+    { "target": "#nav-help",            "text": "tour_help",       "placement": "right" },
+    { "target": ".page-title",          "text": "tour_title",      "placement": "bottom" },
+    { "target": "#btn-maintenance",     "text": "tour_maintenance","placement": "bottom" },
+    { "target": "#preset-trigger",      "text": "tour_presets",    "placement": "bottom" },
+    { "target": "#lang-trigger",        "text": "tour_lang",       "placement": "bottom" },
+    { "target": "#header-sysinfo",      "text": "tour_sysinfo",    "placement": "bottom" },
+    { "target": ".group-tab",           "text": "tour_tab",        "placement": "bottom", "each": true },
+    { "target": ".task-group",          "text": "tour_task_group", "placement": "top",    "each": true },
+    { "target": ".task-run-btn",        "text": "tour_task_run",   "placement": "left",   "each": true },
+    { "target": "#terminal-header",     "text": "tour_console",    "placement": "top" },
+    { "target": "#console-minimize",    "text": "tour_console_min","placement": "top" },
+    { "target": "#console-default",     "text": "tour_console_def","placement": "top" },
+    { "target": "#console-maximize",    "text": "tour_console_max","placement": "top" },
+    { "target": "#btn-stop",            "text": "tour_btn_stop",   "placement": "left" },
+    { "target": "#progress-wrap",       "text": "tour_progress",   "placement": "top" },
+    { "target": "#terminal",            "text": "tour_terminal",   "placement": "top" },
+    { "target": "#terminal-resize-handle","text": "tour_resize",   "placement": "top" },
+    { "target": "#btn-clear",           "text": "tour_btn_clear",  "placement": "left" },
+    { "target": "#btn-static",          "text": "tour_btn_static", "placement": "top" },
+    { "target": "#detail-run",          "text": "tour_detail_run", "placement": "bottom" },
+    { "target": "#detail-stop",         "text": "tour_detail_stop","placement": "bottom" },
+    { "target": "#detail-help",         "text": "tour_detail_help","placement": "bottom" },
+    { "target": "#detail-args",         "text": "tour_detail_args","placement": "top" },
+    { "target": "#mage-reload",         "text": "tour_reload",     "placement": "left" },
+    { "target": "#composer-reload",     "text": "tour_reload",     "placement": "left" }
 ]

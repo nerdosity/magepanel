@@ -1290,6 +1290,18 @@ body.tour-explore #tour-tooltip,
 body.tour-explore #tour-tooltip * {
     cursor: pointer !important;
 }
+
+/* Explore mode: dim non-target elements */
+body.tour-explore #workspace { filter: grayscale(0.7) brightness(0.55); transition: filter 0.2s; }
+body.tour-explore .tour-target {
+    filter: none;
+    position: relative;
+    z-index: 100;
+}
+body.tour-explore .tour-target,
+body.tour-explore .tour-target * {
+    filter: none !important;
+}
 body.tour-explore #nav-help,
 body.tour-explore #nav-help * {
     cursor: pointer !important;

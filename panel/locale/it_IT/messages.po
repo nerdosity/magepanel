@@ -306,8 +306,53 @@ msgstr "Ho capito"
 msgid "tour_nav_tasks"
 msgstr "Sezione Tasks: esegui i task di deploy raggruppati (pulizia, cache, compilazione, ecc.)."
 
+msgid "tour_nav_mage"
+msgstr "Sezione Mage: browser di tutti i comandi bin/magento disponibili. Cerca, seleziona ed esegui."
+
+msgid "tour_nav_composer"
+msgstr "Sezione Composer: browser di tutti i comandi composer. Cerca, seleziona ed esegui."
+
 msgid "tour_help"
 msgstr "Questo bottone. Click singolo attiva la modalità guida (clicca gli elementi per scoprirli), doppio click avvia il tour passo-passo."
+
+msgid "tour_console_min"
+msgstr "Minimizza la console (mostra solo l'header)."
+
+msgid "tour_console_def"
+msgstr "Riporta la console alla dimensione standard (260px)."
+
+msgid "tour_console_max"
+msgstr "Massimizza la console per occupare tutto lo spazio disponibile."
+
+msgid "tour_btn_stop"
+msgstr "Interrompe il comando in esecuzione. Invia un segnale di stop al processo."
+
+msgid "tour_progress"
+msgstr "Barra di progresso che mostra lo stato dell'operazione corrente e il tempo trascorso."
+
+msgid "tour_resize"
+msgstr "Trascina per ridimensionare manualmente la console. Sostituisce i pulsanti di dimensione."
+
+msgid "tour_btn_clear"
+msgstr "Pulisce l'output della console. Non interrompe i comandi in esecuzione."
+
+msgid "tour_btn_static"
+msgstr "Esegue il deploy del contenuto statico con le opzioni selezionate (aree, temi, lingue)."
+
+msgid "tour_detail_run"
+msgstr "Esegue il comando selezionato con gli argomenti specificati."
+
+msgid "tour_detail_stop"
+msgstr "Interrompe il comando in esecuzione."
+
+msgid "tour_detail_help"
+msgstr "Mostra l'help del comando (bin/magento help o composer help)."
+
+msgid "tour_detail_args"
+msgstr "Argomenti aggiuntivi da passare al comando. Separati da spazio, ogni argomento viene escaped."
+
+msgid "tour_reload"
+msgstr "Ricarica la lista dei comandi dal server (utile dopo aver installato nuovi moduli)."
 
 msgid "tour_title"
 msgstr "Il nome del pannello. Personalizzabile da config.php."

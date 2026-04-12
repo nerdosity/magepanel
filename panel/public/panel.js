@@ -1417,11 +1417,26 @@
         if (tourStep >= TOUR.length) endTour();
     }
 
+    function markTourTargets() {
+        // Mark all elements that have a tour step
+        TOUR_RAW.forEach(function (step) {
+            document.querySelectorAll(step.target).forEach(function (el) {
+                el.classList.add('tour-target');
+            });
+        });
+    }
+    function unmarkTourTargets() {
+        document.querySelectorAll('.tour-target').forEach(function (el) {
+            el.classList.remove('tour-target');
+        });
+    }
+
     function startExploreMode() {
         endTour();
         tourMode = 'explore';
         createTourElements();
         document.body.classList.add('tour-explore');
+        markTourTargets();
         tourBackdrop.style.background = 'transparent';
         tourBackdrop.style.pointerEvents = 'none';
         tourHighlight.style.display = 'none';
@@ -1445,6 +1460,7 @@
     function endTour() {
         tourMode = null;
         document.body.classList.remove('tour-explore');
+        unmarkTourTargets();
         removeTourElements();
     }
 

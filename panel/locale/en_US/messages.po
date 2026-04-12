@@ -306,8 +306,53 @@ msgstr "Got it"
 msgid "tour_nav_tasks"
 msgstr "Tasks section: run grouped deploy tasks (cleanup, cache, compilation, etc.)."
 
+msgid "tour_nav_mage"
+msgstr "Mage section: browser for all available bin/magento commands. Search, select and run."
+
+msgid "tour_nav_composer"
+msgstr "Composer section: browser for all composer commands. Search, select and run."
+
 msgid "tour_help"
 msgstr "This button. Single click enables guide mode (click elements to discover them), double click starts the step-by-step tour."
+
+msgid "tour_console_min"
+msgstr "Minimize the console (show only the header)."
+
+msgid "tour_console_def"
+msgstr "Restore the console to default size (260px)."
+
+msgid "tour_console_max"
+msgstr "Maximize the console to fill all available space."
+
+msgid "tour_btn_stop"
+msgstr "Stop the running command. Sends a stop signal to the process."
+
+msgid "tour_progress"
+msgstr "Progress bar showing the current operation status and elapsed time."
+
+msgid "tour_resize"
+msgstr "Drag to manually resize the console. Alternative to the size buttons."
+
+msgid "tour_btn_clear"
+msgstr "Clear the console output. Does not stop running commands."
+
+msgid "tour_btn_static"
+msgstr "Run static content deploy with selected options (areas, themes, locales)."
+
+msgid "tour_detail_run"
+msgstr "Run the selected command with the specified arguments."
+
+msgid "tour_detail_stop"
+msgstr "Stop the running command."
+
+msgid "tour_detail_help"
+msgstr "Show command help (bin/magento help or composer help)."
+
+msgid "tour_detail_args"
+msgstr "Additional arguments to pass to the command. Space-separated, each argument is escaped."
+
+msgid "tour_reload"
+msgstr "Reload the command list from the server (useful after installing new modules)."
 
 msgid "tour_title"
 msgstr "The panel name. Customizable from config.php."
