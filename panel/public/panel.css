@@ -1291,16 +1291,13 @@ body.tour-explore #tour-tooltip * {
     cursor: pointer !important;
 }
 
-/* Explore mode: dim non-target elements */
-body.tour-explore #workspace { filter: grayscale(0.7) brightness(0.55); transition: filter 0.2s; }
-body.tour-explore .tour-target {
-    filter: none;
-    position: relative;
-    z-index: 100;
+/* Explore mode: highlight targets via #tour-highlight (clamped) */
+body.tour-explore #tour-backdrop {
+    background-color: transparent !important;
+    pointer-events: none;
 }
-body.tour-explore .tour-target,
-body.tour-explore .tour-target * {
-    filter: none !important;
+body.tour-explore #tour-highlight.hover {
+    box-shadow: 0 0 0 2px var(--teal), 0 0 16px rgba(0, 209, 202, 0.4);
 }
 body.tour-explore #nav-help,
 body.tour-explore #nav-help * {
@@ -1322,7 +1319,7 @@ body.tour-explore #nav-help .colorable {
     position: fixed;
     z-index: 9998;
     pointer-events: none;
-    box-shadow: rgb(24, 144, 255) 0px 0px 0px 3px inset, rgba(24, 144, 255, 0.3) 0px 0px 20px 4px;
+    box-shadow: 0 0 0 2px rgb(24, 144, 255), 0 0 16px rgba(24, 144, 255, 0.4);
     border-radius: 3px;
     transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
 }

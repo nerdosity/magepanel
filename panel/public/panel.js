@@ -1276,12 +1276,11 @@
         tourBackdrop.style.maskRepeat = 'no-repeat';
         tourBackdrop.style.webkitMaskRepeat = 'no-repeat';
 
-        // Highlight box-shadow
-        // Highlight clamped to viewport (avoid overflow)
-        var hlLeft   = Math.max(4, rect.left - pad);
-        var hlTop    = Math.max(4, rect.top - pad);
-        var hlRight  = Math.min(window.innerWidth - 4, rect.right + pad);
-        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom + pad);
+        // Highlight clamped to viewport (no pad, match hover box-shadow)
+        var hlLeft   = Math.max(4, rect.left);
+        var hlTop    = Math.max(4, rect.top);
+        var hlRight  = Math.min(window.innerWidth - 4, rect.right);
+        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom);
         tourHighlight.style.top = hlTop + 'px';
         tourHighlight.style.left = hlLeft + 'px';
         tourHighlight.style.width = (hlRight - hlLeft) + 'px';
@@ -1345,25 +1344,14 @@
     function renderExploreStep(hit) {
         var el = hit.target;
         var rect = el.getBoundingClientRect();
-        var pad = 6;
 
-        // Backdrop mask
-        var maskRect = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'' + (rect.width + pad * 2) + '\' height=\'' + (rect.height + pad * 2) + '\' rx=\'3\'/></svg>"), linear-gradient(white, white)';
-        tourBackdrop.style.maskImage = maskRect;
-        tourBackdrop.style.webkitMaskImage = maskRect;
-        var maskPos = (rect.left - pad) + 'px ' + (rect.top - pad) + 'px, 0 0';
-        tourBackdrop.style.maskPosition = maskPos;
-        tourBackdrop.style.webkitMaskPosition = maskPos;
-        tourBackdrop.style.maskComposite = 'exclude';
-        tourBackdrop.style.webkitMaskComposite = 'xor';
-        tourBackdrop.style.maskRepeat = 'no-repeat';
-        tourBackdrop.style.webkitMaskRepeat = 'no-repeat';
-
-        // Highlight clamped
-        var hlLeft   = Math.max(4, rect.left - pad);
-        var hlTop    = Math.max(4, rect.top - pad);
-        var hlRight  = Math.min(window.innerWidth - 4, rect.right + pad);
-        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom + pad);
+        // Highlight exactly the element bounds, clamped to viewport (click = blue)
+        tourHighlight.classList.remove('hover');
+        tourHighlight.style.display = '';
+        var hlLeft   = Math.max(4, rect.left);
+        var hlTop    = Math.max(4, rect.top);
+        var hlRight  = Math.min(window.innerWidth - 4, rect.right);
+        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom);
         tourHighlight.style.top = hlTop + 'px';
         tourHighlight.style.left = hlLeft + 'px';
         tourHighlight.style.width = (hlRight - hlLeft) + 'px';
@@ -1379,18 +1367,19 @@
         var tipH = tourTooltip.offsetHeight;
 
         var placement = hit.placement || 'bottom';
+        var gap = 12;
         var tx, ty;
         if (placement === 'bottom') {
             tx = rect.left + rect.width / 2 - tipW / 2;
-            ty = rect.bottom + pad + 12;
+            ty = rect.bottom + gap;
         } else if (placement === 'top') {
             tx = rect.left + rect.width / 2 - tipW / 2;
-            ty = rect.top - pad - 12 - tipH;
+            ty = rect.top - gap - tipH;
         } else if (placement === 'right') {
-            tx = rect.right + pad + 12;
+            tx = rect.right + gap;
             ty = rect.top + rect.height / 2 - tipH / 2;
         } else {
-            tx = rect.left - pad - 12 - tipW;
+            tx = rect.left - gap - tipW;
             ty = rect.top + rect.height / 2 - tipH / 2;
         }
         tx = Math.max(8, Math.min(window.innerWidth - tipW - 8, tx));
@@ -1437,8 +1426,6 @@
         createTourElements();
         document.body.classList.add('tour-explore');
         markTourTargets();
-        tourBackdrop.style.background = 'transparent';
-        tourBackdrop.style.pointerEvents = 'none';
         tourHighlight.style.display = 'none';
 
         // Intro tooltip (no button, clicca in giro per esplorare)
@@ -1479,13 +1466,27 @@
         }
     }, true);
 
-    // Explore mode: hover highlight
+    // Explore mode: hover highlight via #tour-highlight (clamped to viewport)
     document.addEventListener('mouseover', function (e) {
         if (tourMode !== 'explore') return;
-        if (e.target.closest('#tour-tooltip')) return;
-        var idx = findTourStep(e.target);
-        if (idx < 0) { document.body.style.cursor = ''; return; }
-        document.body.style.cursor = 'help';
+        if (e.target.closest('#tour-tooltip') || e.target.closest('#nav-help')) return;
+        var hit = findTourStep(e.target);
+        if (!hit) {
+            tourHighlight.classList.remove('hover');
+            if (!tourTooltip || tourTooltip.style.display === 'none') tourHighlight.style.display = 'none';
+            return;
+        }
+        var rect = hit.target.getBoundingClientRect();
+        var hlLeft   = Math.max(4, rect.left);
+        var hlTop    = Math.max(4, rect.top);
+        var hlRight  = Math.min(window.innerWidth - 4, rect.right);
+        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom);
+        tourHighlight.style.display = '';
+        tourHighlight.style.top = hlTop + 'px';
+        tourHighlight.style.left = hlLeft + 'px';
+        tourHighlight.style.width = (hlRight - hlLeft) + 'px';
+        tourHighlight.style.height = (hlBottom - hlTop) + 'px';
+        tourHighlight.classList.add('hover');
     });
 
     var navHelp = document.getElementById('nav-help');
