@@ -79,6 +79,11 @@ switch ($action) {
         (new DetectController($authenticated, $magentoInfo))->handle();
         break;
 
+    case 'diskinfo':
+        require_once PANEL_ROOT . '/Controller/DiskInfoController.php';
+        (new DiskInfoController($authenticated))->handle();
+        break;
+
     case 'static':
         require_once PANEL_ROOT . '/Controller/StaticDeployController.php';
         (new StaticDeployController($authenticated, $magentoInfo))->handle();

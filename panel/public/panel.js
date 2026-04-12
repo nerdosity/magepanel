@@ -1187,6 +1187,96 @@
         });
     });
 
+    // ── Storage modal ────────────────────────────────────────
+    var sysinfoEl = document.getElementById('header-sysinfo');
+    if (sysinfoEl) {
+        sysinfoEl.addEventListener('click', function (e) {
+            if (tourMode) return; // explore/guided tour handles its own clicks
+            openStorageModal();
+        });
+    }
+
+    function openStorageModal() {
+        var modal = document.getElementById('storage-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'storage-modal';
+            modal.className = 'Modal';
+            modal.innerHTML =
+                '<div class="DialogContainer">'
+              +   '<div class="ModalSizer">'
+              +     '<div class="ModalTitle">'
+              +       '<span class="title-text">' + __('Storage') + '</span>'
+              +       '<button type="button" class="ModalCloseButton" aria-label="close">&times;</button>'
+              +     '</div>'
+              +     '<div class="ModalContainer">'
+              +       '<div class="ModalContent withTitle" id="storage-modal-body">'
+              +         '<div class="storage-loading">' + __('Caricamento...') + '</div>'
+              +       '</div>'
+              +     '</div>'
+              +   '</div>'
+              + '</div>';
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) modal.classList.remove('open');
+            });
+            modal.querySelector('.ModalCloseButton').addEventListener('click', function () {
+                modal.classList.remove('open');
+            });
+        }
+        modal.classList.add('open');
+        loadStorageInfo();
+    }
+
+    function loadStorageInfo() {
+        var body = document.getElementById('storage-modal-body');
+        body.innerHTML = '<div class="storage-loading">' + __('Caricamento...') + '</div>';
+        fetch(BASE_URL + '?action=diskinfo')
+            .then(function (r) { return r.json(); })
+            .then(function (data) { renderStorageInfo(body, data); })
+            .catch(function () { body.innerHTML = '<div class="storage-loading">' + __('Info non disponibili') + '</div>'; });
+    }
+
+    function renderStorageInfo(body, data) {
+        var max = data.folders.length ? data.folders[0].size : 1;
+        var hotMax = data.hot_folders.length ? data.hot_folders[0].size : 1;
+
+        var html = '<div class="storage-summary">'
+                 +   '<div class="storage-stat"><div class="storage-stat-label">' + __('Disco totale') + '</div><div class="storage-stat-value">' + data.disk_total + '</div></div>'
+                 +   '<div class="storage-stat"><div class="storage-stat-label">' + __('Usato') + '</div><div class="storage-stat-value">' + data.disk_used + ' (' + data.disk_used_pct + '%)</div></div>'
+                 +   '<div class="storage-stat"><div class="storage-stat-label">' + __('Libero') + '</div><div class="storage-stat-value">' + data.disk_free + '</div></div>'
+                 +   '<div class="storage-stat"><div class="storage-stat-label">' + __('Magento') + '</div><div class="storage-stat-value">' + data.magento_size + '</div></div>'
+                 + '</div>';
+
+        if (data.hot_folders.length) {
+            html += '<h3 class="storage-section-title">' + __('Cartelle Magento (cache, log, static, ecc.)') + '</h3>';
+            html += '<div class="storage-bars">';
+            data.hot_folders.forEach(function (f) {
+                var pct = Math.max(1, (f.size / hotMax) * 100);
+                html += '<div class="storage-bar-row">'
+                      +   '<div class="storage-bar-name">' + escapeHtml(f.name) + '</div>'
+                      +   '<div class="storage-bar-track"><div class="storage-bar-fill" style="width:' + pct + '%"></div></div>'
+                      +   '<div class="storage-bar-size">' + f.size_human + '</div>'
+                      + '</div>';
+            });
+            html += '</div>';
+        }
+
+        html += '<h3 class="storage-section-title">' + __('Cartelle principali di ') + escapeHtml(data.root_name) + '</h3>';
+        html += '<div class="storage-bars">';
+        data.folders.forEach(function (f) {
+            var pct = Math.max(1, (f.size / max) * 100);
+            html += '<div class="storage-bar-row">'
+                  +   '<div class="storage-bar-name">' + escapeHtml(f.name) + '</div>'
+                  +   '<div class="storage-bar-track"><div class="storage-bar-fill" style="width:' + pct + '%"></div></div>'
+                  +   '<div class="storage-bar-size">' + f.size_human + '</div>'
+                  + '</div>';
+        });
+        html += '</div>';
+
+        body.innerHTML = html;
+    }
+
     // ── Tour / Help ──────────────────────────────────────────
     //
     // Due modalità:

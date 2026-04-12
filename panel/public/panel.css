@@ -1264,6 +1264,172 @@ input[type="checkbox"] {
     display: none;
 }
 
+/* ── Modal (Komodor) ─────────────────────────────────────────── */
+
+.Modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+}
+.Modal.open { display: flex; }
+
+.Modal .DialogContainer {
+    background: rgb(255, 255, 255);
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 8px 32px;
+    width: 720px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.ModalSizer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100vh;
+    flex: 1 1 0%;
+}
+
+.ModalTitle {
+    color: rgb(30, 34, 43);
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: -0.04rem;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 24px 32px 18px;
+    display: flex;
+    align-items: center;
+}
+.ModalTitle .title-text { flex: 1; }
+.ModalTitle .ModalCloseButton {
+    background: none;
+    border: none;
+    color: rgb(128, 140, 169);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.15s;
+}
+.ModalTitle .ModalCloseButton:hover { color: rgb(30, 34, 43); }
+
+.ModalContainer {
+    display: flex;
+    position: relative;
+    max-height: 100%;
+    min-height: 0;
+    flex: 1 1 0%;
+}
+
+.ModalContent {
+    position: relative;
+    z-index: 500;
+    flex: 1 1 0%;
+    overflow: hidden auto;
+    padding: 18px 32px;
+    color: rgb(30, 34, 43);
+}
+.ModalContent.withTitle { padding-top: 0; }
+
+@media screen and (max-width: 700px), screen and (max-height: 600px) {
+    .Modal .DialogContainer {
+        border-radius: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: none !important;
+    }
+}
+
+.storage-loading {
+    text-align: center;
+    color: rgb(128, 140, 169);
+    padding: 40px 0;
+    font-size: 14px;
+}
+
+.storage-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.storage-stat {
+    background: rgb(237, 240, 245);
+    border-radius: 4px;
+    padding: 12px 14px;
+}
+.storage-stat-label {
+    font-size: 11px;
+    color: rgb(128, 140, 169);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.storage-stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(30, 34, 43);
+}
+
+.storage-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(128, 140, 169);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 16px 0 10px;
+}
+
+.storage-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.storage-bar-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 80px;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+.storage-bar-name {
+    color: rgb(30, 34, 43);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.storage-bar-track {
+    height: 8px;
+    background: rgb(237, 240, 245);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.storage-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgb(0, 209, 202), rgb(28, 168, 184));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.storage-bar-size {
+    color: rgb(128, 140, 169);
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+
+#header-sysinfo { cursor: pointer; }
+#header-sysinfo:hover .Quota { opacity: 0.85; }
+
 /* ── Tour / Help ─────────────────────────────────────────────── */
 
 #tour-backdrop {

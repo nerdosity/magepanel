@@ -354,6 +354,26 @@ msgstr "Additional arguments to pass to the command. Space-separated, each argum
 msgid "tour_reload"
 msgstr "Reload the command list from the server (useful after installing new modules)."
 
+# ── Storage modal ──────────────────────────────────────
+
+msgid "Storage"
+msgstr "Storage"
+
+msgid "Disco totale"
+msgstr "Total disk"
+
+msgid "Usato"
+msgstr "Used"
+
+msgid "Libero"
+msgstr "Free"
+
+msgid "Cartelle Magento (cache, log, static, ecc.)"
+msgstr "Magento folders (cache, log, static, etc.)"
+
+msgid "Cartelle principali di "
+msgstr "Top folders of "
+
 msgid "tour_title"
 msgstr "The panel name. Customizable from config.php."
 

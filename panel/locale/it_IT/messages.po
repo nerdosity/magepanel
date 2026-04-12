@@ -354,6 +354,26 @@ msgstr "Argomenti aggiuntivi da passare al comando. Separati da spazio, ogni arg
 msgid "tour_reload"
 msgstr "Ricarica la lista dei comandi dal server (utile dopo aver installato nuovi moduli)."
 
+# ── Storage modal ──────────────────────────────────────
+
+msgid "Storage"
+msgstr "Storage"
+
+msgid "Disco totale"
+msgstr "Disco totale"
+
+msgid "Usato"
+msgstr "Usato"
+
+msgid "Libero"
+msgstr "Libero"
+
+msgid "Cartelle Magento (cache, log, static, ecc.)"
+msgstr "Cartelle Magento (cache, log, static, ecc.)"
+
+msgid "Cartelle principali di "
+msgstr "Cartelle principali di "
+
 msgid "tour_title"
 msgstr "Il nome del pannello. Personalizzabile da config.php."
 
