@@ -294,3 +294,62 @@ msgstr "Seleziona un comando"
 
 msgid "Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo."
 msgstr "Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo."
+
+# ── Tour / Help ────────────────────────────────────────
+
+msgid "tour_intro"
+msgstr "Modalità guida attiva. Clicca su qualsiasi elemento del pannello per scoprire cosa fa. Doppio click sul bottone Guida per un tour passo-passo. Click di nuovo sul bottone Guida per uscire."
+
+msgid "Ho capito"
+msgstr "Ho capito"
+
+msgid "tour_nav_tasks"
+msgstr "Sezione Tasks: esegui i task di deploy raggruppati (pulizia, cache, compilazione, ecc.)."
+
+msgid "tour_help"
+msgstr "Questo bottone. Click singolo attiva la modalità guida (clicca gli elementi per scoprirli), doppio click avvia il tour passo-passo."
+
+msgid "tour_title"
+msgstr "Il nome del pannello. Personalizzabile da config.php."
+
+msgid "tour_maintenance"
+msgstr "Attiva o disattiva la modalità manutenzione del sito."
+
+msgid "tour_presets"
+msgstr "Preset di deploy rapido: full deploy, cache o compilazione."
+
+msgid "tour_lang"
+msgstr "Cambia la lingua dell'interfaccia."
+
+msgid "tour_sysinfo"
+msgstr "Versione PHP, Magento e spazio disco del server."
+
+msgid "tour_tabs"
+msgstr "Naviga tra i gruppi di task: pulizia, compilazione, cache, ecc."
+
+msgid "tour_tasks"
+msgstr "Clicca Esegui per lanciare un task. L'output appare nella console sotto."
+
+msgid "tour_console"
+msgstr "La console mostra l'output dei comandi in tempo reale. Ridimensionala con i pallini o trascinando la barra."
+
+msgid "tour_terminal"
+msgstr "Output del terminale. I task creano sezioni collassabili con indicatore di stato."
+
+msgid "tour_mage"
+msgstr "Browser dei comandi Magento CLI. Cerca, seleziona ed esegui qualsiasi comando bin/magento."
+
+msgid "tour_composer"
+msgstr "Browser dei comandi Composer. Cerca, seleziona ed esegui qualsiasi comando composer."
+
+msgid "Guida"
+msgstr "Guida"
+
+msgid "Avanti"
+msgstr "Avanti"
+
+msgid "Fine"
+msgstr "Fine"
+
+msgid "di"
+msgstr "di"

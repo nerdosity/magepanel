@@ -1,0 +1,67 @@
+[
+    {
+        "target": "#nav-tasks",
+        "text": "tour_nav_tasks",
+        "placement": "right"
+    },
+    {
+        "target": "#nav-commands",
+        "text": "tour_mage",
+        "placement": "right"
+    },
+    {
+        "target": "#nav-composer",
+        "text": "tour_composer",
+        "placement": "right"
+    },
+    {
+        "target": ".page-title",
+        "text": "tour_title",
+        "placement": "bottom"
+    },
+    {
+        "target": "#btn-maintenance",
+        "text": "tour_maintenance",
+        "placement": "bottom"
+    },
+    {
+        "target": "#preset-trigger",
+        "text": "tour_presets",
+        "placement": "bottom"
+    },
+    {
+        "target": "#lang-trigger",
+        "text": "tour_lang",
+        "placement": "bottom"
+    },
+    {
+        "target": "#header-sysinfo",
+        "text": "tour_sysinfo",
+        "placement": "bottom"
+    },
+    {
+        "target": "#group-tabs",
+        "text": "tour_tabs",
+        "placement": "bottom"
+    },
+    {
+        "target": ".task-group",
+        "text": "tour_tasks",
+        "placement": "top"
+    },
+    {
+        "target": "#terminal-header",
+        "text": "tour_console",
+        "placement": "top"
+    },
+    {
+        "target": "#terminal",
+        "text": "tour_terminal",
+        "placement": "top"
+    },
+    {
+        "target": "#nav-help",
+        "text": "tour_help",
+        "placement": "right"
+    }
+]

@@ -294,3 +294,62 @@ msgstr "Select a command"
 
 msgid "Scegli un comando dalla lista a sinistra per visualizzare i dettagli ed eseguirlo."
 msgstr "Choose a command from the list on the left to view details and run it."
+
+# ── Tour / Help ────────────────────────────────────────
+
+msgid "tour_intro"
+msgstr "Guide mode active. Click any element in the panel to learn what it does. Double-click the Guide button for a step-by-step tour. Click the Guide button again to exit."
+
+msgid "Ho capito"
+msgstr "Got it"
+
+msgid "tour_nav_tasks"
+msgstr "Tasks section: run grouped deploy tasks (cleanup, cache, compilation, etc.)."
+
+msgid "tour_help"
+msgstr "This button. Single click enables guide mode (click elements to discover them), double click starts the step-by-step tour."
+
+msgid "tour_title"
+msgstr "The panel name. Customizable from config.php."
+
+msgid "tour_maintenance"
+msgstr "Enable or disable site maintenance mode."
+
+msgid "tour_presets"
+msgstr "Quick deploy presets: full deploy, cache or compilation."
+
+msgid "tour_lang"
+msgstr "Change the interface language."
+
+msgid "tour_sysinfo"
+msgstr "PHP version, Magento version and server disk space."
+
+msgid "tour_tabs"
+msgstr "Navigate between task groups: cleanup, compilation, cache, etc."
+
+msgid "tour_tasks"
+msgstr "Click Run to execute a task. Output appears in the console below."
+
+msgid "tour_console"
+msgstr "The console shows command output in real time. Resize it with the dots or by dragging the bar."
+
+msgid "tour_terminal"
+msgstr "Terminal output. Tasks create collapsible sections with status indicators."
+
+msgid "tour_mage"
+msgstr "Magento CLI command browser. Search, select and run any bin/magento command."
+
+msgid "tour_composer"
+msgstr "Composer command browser. Search, select and run any composer command."
+
+msgid "Guida"
+msgstr "Guide"
+
+msgid "Avanti"
+msgstr "Next"
+
+msgid "Fine"
+msgstr "Done"
+
+msgid "di"
+msgstr "of"
