@@ -847,6 +847,7 @@ html, body {
 .ResourceDetailsContentBar__SwitchOption.selected, .ResourceDetailsContentBar__SwitchOption.selected:hover { color: var(--bg); background: rgb(255, 255, 255) }
 .ResourceDetailsContentBar__SwitchOption:last-child { border: 0 }
 .ResourceDetailsContentBar__SwitchOption:hover { background: rgba(35, 41, 53, 0.8) }
+.ResourceDetailsContentBar.disabled .ResourceDetailsContentBar__Switch { opacity: 0.35; pointer-events: none; cursor: default }
 
 /* --- Logs area: #terminal already styled above --- */
 
@@ -1273,22 +1274,44 @@ input[type="checkbox"] {
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
 }
 .Modal.open { display: flex; }
 
 .Modal .DialogContainer {
-    background: rgb(255, 255, 255);
-    border-radius: 6px;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 8px 32px;
-    width: 720px;
-    max-width: calc(100vw - 32px);
-    max-height: calc(100vh - 64px);
+    width: min(80vw, 700px);
+    min-height: min(90vh, 750px);
+    max-height: min(90vh, 750px);
+    height: min(90vh, 750px);
+    background-color: white;
+    color: rgb(23, 27, 34);
+    font-size: 18px;
+    line-height: normal;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.14) 0px 0px 4px, rgba(0, 0, 0, 0.28) 0px 4px 8px;
+    border-radius: 14px;
+    padding: 0;
+    overflow: visible;
     position: relative;
+    transform: scale(1);
+    transition: transform 200ms ease-in-out;
 }
+
+.DialogCloseButton {
+    cursor: pointer;
+    position: absolute;
+    font-size: 1.8em;
+    right: 14px;
+    top: 8px;
+    color: rgb(128, 140, 169);
+    text-decoration: none;
+    background: none;
+    border: none;
+    z-index: 10;
+    line-height: 1;
+}
+.DialogCloseButton:hover { color: rgb(23, 27, 34); }
 
 .ModalSizer {
     display: flex;
@@ -1306,21 +1329,7 @@ input[type="checkbox"] {
     margin-bottom: 0;
     margin-top: 0;
     padding: 24px 32px 18px;
-    display: flex;
-    align-items: center;
 }
-.ModalTitle .title-text { flex: 1; }
-.ModalTitle .ModalCloseButton {
-    background: none;
-    border: none;
-    color: rgb(128, 140, 169);
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 4px;
-    transition: color 0.15s;
-}
-.ModalTitle .ModalCloseButton:hover { color: rgb(30, 34, 43); }
 
 .ModalContainer {
     display: flex;
@@ -1339,12 +1348,15 @@ input[type="checkbox"] {
     color: rgb(30, 34, 43);
 }
 .ModalContent.withTitle { padding-top: 0; }
+.ModalContent.withNoOverflow { overflow: visible; }
+.ModalContent.withNoMargin { padding: 0; }
 
 @media screen and (max-width: 700px), screen and (max-height: 600px) {
     .Modal .DialogContainer {
         border-radius: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
+        min-height: 100vh !important;
         max-height: none !important;
     }
 }
@@ -1354,6 +1366,21 @@ input[type="checkbox"] {
     color: rgb(128, 140, 169);
     padding: 40px 0;
     font-size: 14px;
+}
+
+/* Help view (toggles with terminal via Logs/Help switch) */
+.help-view {
+    flex: 1 1 auto;
+    overflow: auto;
+    margin: 0;
+    padding: 18px 24px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--deep);
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .storage-summary {

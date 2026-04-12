@@ -596,6 +596,7 @@
             }
             // Deselect current command but keep terminal content
             selectedCmd = null;
+            updateDetailSwitchState();
         });
 
         group.appendChild(parent);
@@ -730,6 +731,9 @@
         }
         updateClearBtn();
         if (detailRun) detailRun.classList.remove('disabled');
+        updateDetailSwitchState();
+        // If currently in Help view, refresh the help for the new command
+        if (currentView === 'help') runHelpForCurrent();
     }
 
     // ── Log stage header ────────────────────────────────────
@@ -810,6 +814,7 @@
     function runSelectedCommand() {
         if (!selectedCmd) return;
         var args = detailArgs ? detailArgs.value.trim() : '';
+        setDetailView('logs');
         // Remove empty state placeholder if present, but keep existing output
         var es = term.querySelector('.term-empty-state');
         if (es) term.removeChild(es);
@@ -927,35 +932,77 @@
     if (detailArgs) detailArgs.addEventListener('keydown', function (e) { if (e.key === 'Enter') runSelectedCommand(); });
     if (detailClear) detailClear.addEventListener('click', function () { clearOutput(); });
 
-    // Help button — runs help <command> in terminal
-    var detailHelp = document.getElementById('detail-help');
-    if (detailHelp) {
-        detailHelp.addEventListener('click', function () {
-            if (!selectedCmd) return;
-            var action = selectedCmd.action;
-            clearOutput();
-            setRunning(true);
-            setDetailButtons(true);
-            var prefix = action === 'run_composer' ? 'composer ' : 'bin/magento ';
-            var stage = addLogStageHeader('help ' + selectedCmd.name, null);
-            activeLogLines = stage.lines;
-            var url = BASE_URL
-                + '?action=' + encodeURIComponent(action)
-                + '&name=help'
-                + '&args=' + encodeURIComponent(selectedCmd.name);
-            openSse(url, function (ok) {
-                setRunning(false);
-                setDetailButtons(false);
-                var pulser = stage.section.querySelector('.progress-pulse');
-                if (pulser) pulser.classList.remove('progress-pulse');
-                if (stage.iconPath) {
-                    stage.iconPath.setAttribute('fill', ok ? '#00d1ca' : '#ff4d61');
-                    stage.iconPath.setAttribute('d', ok ? SVG_PATH_CHECK : SVG_PATH_ERROR_X);
-                }
-                activeLogLines = null;
-            });
-        });
+    // Logs/Help switch in detail content bar
+    var helpCache = {};
+    var currentView = 'logs';
+
+    function runHelpForCurrent() {
+        if (!selectedCmd) return;
+        var key = selectedCmd.action + ':' + selectedCmd.name;
+        if (helpCache[key]) {
+            showHelpContent(helpCache[key]);
+            return;
+        }
+        showHelpContent(__('Caricamento...'));
+        fetch(BASE_URL + '?action=' + encodeURIComponent(selectedCmd.action)
+            + '&name=help&args=' + encodeURIComponent(selectedCmd.name) + '&sync=1')
+            .then(function (r) { return r.text(); })
+            .then(function (txt) {
+                // SSE response: parse 'data: {"line":"..."}' lines
+                var lines = [];
+                txt.split('\n').forEach(function (l) {
+                    var m = l.match(/^data: (.*)$/);
+                    if (!m) return;
+                    try { var d = JSON.parse(m[1]); if (d.line) lines.push(d.line); }
+                    catch (e) {}
+                });
+                var content = lines.join('\n');
+                helpCache[key] = content;
+                showHelpContent(content);
+            })
+            .catch(function () { showHelpContent(__('Info non disponibili')); });
     }
+
+    function showHelpContent(text) {
+        var helpBox = document.getElementById('terminal-help-view');
+        if (!helpBox) {
+            helpBox = document.createElement('pre');
+            helpBox.id = 'terminal-help-view';
+            helpBox.className = 'help-view';
+            term.parentNode.insertBefore(helpBox, term);
+        }
+        helpBox.textContent = text;
+    }
+
+    function setDetailView(view) {
+        if (!selectedCmd) return;
+        currentView = view;
+        document.querySelectorAll('.ResourceDetailsContentBar__SwitchOption').forEach(function (el) {
+            el.classList.toggle('selected', el.dataset.view === view);
+        });
+        var helpBox = document.getElementById('terminal-help-view');
+        if (view === 'help') {
+            term.style.display = 'none';
+            if (helpBox) helpBox.style.display = '';
+            runHelpForCurrent();
+        } else {
+            term.style.display = '';
+            if (helpBox) helpBox.style.display = 'none';
+        }
+    }
+
+    function updateDetailSwitchState() {
+        var bar = document.getElementById('detail-content-bar');
+        if (!bar) return;
+        bar.classList.toggle('disabled', !selectedCmd);
+    }
+
+    document.querySelectorAll('.ResourceDetailsContentBar__SwitchOption').forEach(function (el) {
+        el.addEventListener('click', function () {
+            if (!selectedCmd) return;
+            setDetailView(this.dataset.view);
+        });
+    });
 
     // ── Group tabs ───────────────────────────────────────────
 
@@ -1178,6 +1225,7 @@
 
     clearOutput();
     loadSysInfo();
+    updateDetailSwitchState();
 
     document.querySelectorAll('.lang-option').forEach(function (el) {
         el.addEventListener('click', function () {
@@ -1204,11 +1252,9 @@
             modal.className = 'Modal';
             modal.innerHTML =
                 '<div class="DialogContainer">'
+              +   '<a role="button" class="DialogCloseButton" aria-label="close">×</a>'
               +   '<div class="ModalSizer">'
-              +     '<div class="ModalTitle">'
-              +       '<span class="title-text">' + __('Storage') + '</span>'
-              +       '<button type="button" class="ModalCloseButton" aria-label="close">&times;</button>'
-              +     '</div>'
+              +     '<div class="ModalTitle">' + __('Storage') + '</div>'
               +     '<div class="ModalContainer">'
               +       '<div class="ModalContent withTitle" id="storage-modal-body">'
               +         '<div class="storage-loading">' + __('Caricamento...') + '</div>'
@@ -1220,7 +1266,7 @@
             modal.addEventListener('click', function (e) {
                 if (e.target === modal) modal.classList.remove('open');
             });
-            modal.querySelector('.ModalCloseButton').addEventListener('click', function () {
+            modal.querySelector('.DialogCloseButton').addEventListener('click', function () {
                 modal.classList.remove('open');
             });
         }
