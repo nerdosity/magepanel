@@ -327,6 +327,15 @@ msgstr "Versione PHP, Magento e spazio disco del server."
 msgid "tour_tabs"
 msgstr "Naviga tra i gruppi di task: pulizia, compilazione, cache, ecc."
 
+msgid "tour_tab"
+msgstr "Tab di un gruppo di task. Clicca per visualizzare i task di questo gruppo."
+
+msgid "tour_task_group"
+msgstr "Pannello dei task di questo gruppo. Ogni riga è un task eseguibile."
+
+msgid "tour_task_run"
+msgstr "Esegue il task. L'output viene mostrato nella console sotto in una sezione collassabile."
+
 msgid "tour_tasks"
 msgstr "Clicca Esegui per lanciare un task. L'output appare nella console sotto."
 

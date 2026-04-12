@@ -327,6 +327,15 @@ msgstr "PHP version, Magento version and server disk space."
 msgid "tour_tabs"
 msgstr "Navigate between task groups: cleanup, compilation, cache, etc."
 
+msgid "tour_tab"
+msgstr "Task group tab. Click to view the tasks in this group."
+
+msgid "tour_task_group"
+msgstr "Task panel for this group. Each row is an executable task."
+
+msgid "tour_task_run"
+msgstr "Runs the task. Output is shown in the console below in a collapsible section."
+
 msgid "tour_tasks"
 msgstr "Click Run to execute a task. Output appears in the console below."
 

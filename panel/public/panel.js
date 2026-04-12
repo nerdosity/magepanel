@@ -1194,8 +1194,25 @@
     //      target li evidenzia, click mostra il testo. Altro click su Guida esce.
     //   2. Tour guidato: doppio click su Guida → tour passo-passo con Avanti/Fine.
 
-    var TOUR = window.PANEL_TOUR || [];
-    var TOUR_SELECTORS = TOUR.map(function (s) { return s.target; }).join(',');
+    var TOUR_RAW = window.PANEL_TOUR || [];
+    // Espande gli step con "each": true in uno step per ogni elemento matching
+    function expandTour() {
+        var result = [];
+        TOUR_RAW.forEach(function (step) {
+            if (step.each) {
+                var els = document.querySelectorAll(step.target);
+                els.forEach(function (el, i) {
+                    // Crea un selettore unico per questo elemento
+                    if (!el.id) el.id = 'tour-dyn-' + Math.random().toString(36).slice(2, 8);
+                    result.push({ target: '#' + el.id, text: step.text, placement: step.placement });
+                });
+            } else {
+                result.push(step);
+            }
+        });
+        return result;
+    }
+    var TOUR = TOUR_RAW;
     var tourMode = null; // null | 'explore' | 'guided'
     var tourStep = 0;
     var tourBackdrop = null;
@@ -1224,11 +1241,19 @@
     }
 
     function findTourStep(el) {
-        for (var i = 0; i < TOUR.length; i++) {
-            var target = document.querySelector(TOUR[i].target);
-            if (target && (target === el || target.contains(el))) return i;
+        // Check all raw tour steps including each-expanded
+        for (var i = 0; i < TOUR_RAW.length; i++) {
+            var step = TOUR_RAW[i];
+            if (step.each) {
+                // Match any element of this selector
+                var match = el.closest(step.target);
+                if (match) return { text: step.text, placement: step.placement, target: match };
+            } else {
+                var target = document.querySelector(step.target);
+                if (target && (target === el || target.contains(el))) return { text: step.text, placement: step.placement, target: target };
+            }
         }
-        return -1;
+        return null;
     }
 
     function renderTourStep(stepIdx, showCounter) {
@@ -1264,23 +1289,20 @@
 
         // Tooltip content
         var html = '';
-        if (showCounter) html += '<div class="tour-progress-track"><div class="tour-progress" style="width:' + (((stepIdx + 1) / TOUR.length) * 100) + '%"></div></div>';
-        html += '<div class="tour-body">' + escapeHtml(__(step.text)) + '</div>';
-        html += '<div class="tour-footer">';
         if (showCounter) {
+            html += '<div class="tour-progress-track"><div class="tour-progress" style="width:' + (((stepIdx + 1) / TOUR.length) * 100) + '%"></div></div>';
+        }
+        html += '<div class="tour-body">' + escapeHtml(__(step.text)) + '</div>';
+        if (showCounter) {
+            html += '<div class="tour-footer">';
             html += '<span class="tour-counter">' + (stepIdx + 1) + ' ' + __('di') + ' ' + TOUR.length + '</span>';
             html += '<button class="tour-btn" id="tour-next">' + (stepIdx === TOUR.length - 1 ? __('Fine') : __('Avanti')) + '</button>';
-        } else {
-            html += '<span class="tour-counter"></span>';
-            html += '<button class="tour-btn" id="tour-close">' + __('Fine') + '</button>';
+            html += '</div>';
         }
-        html += '</div>';
         tourTooltip.innerHTML = html;
 
         var nextBtn = document.getElementById('tour-next');
         if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); nextTourStep(); });
-        var closeBtn = document.getElementById('tour-close');
-        if (closeBtn) closeBtn.addEventListener('click', function (e) { e.stopPropagation(); endTour(); });
 
         // Make visible first so we can measure
         tourTooltip.style.transform = '';
@@ -1320,10 +1342,68 @@
         return div.innerHTML;
     }
 
+    function renderExploreStep(hit) {
+        var el = hit.target;
+        var rect = el.getBoundingClientRect();
+        var pad = 6;
+
+        // Backdrop mask
+        var maskRect = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><rect width=\'' + (rect.width + pad * 2) + '\' height=\'' + (rect.height + pad * 2) + '\' rx=\'3\'/></svg>"), linear-gradient(white, white)';
+        tourBackdrop.style.maskImage = maskRect;
+        tourBackdrop.style.webkitMaskImage = maskRect;
+        var maskPos = (rect.left - pad) + 'px ' + (rect.top - pad) + 'px, 0 0';
+        tourBackdrop.style.maskPosition = maskPos;
+        tourBackdrop.style.webkitMaskPosition = maskPos;
+        tourBackdrop.style.maskComposite = 'exclude';
+        tourBackdrop.style.webkitMaskComposite = 'xor';
+        tourBackdrop.style.maskRepeat = 'no-repeat';
+        tourBackdrop.style.webkitMaskRepeat = 'no-repeat';
+
+        // Highlight clamped
+        var hlLeft   = Math.max(4, rect.left - pad);
+        var hlTop    = Math.max(4, rect.top - pad);
+        var hlRight  = Math.min(window.innerWidth - 4, rect.right + pad);
+        var hlBottom = Math.min(window.innerHeight - 4, rect.bottom + pad);
+        tourHighlight.style.top = hlTop + 'px';
+        tourHighlight.style.left = hlLeft + 'px';
+        tourHighlight.style.width = (hlRight - hlLeft) + 'px';
+        tourHighlight.style.height = (hlBottom - hlTop) + 'px';
+
+        // Tooltip content (no button, no counter in explore)
+        tourTooltip.innerHTML = '<div class="tour-body">' + escapeHtml(__(hit.text)) + '</div>';
+        tourTooltip.style.display = 'block';
+        tourTooltip.style.transform = '';
+        tourTooltip.style.left = '-9999px';
+        tourTooltip.style.top = '0';
+        var tipW = tourTooltip.offsetWidth;
+        var tipH = tourTooltip.offsetHeight;
+
+        var placement = hit.placement || 'bottom';
+        var tx, ty;
+        if (placement === 'bottom') {
+            tx = rect.left + rect.width / 2 - tipW / 2;
+            ty = rect.bottom + pad + 12;
+        } else if (placement === 'top') {
+            tx = rect.left + rect.width / 2 - tipW / 2;
+            ty = rect.top - pad - 12 - tipH;
+        } else if (placement === 'right') {
+            tx = rect.right + pad + 12;
+            ty = rect.top + rect.height / 2 - tipH / 2;
+        } else {
+            tx = rect.left - pad - 12 - tipW;
+            ty = rect.top + rect.height / 2 - tipH / 2;
+        }
+        tx = Math.max(8, Math.min(window.innerWidth - tipW - 8, tx));
+        ty = Math.max(8, Math.min(window.innerHeight - tipH - 8, ty));
+        tourTooltip.style.top = ty + 'px';
+        tourTooltip.style.left = tx + 'px';
+    }
+
     function startGuidedTour() {
         endTour();
         tourMode = 'guided';
         tourStep = 0;
+        TOUR = expandTour();
         createTourElements();
         tourBackdrop.addEventListener('click', endTour);
         renderTourStep(tourStep, true);
@@ -1337,14 +1417,6 @@
         if (tourStep >= TOUR.length) endTour();
     }
 
-    var tourCursor = null;
-    function onTourMouseMove(e) {
-        if (tourCursor) {
-            tourCursor.style.left = e.clientX + 'px';
-            tourCursor.style.top = e.clientY + 'px';
-        }
-    }
-
     function startExploreMode() {
         endTour();
         tourMode = 'explore';
@@ -1354,30 +1426,10 @@
         tourBackdrop.style.pointerEvents = 'none';
         tourHighlight.style.display = 'none';
 
-        // Cursor follower: freccia bianca in alto-sx + cerchio Guida in basso-dx
-        tourCursor = document.createElement('div');
-        tourCursor.id = 'tour-cursor';
-        tourCursor.innerHTML =
-            '<svg class="tc-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28">'
-          +   '<path fill="white" stroke="#181b22" stroke-width="1.2" stroke-linejoin="round" d="M2 2 L2 22 L7 17 L10 24 L13 22.5 L10 15.5 L17 15 Z"/>'
-          + '</svg>'
-          + '<svg class="tc-help" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
-          +   '<path fill="white" fill-rule="nonzero" d="M24 12c0 6.624-5.376 12-12 12S0 18.624 0 12 5.376 0 12 0s12 5.376 12 12zm-13.028 1.902h2.13v-.26c0-.195.016-.368.048-.52.033-.152.084-.295.155-.43.07-.136.168-.275.293-.416.124-.14.279-.298.463-.471.195-.184.38-.371.553-.561.173-.19.325-.393.455-.61.13-.217.233-.45.309-.699.076-.25.114-.531.114-.846 0-.433-.087-.84-.26-1.22a2.953 2.953 0 00-.724-.983 3.373 3.373 0 00-1.114-.65A4.171 4.171 0 0011.964 6a3.61 3.61 0 00-1.318.228c-.39.151-.729.35-1.016.593a3.528 3.528 0 00-.715.821c-.19.304-.328.607-.415.91l1.87.781c.043-.173.111-.341.203-.504.092-.162.209-.309.35-.439.14-.13.303-.233.488-.309.184-.076.39-.114.617-.114.423 0 .757.125 1 .374.244.25.366.537.366.862 0 .315-.081.58-.244.797-.162.217-.39.455-.683.715-.281.239-.517.461-.707.667a3.22 3.22 0 00-.455.618c-.114.206-.198.42-.252.642a3.05 3.05 0 00-.081.724v.536zM12.012 18c.39 0 .724-.138 1-.415.277-.276.415-.61.415-1s-.138-.72-.415-.992a1.377 1.377 0 00-1-.406c-.39 0-.72.135-.992.406a1.35 1.35 0 00-.406.992c0 .39.135.724.406 1 .271.277.602.415.992.415z"/>'
-          + '</svg>';
-        tourCursor.style.left = '-100px';
-        tourCursor.style.top = '-100px';
-        document.body.appendChild(tourCursor);
-        document.addEventListener('mousemove', onTourMouseMove);
-
-        // Intro tooltip che spiega come funziona
+        // Intro tooltip (no button, clicca in giro per esplorare)
         var help = document.getElementById('nav-help');
         var hrect = help.getBoundingClientRect();
-        tourTooltip.innerHTML = '<div class="tour-body">'
-            + escapeHtml(__('tour_intro'))
-            + '</div><div class="tour-footer">'
-            + '<span class="tour-counter"></span>'
-            + '<button class="tour-btn" id="tour-close">' + __('Ho capito') + '</button>'
-            + '</div>';
+        tourTooltip.innerHTML = '<div class="tour-body">' + escapeHtml(__('tour_intro')) + '</div>';
         tourTooltip.style.display = 'block';
         tourTooltip.style.transform = '';
         tourTooltip.style.left = '-9999px';
@@ -1388,18 +1440,12 @@
         var ty = Math.max(8, Math.min(window.innerHeight - tipH - 8, hrect.top - 20));
         tourTooltip.style.left = tx + 'px';
         tourTooltip.style.top = ty + 'px';
-        document.getElementById('tour-close').addEventListener('click', function (e) {
-            e.stopPropagation();
-            tourTooltip.style.display = 'none';
-        });
     }
 
     function endTour() {
         tourMode = null;
         document.body.classList.remove('tour-explore');
         removeTourElements();
-        if (tourCursor) { tourCursor.remove(); tourCursor = null; }
-        document.removeEventListener('mousemove', onTourMouseMove);
     }
 
     // Explore mode: intercept ALL clicks
@@ -1410,10 +1456,10 @@
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        var idx = findTourStep(e.target);
-        if (idx >= 0) {
+        var hit = findTourStep(e.target);
+        if (hit) {
             tourHighlight.style.display = '';
-            renderTourStep(idx, false);
+            renderExploreStep(hit);
         }
     }, true);
 
@@ -1428,20 +1474,14 @@
 
     var navHelp = document.getElementById('nav-help');
     if (navHelp) {
-        navHelp.addEventListener('click', function () {
-            // Se già attivo, esci
+        navHelp.addEventListener('click', function (e) {
+            e.stopPropagation();
             if (tourMode) { endTour(); return; }
-            // Click singolo: explore mode. Doppio click: guided tour.
-            if (tourClickTimer) {
-                clearTimeout(tourClickTimer);
-                tourClickTimer = null;
-                startGuidedTour();
-            } else {
-                tourClickTimer = setTimeout(function () {
-                    tourClickTimer = null;
-                    startExploreMode();
-                }, 250);
-            }
+            startExploreMode();
+        });
+        navHelp.addEventListener('dblclick', function (e) {
+            e.stopPropagation();
+            startGuidedTour();
         });
     }
 

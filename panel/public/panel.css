@@ -1279,49 +1279,16 @@ input[type="checkbox"] {
     transition: mask-position 0.3s ease;
 }
 
-/* Explore mode: hide native cursor, use custom follower */
+/* Explore mode: native help cursor on everything */
 body.tour-explore,
-body.tour-explore *,
-body.tour-explore *::before,
-body.tour-explore *::after,
-body.tour-explore input,
-body.tour-explore button,
-body.tour-explore a,
-body.tour-explore textarea,
-body.tour-explore select,
-body.tour-explore [role="button"] {
-    cursor: none !important;
+body.tour-explore * {
+    cursor: help !important;
 }
 body.tour-explore #nav-help,
 body.tour-explore #nav-help *,
 body.tour-explore #tour-tooltip,
 body.tour-explore #tour-tooltip * {
     cursor: pointer !important;
-}
-
-/* Custom cursor follower */
-#tour-cursor {
-    position: fixed;
-    width: 40px;
-    height: 48px;
-    pointer-events: none;
-    z-index: 10000;
-    transform: translate(-2px, -2px);
-    will-change: transform;
-}
-#tour-cursor .tc-arrow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 28px;
-}
-#tour-cursor .tc-help {
-    position: absolute;
-    top: 22px;
-    left: 16px;
-    width: 22px;
-    height: 22px;
 }
 body.tour-explore #nav-help,
 body.tour-explore #nav-help * {

@@ -40,14 +40,22 @@
         "placement": "bottom"
     },
     {
-        "target": "#group-tabs",
-        "text": "tour_tabs",
-        "placement": "bottom"
+        "target": ".group-tab",
+        "text": "tour_tab",
+        "placement": "bottom",
+        "each": true
     },
     {
         "target": ".task-group",
-        "text": "tour_tasks",
-        "placement": "top"
+        "text": "tour_task_group",
+        "placement": "top",
+        "each": true
+    },
+    {
+        "target": ".task-run-btn",
+        "text": "tour_task_run",
+        "placement": "left",
+        "each": true
     },
     {
         "target": "#terminal-header",
