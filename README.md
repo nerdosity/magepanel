@@ -58,11 +58,53 @@ Stessa cosa, per Composer. `require`, `update`, `dump-autoload` — tutto dal br
 
 ### Manutenzione
 
-Toggle manutenzione con conferma modale. Badge visivo nell'header quando il sito e in manutenzione.
+Toggle manutenzione con conferma modale. L'icona del bottone mostra un check verde quando il sito e online, un triangolo warning rosso quando in manutenzione.
 
-### Pannello info
+### Info sistema nell'header (SpaceQuotas)
 
-Nella sidebar: versione PHP, versione Magento, spazio disco disponibile. Aggiornato automaticamente.
+Nell'header, accanto al selettore lingua:
+
+- **PHP** — major.minor (es. 8.3)
+- **Magento** — versione da `composer.json`
+- **Storage** — spazio usato/totale con barra di progresso (teal < 70%, gialla 70-90%, rossa > 90%)
+
+Click sul blocco Storage apre un **modal interattivo** con:
+
+- Riepilogo disco (totale, usato, libero) + dimensione Magento
+- **Hot folders Magento**: var/cache, var/log, var/session, var/page_cache, var/view_preprocessed, generated/code, generated/metadata, pub/static, pub/media — con barre proporzionali
+- **Cartelle root Magento**: tutte le top-level (app, vendor, pub, var, ecc.) ordinate per dimensione
+
+Utile per capire al volo dove sta finendo lo spazio disco.
+
+### Console con controlli stile macOS
+
+Header della console con tre pallini colorati (rosso/giallo/verde):
+
+- **Rosso** (chevron giu) — minimizza la console
+- **Giallo** (1/3 schermo) — dimensione standard
+- **Verde** (chevron su) — massimizza a tutto schermo
+
+Lo stato attivo viene disabilitato automaticamente. Transizione animata fra stati. In alternativa, trascina la barra di resize per dimensione custom.
+
+### Switch Logs / Help nel pannello comandi
+
+Nel detail panel di Mage/Composer, uno switch in stile tab permette di alternare fra:
+
+- **Logs** — output del comando eseguito in streaming
+- **Help** — output di `help <comando>` (con cache)
+
+L'help viene fetchato al volo e memorizzato, lo switch e istantaneo. Premendo Esegui si torna automaticamente alla vista Logs. Se cambi comando mentre sei in Help, l'help del nuovo comando viene caricato automaticamente.
+
+### Modalita guida interattiva
+
+Bottone **Guida** (?) in basso a sinistra nel drawer. Attiva una modalita di esplorazione in cui:
+
+- **Click singolo** sul bottone Guida: modalita esplora. Cursor help su tutto. Click su qualsiasi elemento documentato mostra il suo tooltip di spiegazione. Riclicca Guida per uscire.
+- **Doppio click** sul bottone Guida: tour guidato passo-passo con progress bar, counter "1 di N", bottone Avanti/Fine, overlay scuro con spotlight sull'elemento corrente.
+
+I contenuti della guida sono in `panel/tour.json`, con testi tradotti tramite chiavi `.po`. Ogni step ha un selettore CSS, una chiave di traduzione e un placement (top/bottom/left/right). Supporto `each: true` per espansione dinamica (es. un tooltip per ogni tab, per ogni task group, per ogni bottone Run).
+
+Gli elementi non documentabili restano scuri, quelli documentati si evidenziano al passaggio del mouse con bordo teal animato.
 
 ## Come funziona
 
@@ -206,19 +248,21 @@ Questa opzione puo essere piu semplice su hosting dove la document root e `pub/`
 ```
 panel/
   index.php                  # Front controller + router
-  config.php                 # Token, task definitions (gitignored)
+  config.php                 # Token, task definitions, PANEL_TITLE (gitignored)
+  tour.json                  # Definizioni della guida interattiva
   .htaccess                  # Protezione accesso Apache
   bin/clean.php              # Cleaner PHP-native
   Controller/
     AbstractController.php   # Auth + response helpers
+    SseController.php        # Base class per streaming SSE (DRY)
     DashboardController.php  # Render della UI
     StreamController.php     # SSE per task predefiniti
     StaticDeployController.php
     RunCommandController.php # SSE per comandi Magento arbitrari
     RunComposerController.php
-    CommandsController.php   # Lista comandi Magento (JSON)
-    ComposerCommandsController.php
+    ListCommandsController.php # Lista comandi Magento/Composer (JSON)
     DetectController.php     # Info sistema (JSON)
+    DiskInfoController.php   # Info dettagliate storage (JSON)
   Model/
     TaskRegistry.php         # Registro task da config.php
     MagentoInfo.php          # Scan temi e lingue
@@ -229,7 +273,7 @@ panel/
     login.php                # Pagina di login
   public/
     panel.js                 # Frontend JS (vanilla)
-    panel.css                # Stili (dark theme stile DevOps)
+    panel.css                # Stili (dark theme stile Komodor/Okteto)
     .htaccess                # Permette servire CSS/JS, blocca PHP
   locale/
     it_IT/messages.po        # Italiano (lingua sorgente)
@@ -258,6 +302,36 @@ Poi aggiungi la traduzione del label in ogni file `.po` sotto `locale/`.
 3. Traduci i `msgstr` — i `msgid` sono le stringhe italiane originali
 4. La lingua appare automaticamente nel selettore
 
+## Personalizzare il titolo
+
+Il titolo del pannello (default `MagePanel`) si configura da `config.php`:
+
+```php
+define('PANEL_TITLE', getenv('DEPLOY_PANEL_TITLE') ?: 'MagePanel');
+```
+
+Il PHP separa automaticamente le parole (camelCase o spazio) e colora la prima in bianco e la seconda in teal. Esempi: `MagePanel` diventa `Mage`+`Panel`, `Deploy Panel` diventa `Deploy`+`Panel`.
+
+## Aggiungere uno step alla guida
+
+Modifica `panel/tour.json`, aggiungi un'entry:
+
+```json
+{
+    "target": "#mio-elemento",
+    "text": "tour_mio_step",
+    "placement": "bottom"
+}
+```
+
+Poi aggiungi la traduzione `tour_mio_step` in ogni file `.po`. Se il selettore matcha piu elementi contemporaneamente, aggiungi `"each": true` e ogni match avra il suo tooltip.
+
 ---
 
 Made with mass amounts of caffeine by **Nerdosity**.
+
+## Ti e piaciuto?
+
+Offrimi un caffe: [paypal.me/giovafedele](https://paypal.me/giovafedele)
+
+[![Donate](https://img.shields.io/badge/PayPal-Buy%20me%20a%20coffee-00457C?logo=paypal&logoColor=white)](https://paypal.me/giovafedele)

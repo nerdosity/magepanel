@@ -58,11 +58,53 @@ Same thing, for Composer. `require`, `update`, `dump-autoload` — all from the 
 
 ### Maintenance mode
 
-Maintenance toggle with confirmation modal. Visual badge in the header when the site is under maintenance.
+Maintenance toggle with confirmation modal. The button icon shows a green check when the site is online, a red warning triangle when in maintenance.
 
-### Info panel
+### System info in the header (SpaceQuotas)
 
-In the sidebar: PHP version, Magento version, available disk space. Auto-refreshed.
+In the header, next to the language selector:
+
+- **PHP** — major.minor (e.g. 8.3)
+- **Magento** — version from `composer.json`
+- **Storage** — used/total disk space with a progress bar (teal < 70%, yellow 70-90%, red > 90%)
+
+Clicking the Storage block opens an **interactive modal** with:
+
+- Disk summary (total, used, free) + Magento size
+- **Magento hot folders**: var/cache, var/log, var/session, var/page_cache, var/view_preprocessed, generated/code, generated/metadata, pub/static, pub/media — with proportional bars
+- **Magento root folders**: all top-level folders (app, vendor, pub, var, etc.) sorted by size
+
+Useful to quickly figure out where disk space is going.
+
+### Console with macOS-style controls
+
+Console header with three colored dots (red/yellow/green):
+
+- **Red** (chevron down) — minimize the console
+- **Yellow** (1/3 screen) — default size
+- **Green** (chevron up) — maximize to full screen
+
+The active state is automatically disabled. Animated transition between states. Alternatively, drag the resize bar for a custom size.
+
+### Logs / Help switch in the command panel
+
+In the Mage/Composer detail panel, a tab-style switch toggles between:
+
+- **Logs** — streamed output of the executed command
+- **Help** — output of `help <command>` (cached)
+
+Help is fetched on demand and cached in memory, switching is instant. Clicking Run automatically returns to the Logs view. If you switch commands while in Help view, the new command's help is loaded automatically.
+
+### Interactive guide mode
+
+**Guide** button (?) in the bottom-left of the drawer. Activates an exploration mode where:
+
+- **Single click** on Guide: explore mode. Help cursor on everything. Click on any documented element to see its explanation tooltip. Click Guide again to exit.
+- **Double click** on Guide: step-by-step guided tour with progress bar, "1 of N" counter, Next/Done button, dark overlay with spotlight on the current element.
+
+Guide contents live in `panel/tour.json`, with text translated via `.po` keys. Each step has a CSS selector, a translation key, and a placement (top/bottom/left/right). Support for `each: true` for dynamic expansion (e.g. one tooltip per tab, per task group, per Run button).
+
+Non-documentable elements stay dim, documented ones highlight on mouse hover with an animated teal border.
 
 ## How it works
 
@@ -206,19 +248,21 @@ This option can be simpler on hosting where the document root is `pub/` and you 
 ```
 panel/
   index.php                  # Front controller + router
-  config.php                 # Token, task definitions (gitignored)
+  config.php                 # Token, task definitions, PANEL_TITLE (gitignored)
+  tour.json                  # Interactive guide definitions
   .htaccess                  # Apache access protection
   bin/clean.php              # PHP-native cleaner
   Controller/
     AbstractController.php   # Auth + response helpers
+    SseController.php        # Base class for SSE streaming (DRY)
     DashboardController.php  # UI rendering
     StreamController.php     # SSE for predefined tasks
     StaticDeployController.php
     RunCommandController.php # SSE for arbitrary Magento commands
     RunComposerController.php
-    CommandsController.php   # Magento command list (JSON)
-    ComposerCommandsController.php
+    ListCommandsController.php # Magento/Composer command list (JSON)
     DetectController.php     # System info (JSON)
+    DiskInfoController.php   # Detailed storage info (JSON)
   Model/
     TaskRegistry.php         # Task registry from config.php
     MagentoInfo.php          # Theme and locale scanner
@@ -229,7 +273,7 @@ panel/
     login.php                # Login page
   public/
     panel.js                 # Frontend JS (vanilla)
-    panel.css                # Styles (dark DevOps-style theme)
+    panel.css                # Styles (Komodor/Okteto dark theme)
     .htaccess                # Allows serving CSS/JS, blocks PHP
   locale/
     it_IT/messages.po        # Italian (source language)
@@ -258,6 +302,36 @@ Then add the label translation in each `.po` file under `locale/`.
 3. Translate the `msgstr` values — the `msgid` keys are the original Italian strings
 4. The language automatically shows up in the selector
 
+## Customizing the title
+
+The panel title (default `MagePanel`) is configured in `config.php`:
+
+```php
+define('PANEL_TITLE', getenv('DEPLOY_PANEL_TITLE') ?: 'MagePanel');
+```
+
+PHP automatically splits words (camelCase or space) and colors the first white and the second teal. Examples: `MagePanel` becomes `Mage`+`Panel`, `Deploy Panel` becomes `Deploy`+`Panel`.
+
+## Adding a guide step
+
+Edit `panel/tour.json`, add an entry:
+
+```json
+{
+    "target": "#my-element",
+    "text": "tour_my_step",
+    "placement": "bottom"
+}
+```
+
+Then add the `tour_my_step` translation in each `.po` file. If the selector matches multiple elements at once, add `"each": true` and each match will get its own tooltip.
+
 ---
 
 Made with mass amounts of caffeine by **Nerdosity**.
+
+## Liked my work?
+
+Buy me a coffee: [paypal.me/giovafedele](https://paypal.me/giovafedele)
+
+[![Donate](https://img.shields.io/badge/PayPal-Buy%20me%20a%20coffee-00457C?logo=paypal&logoColor=white)](https://paypal.me/giovafedele)
